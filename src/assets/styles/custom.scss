@@ -1,0 +1,389 @@
+$font-weight-bold: 600 !default;
+$text-color: #17324d;
+
+// This file is useful to use some of the feautures of Bootstrap Italia
+// we catch only the necessary to our aim
+// --------------------------------------------------------------------
+// funzioni e variabili colore
+@import "~bootstrap-italia/src/scss/functions";
+@import "~bootstrap-italia/src/scss/utilities/colors_vars";
+
+//variables
+@import "~bootstrap-italia/src/scss/variables";
+
+//classi colore
+@import "~bootstrap-italia/src/scss/utilities/colors";
+
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+// mixins
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap-italia/src/scss/custom/mixins/buttons";
+@import "~bootstrap-italia/src/scss/custom/mixins/text-emphasis";
+
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/print";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/alert";
+//@import '~bootstrap/scss/images';
+//@import '~bootstrap/scss/code';
+@import "~bootstrap/scss/grid";
+@import '~bootstrap/scss/tables';
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/transitions";
+@import "~bootstrap/scss/dropdown";
+@import "~bootstrap/scss/button-group";
+@import "~bootstrap/scss/input-group";
+@import '~bootstrap/scss/nav';
+@import '~bootstrap/scss/navbar';
+@import '~bootstrap/scss/card';
+@import '~bootstrap/scss/breadcrumb';
+@import '~bootstrap/scss/pagination';
+@import '~bootstrap/scss/badge';
+//@import '~bootstrap/scss/progress';
+//@import '~bootstrap/scss/media';
+@import "~bootstrap/scss/list-group";
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/modal';
+@import '~bootstrap/scss/tooltip';
+//@import '~bootstrap/scss/popover';
+//@import '~bootstrap/scss/carousel';
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/spinners";
+@import "~bootstrap/scss/toasts";
+//@import "~bootstrap-icons/font/bootstrap-icons";
+
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.spinner {
+  animation: spin infinite 1s linear;
+}
+
+.custom-control-box {
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.custom-control {
+  position: relative;
+  z-index: 1;
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 1.5rem;
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact
+}
+
+.custom-control-input {
+  position: absolute;
+  left: 0;
+  z-index: -1;
+  width: 1rem;
+  height: 1.25rem;
+  //opacity: 0;
+}
+
+.custom-control-label {
+  position: relative;
+  margin-bottom: 0;
+  vertical-align: top;
+}
+
+.disabled {
+  color: $gray-500;
+  cursor: not-allowed !important;
+}
+
+pre {
+  max-height: 300px;
+  overflow: auto;
+  background: #333;
+  color: white !important;
+  padding: 10px 15px;
+  font-size: 12px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/*
+ * Sidebar
+ */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100; /* Behind the navbar */
+  //padding: 48px 0 0 !important; /* Height of navbar */
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  font-size: 0.9rem;
+
+  .list-group {
+
+    .list-group-item-action {
+      text-decoration: none;
+      padding: 10px 0px;
+
+      span {
+        padding: 20px;
+      }
+
+      &.active {
+        background-color: $gray-100;
+        font-weight: bold;
+        color: $black;
+      }
+    }
+  }
+
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    //top: 5rem;
+  }
+}
+
+.sidebar-sticky {
+  position: relative;
+  top: 0;
+  margin-top: 32px;
+  height: calc(100vh - 58px - 32px); // topbar 58 + 32 margin-top
+  overflow-x: hidden;
+  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+}
+
+@supports ((position: -webkit-sticky) or (position: sticky)) {
+  .sidebar-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar .nav-link .feather {
+  margin-right: 4px;
+  color: #999;
+}
+
+.sidebar .nav-link.active {
+  color: #007bff;
+}
+
+.sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+  color: inherit;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+  text-transform: uppercase;
+}
+
+/*
+ * Navbar
+ */
+.bg-light {
+  background-color: #fff;
+}
+
+.navbar {
+  height: 58px;
+}
+
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: 1rem;
+}
+
+.navbar .navbar-toggler {
+  top: .25rem;
+  right: 1rem;
+}
+
+.navbar .form-control {
+  padding: .75rem 1rem;
+  border-width: 0;
+  border-radius: 0;
+}
+
+.creditor-institutions {
+  .fixed-td-width {
+    width: 35%;
+  }
+
+  .ec-station {
+    .fixed-td-width {
+      width: 20%;
+    }
+  }
+}
+
+.configuration {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  td.key-td-width,
+  td.description-td-width {
+    overflow: auto;
+  }
+
+  .buttons-td-width {
+    width: 10%;
+  }
+}
+
+.xsd-table {
+  td:first-child {
+    width: 35%;
+  }
+
+  td:nth-child(2) {
+    width: 5%;
+  }
+
+  td:nth-child(3) {
+    width: 60%;
+  }
+}
+
+.xml-table {
+  td:first-child {
+    width: 12%;
+  }
+
+  td:nth-child(2) {
+    width: 23%;
+  }
+
+  td:nth-child(3) {
+    width: 5%;
+  }
+
+  td:nth-child(4) {
+    width: 30%;
+  }
+
+  td:nth-child(5) {
+    width: 30%;
+  }
+}
+
+.breadcrumb {
+  background-color: white !important;
+}
+
+.navbar-heading {
+  display: block;
+  text-transform: uppercase;
+  color: $gray-600;
+  font-size: 0.75rem;
+  border-bottom: 1px solid $gray-100;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.legend {
+  font-size: 0.8rem;
+}
+
+.icas {
+  .fixed-td-width {
+    width: 20%;
+  }
+
+  .hidden {
+    display: none;
+  }
+}
+
+.cdis {
+  .fixed-td-width {
+    width: 18%;
+  }
+
+  .fixed-td-width-sm {
+    width: 5%;
+  }
+
+  .hidden {
+    display: none;
+  }
+}
+
+.cpts {
+  .fixed-td-width {
+    width: 18%;
+  }
+
+  .fixed-td-width-sm {
+    width: 6%;
+  }
+
+  .hidden {
+    display: none;
+  }
+}
+
+.massive-loading {
+
+  .hidden {
+    display: none;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-break: keep-all
+  }
+}
+
+.toast-width {
+  width: 240px;
+}
+
+.info-box {
+  color: #999999;
+  margin: 16px;
+  position: absolute;
+  bottom: 0px;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  display: block; /* for use on default inline elements like span */
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+
+.dropdown {
+  height: fit-content;
+}
