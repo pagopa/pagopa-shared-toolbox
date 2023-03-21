@@ -1,0 +1,1 @@
+# pagopa-mock-config-fe
