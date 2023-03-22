@@ -182,8 +182,10 @@ export default class Sidebar extends React.Component<IProps, IState> {
                 </Accordion>
                 <div className={"info-box"}>
                     <div>Portal version: {packageJson.version} </div>
+                    {/*
                     <div>Mock configurator version: {this.state.versions.mockConfig} </div>
                     <div>Mocker version: {this.state.versions.mocker} </div>
+                    */}
                     Made with ❤️ by PagoPA S.p.A.
                 </div>
             </>
