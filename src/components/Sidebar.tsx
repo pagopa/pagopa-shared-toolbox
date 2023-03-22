@@ -130,7 +130,7 @@ export default class Sidebar extends React.Component<IProps, IState> {
                             </div>
                         </Accordion.Collapse>
                     </span>
-                    {/* <span>
+                    <span>
                         <Accordion.Toggle as="div" eventKey="1">
                             <span className="navbar-heading" onClick={() => this.setDomainState("simulation")}>
                                 <FaExpand className={`ml-2 mr-2 ${getCompressionClass("simulation", true)}`}/>
@@ -145,7 +145,7 @@ export default class Sidebar extends React.Component<IProps, IState> {
                             }
                             </div>
                         </Accordion.Collapse>
-                    </span> */}
+                    </span>
                 </Accordion>
             </>
         );

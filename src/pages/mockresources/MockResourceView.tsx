@@ -1,13 +1,14 @@
 import React from "react";
 import axios from "axios";
-import { Accordion, Alert, Breadcrumb, Button, Card, Form } from "react-bootstrap";
-import { FaPen, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
+import { Accordion, Alert, Breadcrumb, Button, Card, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { FaPen, FaPlay, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import base64 from 'react-native-base64'
 import { v4 as uuid } from "uuid";
 import MockRuleListItem from "../../components/mockresource/MockRuleListItem";
 import { MockResource } from "../../models/MockResource";
 import MockConditionListItem from "../../components/mockresource/MockConditionListItem";
+import getMockerURL from "../../util/envreader";
 
 interface IProps {
   mockResourceId?: string;
@@ -55,9 +56,8 @@ export default class MockResourceView extends React.Component<IProps, IState> {
         mockHeaders: {},  
         updatingRuleId: "",
       },
-      mockResource: {}
+      mockResource: {},
     }
-
     this.removeMockRuleCondition = this.removeMockRuleCondition.bind(this);
   }
 
@@ -182,6 +182,10 @@ export default class MockResourceView extends React.Component<IProps, IState> {
   }
 
   
+
+  generateCompleteUrl(): string {
+    return `${getMockerURL()}${this.state.mockResource?.mockType === undefined ? "" : this.state.mockResource?.mockType}${this.state.mockResource?.resourceUrl === undefined ? "" : this.state.mockResource?.resourceUrl}`;
+  }
 
   createEmptyMockRule(): void {
     const ruleManagement = {
@@ -366,13 +370,17 @@ export default class MockResourceView extends React.Component<IProps, IState> {
     this.props.history.push("/configuration/mock-resources/" + this.props.mockResourceId + "?edit");
   }
 
+  redirectToSimulation() {
+    this.props.history.push("/simulation/?url=" + base64.encode(this.generateCompleteUrl()));
+  }
+
 
 
 
   readMockResource(mockResourceId: string): void {
     this.setState({isLoading: true});
     axios
-      .get(`https://wt1wacwpzh.execute-api.eu-south-1.amazonaws.com/mocker/config/resources/${mockResourceId}`)
+      .get(`${getMockerURL()}config/resources/${mockResourceId}`)
       .then((res) => {
         if (res.status === 200) {
           this.setState({ mockResource: res.data as MockResource});
@@ -390,7 +398,7 @@ export default class MockResourceView extends React.Component<IProps, IState> {
   createMockResource() {
     this.setState({isLoading: true});
     let isOk = false;
-    axios.post(`https://wt1wacwpzh.execute-api.eu-south-1.amazonaws.com/mocker/config/resources`, this.state.mockResource)
+    axios.post(`${getMockerURL()}config/resources`, this.state.mockResource)
       .then((res) => {
         if (res.status === 200) {
           this.toastOK("Resource created successfully!");
@@ -413,7 +421,7 @@ export default class MockResourceView extends React.Component<IProps, IState> {
   updateMockResource() {
     this.setState({isLoading: true});
     let isOk = false;
-    axios.put(`https://wt1wacwpzh.execute-api.eu-south-1.amazonaws.com/mocker/config/resources/${this.props.mockResourceId}`, this.state.mockResource)
+    axios.put(`${getMockerURL()}config/resources/${this.props.mockResourceId}`, this.state.mockResource)
       .then((res) => {
         if (res.status === 200) {
           this.toastOK("Resource updated successfully!");
@@ -439,6 +447,7 @@ export default class MockResourceView extends React.Component<IProps, IState> {
       this.readMockResource(this.props.mockResourceId);
     }
   }
+
 
 
   render(): React.ReactNode {
@@ -516,9 +525,25 @@ export default class MockResourceView extends React.Component<IProps, IState> {
                             <Form.Group className="col-md-1">
                               <Form.Control value={mockResource.httpMethod} readOnly />
                             </Form.Group>
-                            <Form.Group className="col-md-11">
-                              <Form.Control value={`https://{SERVICE_URL}}/mocker/${mockResource.mockType === undefined ? "" : mockResource.mockType}${mockResource.resourceUrl === undefined ? "" : mockResource.resourceUrl}`} readOnly />
-                            </Form.Group>
+                            {
+                              this.props.action !== "show" &&
+                              <Form.Group className="col-md-11">
+                                <Form.Control value={this.generateCompleteUrl()} readOnly />
+                              </Form.Group>
+                            }
+                            {
+                              this.props.action === "show" &&
+                              <>
+                                <Form.Group className="col-md-10">
+                                  <Form.Control value={this.generateCompleteUrl()} readOnly />
+                                </Form.Group>
+                                <Form.Group className="col-md-1">
+                                  <OverlayTrigger placement="top" overlay={<Tooltip id="button-tooltip">Simulate behavior</Tooltip>}>
+                                    <Button className="float-md-right"	onClick={() => this.redirectToSimulation()}><FaPlay/></Button>            
+                                  </OverlayTrigger>                                
+                                </Form.Group>
+                              </>
+                            }
                           </div>
                         </Card.Body>
                       </Card>
