@@ -1,7 +1,7 @@
 {
   "name": "pagopa-mock-config-fe",
   "homepage": "https://pagopa.github.io/pagopa-mock-config-fe/",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "dependencies": {
     "@azure/msal-browser": "^2.19.0",
     "@azure/msal-react": "^1.1.1",
