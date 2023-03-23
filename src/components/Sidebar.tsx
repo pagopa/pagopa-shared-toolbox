@@ -1,10 +1,13 @@
 import React from "react";
+import axios from "axios";
 import {Link} from "react-router-dom";
 import {FaCompress, FaExpand, FaHome} from "react-icons/fa";
 import {Accordion} from "react-bootstrap";
+import SidebarItems from "./SidebarItems";
+import getMockerURL from "../util/envreader";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import SidebarItems from "./SidebarItems";
+import packageJson from "../../package.json";
 
 interface IProps {
     history: {
@@ -20,7 +23,13 @@ interface IState {
         configuration: boolean;
         simulation: boolean;
     };
+    versions: {
+        mocker: string;
+        mockConfig: string;
+    };
 }
+
+
 
 export default class Sidebar extends React.Component<IProps, IState> {
     constructor(props: IProps) {
@@ -30,6 +39,10 @@ export default class Sidebar extends React.Component<IProps, IState> {
             domains: {
                 configuration: true,
                 simulation: false,
+            },
+            versions: {
+                mocker: "",
+                mockConfig: "",
             }
         };
     }
@@ -78,7 +91,27 @@ export default class Sidebar extends React.Component<IProps, IState> {
         });
     }
 
-    
+    getMockerInfo(): void {
+        axios.get(`${getMockerURL()}info`)
+        .then((res) => {
+            if (res.status === 200) {
+                let versions = this.state.versions;
+                versions.mockConfig = res.data.version;
+                this.setState({ versions });
+            }
+        });
+    }
+
+    getMockConfigInfo(): void {
+        axios.get(`${getMockerURL()}config/info`)
+        .then((res) => {
+            if (res.status === 200) {
+                let versions = this.state.versions;
+                versions.mockConfig = res.data.version;
+                this.setState({ versions });
+            }
+        });
+    }
 
 
     render(): React.ReactNode {
@@ -130,7 +163,7 @@ export default class Sidebar extends React.Component<IProps, IState> {
                             </div>
                         </Accordion.Collapse>
                     </span>
-                    {/* <span>
+                    <span>
                         <Accordion.Toggle as="div" eventKey="1">
                             <span className="navbar-heading" onClick={() => this.setDomainState("simulation")}>
                                 <FaExpand className={`ml-2 mr-2 ${getCompressionClass("simulation", true)}`}/>
@@ -145,8 +178,16 @@ export default class Sidebar extends React.Component<IProps, IState> {
                             }
                             </div>
                         </Accordion.Collapse>
-                    </span> */}
+                    </span>
                 </Accordion>
+                <div className={"info-box"}>
+                    <div>Portal version: {packageJson.version} </div>
+                    {/*
+                    <div>Mock configurator version: {this.state.versions.mockConfig} </div>
+                    <div>Mocker version: {this.state.versions.mocker} </div>
+                    */}
+                    Made with ❤️ by PagoPA S.p.A.
+                </div>
             </>
         );
     }

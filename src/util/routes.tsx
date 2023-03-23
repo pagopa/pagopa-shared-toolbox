@@ -28,7 +28,7 @@ export default class Routes extends React.Component {
                   const edit: boolean = new URLSearchParams(props.location.search).get("edit") !== null;
                   return edit ? <EditMockResource {...props} /> : <ShowMockResourceDetail {...props} />;
                 }}/>
-                <Route path="/simulation/" exact component={ShowSimulationMainPage } />
+                <Route path="/simulation/" exact render={props => { return <ShowSimulationMainPage {...props} /> }} />
                 <Route component={NotFound} />
               </Switch>
             </Layout>
