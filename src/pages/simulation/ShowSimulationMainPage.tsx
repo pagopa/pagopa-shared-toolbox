@@ -141,7 +141,7 @@ export default class ShowSimulationMainPage extends React.Component<IProps, ISta
         // executing request to Mocker
         axios.request({
           method: request.httpMethod.toLowerCase() as Method,
-          url: `${request.root}${request.resourceUrl}`.replace(/\/\//g, '/'),
+          url: request.resourceUrl,
           data: request.body,
           headers: request.headers
         }).then((res) => {
