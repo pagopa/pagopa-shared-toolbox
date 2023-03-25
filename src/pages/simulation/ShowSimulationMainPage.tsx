@@ -142,6 +142,7 @@ export default class ShowSimulationMainPage extends React.Component<IProps, ISta
         axios.request({
           method: request.httpMethod.toLowerCase() as Method,
           url: request.resourceUrl,
+          baseURL: request.root,
           data: request.body,
           headers: request.headers
         }).then((res) => {
