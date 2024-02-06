@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { Accordion, Alert, Breadcrumb, Button, Card, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaPen, FaPlay, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -8,7 +7,13 @@ import { v4 as uuid } from "uuid";
 import MockRuleListItem from "../../components/mockresource/MockRuleListItem";
 import { MockResource } from "../../models/MockResource";
 import MockConditionListItem from "../../components/mockresource/MockConditionListItem";
-import getMockerURL from "../../util/envreader";
+import { MsalContext } from "@azure/msal-react";
+import { loginRequest } from "../../util/authconfig";
+import { AuthenticationResult } from "@azure/msal-browser";
+import { MockConfigApi } from "../../util/apiclient";
+import { isErrorResponse } from "../../util/client-utils";
+import { ProblemJson } from "../../api/generated/ProblemJson";
+import { ENV as env } from "../../util/env";
 
 interface IProps {
   mockResourceId?: string;
@@ -34,6 +39,9 @@ interface IState {
 }
 
 export default class MockResourceView extends React.Component<IProps, IState> {
+
+  static contextType = MsalContext;
+  context!: React.ContextType<typeof MsalContext>
 
   constructor(props: IProps) {
     super(props);
@@ -184,7 +192,8 @@ export default class MockResourceView extends React.Component<IProps, IState> {
   
 
   generateCompleteUrl(): string {
-    return `${getMockerURL()}${this.state.mockResource?.mockType === undefined ? "" : this.state.mockResource?.mockType}${this.state.mockResource?.resourceUrl === undefined ? "" : this.state.mockResource?.resourceUrl}`;
+    
+    return `${env.MOCKER.URL}${this.state.mockResource?.mockType === undefined ? "" : this.state.mockResource?.mockType}${this.state.mockResource?.resourceUrl === undefined ? "" : this.state.mockResource?.resourceUrl}`;
   }
 
   createEmptyMockRule(): void {
@@ -379,25 +388,40 @@ export default class MockResourceView extends React.Component<IProps, IState> {
 
   readMockResource(mockResourceId: string): void {
     this.setState({isLoading: true});
-    axios
-      .get(`${getMockerURL()}config/resources/${mockResourceId}`)
-      .then((res) => {
-        if (res.status === 200) {
-          this.setState({ mockResource: res.data as MockResource});
+
+    this.context.instance.acquireTokenSilent({
+      ...loginRequest,
+      account: this.context.accounts[0]
+    })
+    .then((auth: AuthenticationResult) => {
+      MockConfigApi.getMockResource(auth.idToken, mockResourceId)
+      .then((response) => {
+        if (isErrorResponse(response)) {
+            const problemJson = response as ProblemJson;
+            if (problemJson.status === 404) {
+              this.toastError(`No mock resource found with id ${mockResourceId}...`);
+            } else if (problemJson.status === 500) {
+              this.toastError("An error occurred while reading mock resource list...");
+            }
+            this.setState({isError: true});
+        } else {
+          this.setState({ mockResource: response });          
         }
       })
       .catch(() => {
-        this.toastError("An error occurred while reading mock resource...");
+        this.toastError("An error occurred while reading mock resource list...");
         this.setState({isError: true});
       })
       .finally(() => {
-        this.setState({isLoading: false});
-      });
+        this.setState({ isLoading: false });
+      })
+    });
   }
 
   createMockResource() {
     this.setState({isLoading: true});
-    let isOk = false;
+    //let isOk = false;
+    /*
     axios.post(`${getMockerURL()}config/resources`, this.state.mockResource)
       .then((res) => {
         if (res.status === 200) {
@@ -416,11 +440,13 @@ export default class MockResourceView extends React.Component<IProps, IState> {
     if (isOk) {
       this.props.history.goBack();
     }
+    */
   }
 
   updateMockResource() {
     this.setState({isLoading: true});
-    let isOk = false;
+    //let isOk = false;
+    /*
     axios.put(`${getMockerURL()}config/resources/${this.props.mockResourceId}`, this.state.mockResource)
       .then((res) => {
         if (res.status === 200) {
@@ -439,6 +465,7 @@ export default class MockResourceView extends React.Component<IProps, IState> {
     if (isOk) {
       this.props.history.goBack();
     }
+    */
   }
 
   componentDidMount(): void {
@@ -664,216 +691,218 @@ export default class MockResourceView extends React.Component<IProps, IState> {
                             {
                               (this.state.ruleManagement.create || this.state.ruleManagement.edit) &&
                               <Card>
-                                <Accordion.Toggle as={Card.Header} eventKey={"addNewMockRuleAccordionToggle"}>
-                                  {
-                                    (this.state.ruleManagement.create) &&
-                                    <h6>Add a new mock Rule</h6>
-                                  }
-                                  {
-                                    (this.state.ruleManagement.edit) &&
-                                    <h6>Update mock Rule</h6>
-                                  }
-                                </Accordion.Toggle>
-                                <Accordion.Collapse eventKey={"addNewMockRuleAccordionToggle"}>
-                                  <Card.Body>
-                                    <div className="row">
-                                      <Form.Group controlId="name" className="col-md-8">
-                                        <Form.Label>Name<span className="text-danger">*</span></Form.Label>
-                                        <Form.Control name="name" placeholder="Mock resource rule description" value={this.state.ruleManagement.mockRule?.name} onChange={(e) => this.handleChange(e, "mockRule")}/>
-                                      </Form.Group>
-                                      <Form.Group controlId="id" className="col-md-2">
-                                        <Form.Label>Rule check order<span className="text-danger">*</span></Form.Label>
-                                        <Form.Control name="id" type="number" min={1} value={this.state.ruleManagement.mockRule?.id} onChange={(e) => this.handleChange(e, "mockRule")}/>
-                                      </Form.Group>
-                                      <Form.Group controlId="isRuleActive" className="col-md-2">
-                                        <Form.Label>Active<span className="text-danger">*</span></Form.Label>
-                                        <Form.Switch name="isActive" checked={this.state.ruleManagement.mockRule?.isActive} onChange={(e) => this.handleChange(e, "mockRule")}/>
-                                      </Form.Group>
-                                    </div>
+                                <Accordion.Item as={Card.Header} eventKey={"addNewMockRuleAccordionToggle"}>
+                                  <Accordion.Header>
+                                    {
+                                      (this.state.ruleManagement.create) &&
+                                      <h6>Add a new mock Rule</h6>
+                                    }
+                                    {
+                                      (this.state.ruleManagement.edit) &&
+                                      <h6>Update mock Rule</h6>
+                                    }
+                                  </Accordion.Header>
+                                  <Accordion.Body>
+                                    <Card.Body>
+                                      <div className="row">
+                                        <Form.Group controlId="name" className="col-md-8">
+                                          <Form.Label>Name<span className="text-danger">*</span></Form.Label>
+                                          <Form.Control name="name" placeholder="Mock resource rule description" value={this.state.ruleManagement.mockRule?.name} onChange={(e) => this.handleChange(e, "mockRule")}/>
+                                        </Form.Group>
+                                        <Form.Group controlId="id" className="col-md-2">
+                                          <Form.Label>Rule check order<span className="text-danger">*</span></Form.Label>
+                                          <Form.Control name="id" type="number" min={1} value={this.state.ruleManagement.mockRule?.id} onChange={(e) => this.handleChange(e, "mockRule")}/>
+                                        </Form.Group>
+                                        <Form.Group controlId="isRuleActive" className="col-md-2">
+                                          <Form.Label>Active<span className="text-danger">*</span></Form.Label>
+                                          <Form.Switch name="isActive" checked={this.state.ruleManagement.mockRule?.isActive} onChange={(e) => this.handleChange(e, "mockRule")}/>
+                                        </Form.Group>
+                                      </div>
 
-                                    <div className="row">
-                                      <Form.Group controlId="tag" className="col-md-6">
-                                        <Form.Label>Tags to be added (separated with a comma)</Form.Label>
-                                        <Form.Control name="tag" placeholder="No tag" value={this.state.ruleManagement.mockRule?.tag.toString()} onChange={(e) => this.handleChange(e, "mockRuleTags")}/>
-                                      </Form.Group>
-                                      <Form.Group controlId="tag" className="col-md-6">
-                                        <Form.Label>Added tags</Form.Label>
-                                        <div>
-                                          { 
-                                            (this.state.ruleManagement.mockRule.tag === undefined || this.state.ruleManagement.mockRule.tag.length === 0) && 
-                                            <span>No added tag</span> 
-                                          }
-                                          {
-                                            this.state.ruleManagement.mockRule.tag !== undefined &&
-                                            Object.keys(this.state.ruleManagement.mockRule.tag).map((tag: any, index: number) => (
-                                              <span key={index} className="mr-1 badge badge-primary">
-                                                {this.state.ruleManagement.mockRule.tag[tag]}
-                                              </span>
-                                            ))
-                                          }
-                                        </div>
-                                      </Form.Group>
-                                    </div>
-
-                                    <div className="row">
-                                      <Form.Group controlId="conditions" className="col-md-12">
-                                        <Form.Label>Conditions (evaluated in AND):</Form.Label>
-                                        <div className="row">
-                                          <div className="col-md-1">  
-                                            <Form.Control name="id" placeholder="Order" type="number" min={1} value={this.state.ruleManagement.mockCondition.id} onChange={(e) => this.handleChange(e, "mockRuleCondition")}/>
-                                          </div>
-                                          <div className="col-md-3">
-                                            <Form.Control name="fieldName" placeholder="Field Name" value={this.state.ruleManagement.mockCondition.fieldName} onChange={(e) => this.handleChange(e, "mockRuleCondition")}/>  
-                                          </div>
-                                          <div className="col-md-2">
-                                            <Form.Control as="select" name="conditionType" value={this.state.ruleManagement.mockCondition.conditionType} defaultValue={""} onChange={(e) => this.handleChange(e, "mockRuleCondition")}>  
-                                              <option value=""></option>
-                                              <option value="ANY">IS NOT NULL</option>
-                                              <option value="NULL">IS NULL</option>
-                                              <option value="EQ">EQUALS</option>
-                                              <option value="NEQ">NOT EQUALS</option>
-                                              <option value="REGEX">MEETS REGEX</option>
-                                              <option value="LT">LOWER THAN</option>
-                                              <option value="GT">GREATER THAN</option>
-                                              <option value="LE">LOWER EQUALS THAN</option>
-                                              <option value="GE">GREATER EQUALS THAN</option>
-                                            </Form.Control>
-                                          </div>
-                                          <div className="col-md-2">
-                                          {
-                                            (this.state.ruleManagement.mockCondition.conditionType === undefined || this.state.ruleManagement.mockCondition.conditionType === "NULL" || this.state.ruleManagement.mockCondition.conditionType === "ANY") &&
-                                            <Form.Control name="conditionValue" placeholder="" value={""} readOnly/>  
-                                          }
-                                          {
-                                            (this.state.ruleManagement.mockCondition.conditionType !== undefined && this.state.ruleManagement.mockCondition.conditionType !== "NULL" && this.state.ruleManagement.mockCondition.conditionType !== "ANY") &&
-                                            <Form.Control name="conditionValue" placeholder="Condition Value" value={this.state.ruleManagement.mockCondition.conditionValue} onChange={(e) => this.handleChange(e, "mockRuleCondition")}/>  
-                                          }
-                                          </div>
-                                          <div className="col-md-3">
-                                            <Form.Control as="select" name="contentPosition" defaultValue={""} value={this.state.ruleManagement.mockCondition.contentPosition} onChange={(e) => this.handleChange(e, "mockRuleCondition")}>
-                                              <option value=""></option>
-                                              <option value="BODY_JSON">In request body as JSON</option>
-                                              <option value="BODY_XML">In request body as XML</option>
-                                              <option value="URL_STRING">In request URL as query parameter</option>
-                                              <option value="HEADER_STRING">In request headers</option>
-                                            </Form.Control>
-                                          </div>                                        
+                                      <div className="row">
+                                        <Form.Group controlId="tag" className="col-md-6">
+                                          <Form.Label>Tags to be added (separated with a comma)</Form.Label>
+                                          <Form.Control name="tag" placeholder="No tag" value={this.state.ruleManagement.mockRule?.tag.toString()} onChange={(e) => this.handleChange(e, "mockRuleTags")}/>
+                                        </Form.Group>
+                                        <Form.Group controlId="tag" className="col-md-6">
+                                          <Form.Label>Added tags</Form.Label>
                                           <div>
-                                            <Button className="float-md-right"	onClick={() => this.addMockRuleCondition()}><FaPlus/></Button>
+                                            { 
+                                              (this.state.ruleManagement.mockRule.tag === undefined || this.state.ruleManagement.mockRule.tag.length === 0) && 
+                                              <span>No added tag</span> 
+                                            }
+                                            {
+                                              this.state.ruleManagement.mockRule.tag !== undefined &&
+                                              Object.keys(this.state.ruleManagement.mockRule.tag).map((tag: any, index: number) => (
+                                                <span key={index} className="mr-1 badge badge-primary">
+                                                  {this.state.ruleManagement.mockRule.tag[tag]}
+                                                </span>
+                                              ))
+                                            }
                                           </div>
-                                        </div>
-                                      </Form.Group>
-                                    </div>
-                                    <div className="row">
-                                      <Form.Group controlId="addedConditions" className="col-md-12">
-                                        <Form.Label>Added conditions</Form.Label>
-                                        <div>
-                                          { 
-                                            (this.state.ruleManagement.mockRule.conditions === undefined || this.state.ruleManagement.mockRule.conditions.length === 0) && 
-                                            <span>No added conditions, always verified</span> 
-                                          }
-                                          { 
-                                            (this.state.ruleManagement.mockRule.conditions !== undefined && this.state.ruleManagement.mockRule.conditions.length > 0) &&
-                                            (
-                                              this.state.ruleManagement.mockRule.conditions?.map((condition: any, key: any) => { 
-                                                return (
-                                                  <MockConditionListItem 
-                                                    removeMockCondition={this.removeMockRuleCondition}
-                                                    item={condition} 
-                                                    itemKey={key} 
-                                                    history={this.props.history} 
-                                                  />
-                                                );                           
-                                              })
-                                            )                                    
-                                          }
-                                        </div>
-                                      </Form.Group>
-                                    </div>                                  
+                                        </Form.Group>
+                                      </div>
 
-                                    <div className="row">
-                                      <Form.Group controlId="headers" className="col-md-12">
-                                        <Form.Label>Response headers:</Form.Label>
-                                        <div className="row">
-                                          <div className="col-md-5">
-                                            <Form.Control name="headerKey" placeholder="Header Key" value={this.state.ruleManagement.mockHeaders?.[0]} onChange={(e) => this.handleChange(e, "mockRuleHeader")}/>  
+                                      <div className="row">
+                                        <Form.Group controlId="conditions" className="col-md-12">
+                                          <Form.Label>Conditions (evaluated in AND):</Form.Label>
+                                          <div className="row">
+                                            <div className="col-md-1">  
+                                              <Form.Control name="id" placeholder="Order" type="number" min={1} value={this.state.ruleManagement.mockCondition.id} onChange={(e) => this.handleChange(e, "mockRuleCondition")}/>
+                                            </div>
+                                            <div className="col-md-3">
+                                              <Form.Control name="fieldName" placeholder="Field Name" value={this.state.ruleManagement.mockCondition.fieldName} onChange={(e) => this.handleChange(e, "mockRuleCondition")}/>  
+                                            </div>
+                                            <div className="col-md-2">
+                                              <Form.Control as="select" name="conditionType" value={this.state.ruleManagement.mockCondition.conditionType} defaultValue={""} onChange={(e) => this.handleChange(e, "mockRuleCondition")}>  
+                                                <option value=""></option>
+                                                <option value="ANY">IS NOT NULL</option>
+                                                <option value="NULL">IS NULL</option>
+                                                <option value="EQ">EQUALS</option>
+                                                <option value="NEQ">NOT EQUALS</option>
+                                                <option value="REGEX">MEETS REGEX</option>
+                                                <option value="LT">LOWER THAN</option>
+                                                <option value="GT">GREATER THAN</option>
+                                                <option value="LE">LOWER EQUALS THAN</option>
+                                                <option value="GE">GREATER EQUALS THAN</option>
+                                              </Form.Control>
+                                            </div>
+                                            <div className="col-md-2">
+                                            {
+                                              (this.state.ruleManagement.mockCondition.conditionType === undefined || this.state.ruleManagement.mockCondition.conditionType === "NULL" || this.state.ruleManagement.mockCondition.conditionType === "ANY") &&
+                                              <Form.Control name="conditionValue" placeholder="" value={""} readOnly/>  
+                                            }
+                                            {
+                                              (this.state.ruleManagement.mockCondition.conditionType !== undefined && this.state.ruleManagement.mockCondition.conditionType !== "NULL" && this.state.ruleManagement.mockCondition.conditionType !== "ANY") &&
+                                              <Form.Control name="conditionValue" placeholder="Condition Value" value={this.state.ruleManagement.mockCondition.conditionValue} onChange={(e) => this.handleChange(e, "mockRuleCondition")}/>  
+                                            }
+                                            </div>
+                                            <div className="col-md-3">
+                                              <Form.Control as="select" name="contentPosition" defaultValue={""} value={this.state.ruleManagement.mockCondition.contentPosition} onChange={(e) => this.handleChange(e, "mockRuleCondition")}>
+                                                <option value=""></option>
+                                                <option value="BODY_JSON">In request body as JSON</option>
+                                                <option value="BODY_XML">In request body as XML</option>
+                                                <option value="URL_STRING">In request URL as query parameter</option>
+                                                <option value="HEADER_STRING">In request headers</option>
+                                              </Form.Control>
+                                            </div>                                        
+                                            <div>
+                                              <Button className="float-md-right"	onClick={() => this.addMockRuleCondition()}><FaPlus/></Button>
+                                            </div>
                                           </div>
-                                          <div className="col-md-5">
-                                            <Form.Control name="headerValue" placeholder="Header Value" value={this.state.ruleManagement.mockHeaders?.[1]} onChange={(e) => this.handleChange(e, "mockRuleHeader")}/>  
-                                          </div>
+                                        </Form.Group>
+                                      </div>
+                                      <div className="row">
+                                        <Form.Group controlId="addedConditions" className="col-md-12">
+                                          <Form.Label>Added conditions</Form.Label>
                                           <div>
-                                            <Button className="float-md-right"	onClick={() => this.addMockRuleHeader()} disabled={this.isNullUndefinedOrEmpty(this.state.ruleManagement.mockHeaders[0])}><FaPlus/></Button>
+                                            { 
+                                              (this.state.ruleManagement.mockRule.conditions === undefined || this.state.ruleManagement.mockRule.conditions.length === 0) && 
+                                              <span>No added conditions, always verified</span> 
+                                            }
+                                            { 
+                                              (this.state.ruleManagement.mockRule.conditions !== undefined && this.state.ruleManagement.mockRule.conditions.length > 0) &&
+                                              (
+                                                this.state.ruleManagement.mockRule.conditions?.map((condition: any, key: any) => { 
+                                                  return (
+                                                    <MockConditionListItem 
+                                                      removeMockCondition={this.removeMockRuleCondition}
+                                                      item={condition} 
+                                                      itemKey={key} 
+                                                      history={this.props.history} 
+                                                    />
+                                                  );                           
+                                                })
+                                              )                                    
+                                            }
                                           </div>
-                                        </div>
-                                      </Form.Group>
-                                    </div>
-                                    <div className="row">
-                                      <Form.Group controlId="addedHeaders" className="col-md-12">
-                                        <Form.Label>Added headers:</Form.Label>
-                                        <div>
-                                          { 
-                                            (this.state.ruleManagement.mockRule.response?.headers === undefined) && 
-                                            <span>No added headers</span> 
-                                          }
-                                          { 
-                                            (this.state.ruleManagement.mockRule.response?.headers !== undefined) &&
-                                            (
-                                              Object.keys(this.state.ruleManagement.mockRule.response.headers).map((header: any, key: any) => {
-                                                return (
-                                                  <Card key={key}>
-                                                      <Card.Body>
-                                                        <div className="col-md-12">
-                                                          {header}: {this.state.ruleManagement.mockRule.response.headers[header]}
-                                                          <Button className="float-md-right"	onClick={() => this.removeMockRuleHeader(header)}>
-                                                            <FaTrash/>
-                                                          </Button>
-                                                        </div>
-                                                      </Card.Body>
-                                                    </Card>
-                                                );
-                                              })
-                                            )                   
-                                          }
-                                        </div>
-                                      </Form.Group>
-                                    </div> 
+                                        </Form.Group>
+                                      </div>                                  
 
-                                    <div className="row">
-                                      <Form.Group controlId="body" className="col-md-6">
-                                        <Form.Label>Response body</Form.Label>
-                                        <Form.Control as="textarea" name="body" rows={10} value={base64.decode(this.state.ruleManagement.mockRule?.response?.body)} onChange={(e) => this.handleChange(e, "mockRuleResponse")}/>
-                                      </Form.Group>
-                                      <Form.Group controlId="body" className="col-md-6">
-                                        <Form.Label>Response status<span className="text-danger">*</span></Form.Label>
-                                        <Form.Control name="status" value={this.state.ruleManagement.mockRule?.response?.status} onChange={(e) => this.handleChange(e, "mockRuleResponse")}/>
-                                      </Form.Group>
-                                    </div>
+                                      <div className="row">
+                                        <Form.Group controlId="headers" className="col-md-12">
+                                          <Form.Label>Response headers:</Form.Label>
+                                          <div className="row">
+                                            <div className="col-md-5">
+                                              <Form.Control name="headerKey" placeholder="Header Key" value={this.state.ruleManagement.mockHeaders?.[0]} onChange={(e) => this.handleChange(e, "mockRuleHeader")}/>  
+                                            </div>
+                                            <div className="col-md-5">
+                                              <Form.Control name="headerValue" placeholder="Header Value" value={this.state.ruleManagement.mockHeaders?.[1]} onChange={(e) => this.handleChange(e, "mockRuleHeader")}/>  
+                                            </div>
+                                            <div>
+                                              <Button className="float-md-right"	onClick={() => this.addMockRuleHeader()} disabled={this.isNullUndefinedOrEmpty(this.state.ruleManagement.mockHeaders[0])}><FaPlus/></Button>
+                                            </div>
+                                          </div>
+                                        </Form.Group>
+                                      </div>
+                                      <div className="row">
+                                        <Form.Group controlId="addedHeaders" className="col-md-12">
+                                          <Form.Label>Added headers:</Form.Label>
+                                          <div>
+                                            { 
+                                              (this.state.ruleManagement.mockRule.response?.headers === undefined) && 
+                                              <span>No added headers</span> 
+                                            }
+                                            { 
+                                              (this.state.ruleManagement.mockRule.response?.headers !== undefined) &&
+                                              (
+                                                Object.keys(this.state.ruleManagement.mockRule.response.headers).map((header: any, key: any) => {
+                                                  return (
+                                                    <Card key={key}>
+                                                        <Card.Body>
+                                                          <div className="col-md-12">
+                                                            {header}: {this.state.ruleManagement.mockRule.response.headers[header]}
+                                                            <Button className="float-md-right"	onClick={() => this.removeMockRuleHeader(header)}>
+                                                              <FaTrash/>
+                                                            </Button>
+                                                          </div>
+                                                        </Card.Body>
+                                                      </Card>
+                                                  );
+                                                })
+                                              )                   
+                                            }
+                                          </div>
+                                        </Form.Group>
+                                      </div> 
 
-                                    <div className="row">
-                                      <Form.Group controlId="injectedParameters" className="col-md-6">
-                                        <Form.Label>Injected parameters</Form.Label>
-                                        <Form.Control name="parameters" value={this.state.ruleManagement.mockRule?.response?.parameters?.toString()} onChange={(e) => this.handleChange(e, "mockRuleResponse")}/>
-                                      </Form.Group>
-                                      <Form.Group controlId="tag" className="col-md-6">
-                                        <Form.Label>Added parameters</Form.Label>
-                                        <div>
-                                          { 
-                                            (this.state.ruleManagement.mockRule.response?.parameters === undefined || this.state.ruleManagement.mockRule.response?.parameters.length === 0) && 
-                                            <span>No added parameters to be injected</span> 
-                                          }
-                                          {
-                                            (this.state.ruleManagement.mockRule.response?.parameters !== undefined && this.state.ruleManagement.mockRule.response?.parameters.length !== 0) &&
-                                            Object.keys(this.state.ruleManagement.mockRule.response.parameters).map((parameter: any, index: number) => (
-                                              <span key={index} className="mr-1 badge badge-success">
-                                                {this.state.ruleManagement.mockRule.response.parameters[parameter]}
-                                              </span>
-                                            ))
-                                          }
-                                        </div>
-                                      </Form.Group>
-                                    </div>
-                                  </Card.Body>
-                                </Accordion.Collapse>
+                                      <div className="row">
+                                        <Form.Group controlId="body" className="col-md-6">
+                                          <Form.Label>Response body</Form.Label>
+                                          <Form.Control as="textarea" name="body" rows={10} value={base64.decode(this.state.ruleManagement.mockRule?.response?.body)} onChange={(e) => this.handleChange(e, "mockRuleResponse")}/>
+                                        </Form.Group>
+                                        <Form.Group controlId="body" className="col-md-6">
+                                          <Form.Label>Response status<span className="text-danger">*</span></Form.Label>
+                                          <Form.Control name="status" value={this.state.ruleManagement.mockRule?.response?.status} onChange={(e) => this.handleChange(e, "mockRuleResponse")}/>
+                                        </Form.Group>
+                                      </div>
+
+                                      <div className="row">
+                                        <Form.Group controlId="injectedParameters" className="col-md-6">
+                                          <Form.Label>Injected parameters</Form.Label>
+                                          <Form.Control name="parameters" value={this.state.ruleManagement.mockRule?.response?.parameters?.toString()} onChange={(e) => this.handleChange(e, "mockRuleResponse")}/>
+                                        </Form.Group>
+                                        <Form.Group controlId="tag" className="col-md-6">
+                                          <Form.Label>Added parameters</Form.Label>
+                                          <div>
+                                            { 
+                                              (this.state.ruleManagement.mockRule.response?.parameters === undefined || this.state.ruleManagement.mockRule.response?.parameters.length === 0) && 
+                                              <span>No added parameters to be injected</span> 
+                                            }
+                                            {
+                                              (this.state.ruleManagement.mockRule.response?.parameters !== undefined && this.state.ruleManagement.mockRule.response?.parameters.length !== 0) &&
+                                              Object.keys(this.state.ruleManagement.mockRule.response.parameters).map((parameter: any, index: number) => (
+                                                <span key={index} className="mr-1 badge badge-success">
+                                                  {this.state.ruleManagement.mockRule.response.parameters[parameter]}
+                                                </span>
+                                              ))
+                                            }
+                                          </div>
+                                        </Form.Group>
+                                      </div>
+                                    </Card.Body>
+                                  </Accordion.Body>
+                                </Accordion.Item>
                               </Card>
                             }
                             { (!this.state.ruleManagement.create && (mockResource.rules === undefined || mockResource.rules.length === 0)) && 
@@ -885,27 +914,29 @@ export default class MockResourceView extends React.Component<IProps, IState> {
                                 let ruleKey = `insertedrule_${key}`;
                                   return  (
                                     <Card key={ruleKey}>
-                                      <Accordion.Toggle as={Card.Header} eventKey={ruleKey}>
-                                        {rule.name}
-                                        {
-                                          (this.props.action !== "show") && 
-                                          (
-                                            <>
-                                              <Button className="float-md-right"	onClick={() => this.removeMockRule(key)}>
-                                                <FaTrash/>
-                                              </Button>
-                                              <Button className="float-md-right"	onClick={() => this.startUpdateMockRule(key)}>
-                                                <FaPen/>
-                                              </Button>
-                                            </>
-                                          )
-                                        }
-                                      </Accordion.Toggle>
-                                      <Accordion.Collapse eventKey={ruleKey}>
-                                        <Card.Body>
-                                          <MockRuleListItem key={ruleKey} item={rule} history={this.props.history} />
-                                        </Card.Body>
-                                      </Accordion.Collapse>
+                                      <Accordion.Item as={Card.Header} eventKey={ruleKey}>
+                                        <Accordion.Header>
+                                          {rule.name}
+                                          {
+                                            (this.props.action !== "show") && 
+                                            (
+                                              <>
+                                                <Button className="float-md-right"	onClick={() => this.removeMockRule(key)}>
+                                                  <FaTrash/>
+                                                </Button>
+                                                <Button className="float-md-right"	onClick={() => this.startUpdateMockRule(key)}>
+                                                  <FaPen/>
+                                                </Button>
+                                              </>
+                                            )
+                                          }
+                                        </Accordion.Header>
+                                        <Accordion.Body>
+                                          <Card.Body>
+                                            <MockRuleListItem key={ruleKey} item={rule} history={this.props.history} />
+                                          </Card.Body>
+                                        </Accordion.Body>
+                                      </Accordion.Item>
                                     </Card>
                                   );                              
                               })

@@ -1,13 +1,13 @@
 import React from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
-import {FaCompress, FaExpand, FaHome} from "react-icons/fa";
-import {Accordion} from "react-bootstrap";
 import SidebarItems from "./SidebarItems";
-import getMockerURL from "../util/envreader";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// eslint-disable-next-line 
 // @ts-ignore
 import packageJson from "../../package.json";
+import { ENV as env } from "../util/env";
+import { Accordion } from "react-bootstrap";
+import { FaCompress, FaExpand, FaHome } from "react-icons/fa";
 
 interface IProps {
     history: {
@@ -68,6 +68,9 @@ export default class Sidebar extends React.Component<IProps, IState> {
                 });
             }
         });
+
+        this.getMockerInfo();
+        this.getMockConfigInfo();
     }
 
     handleAccordion(activeIndex: any) {
@@ -92,25 +95,27 @@ export default class Sidebar extends React.Component<IProps, IState> {
     }
 
     getMockerInfo(): void {
-        axios.get(`${getMockerURL()}info`)
+        axios.get(`${env.MOCKER.URL}/info`)
         .then((res) => {
             if (res.status === 200) {
                 let versions = this.state.versions;
                 versions.mockConfig = res.data.version;
                 this.setState({ versions });
             }
-        });
+        })
+        .catch(() => {});
     }
 
     getMockConfigInfo(): void {
-        axios.get(`${getMockerURL()}config/info`)
+        axios.get(`${env.MOCKCONFIG.HOST}${env.MOCKCONFIG.BASEPATH}/info`)
         .then((res) => {
             if (res.status === 200) {
                 let versions = this.state.versions;
                 versions.mockConfig = res.data.version;
                 this.setState({ versions });
             }
-        });
+        })
+        .catch(() => {});
     }
 
 
@@ -148,44 +153,42 @@ export default class Sidebar extends React.Component<IProps, IState> {
                 </Link>
                 <Accordion onSelect={(activeIndex) => this.handleAccordion(activeIndex)}>
                     <span>
-                        <Accordion.Toggle as="div" eventKey="0">
-                            <span className="navbar-heading" onClick={() => this.setDomainState("configuration")}>
-                                <FaExpand className={`ml-2 mr-2 ${getCompressionClass("configuration", true)}`}/>
-                                <FaCompress className={`ml-2 mr-2 ${getCompressionClass("configuration", false)}`}/>
-                                Configuration
-                            </span>
-                        </Accordion.Toggle>
-                        <Accordion.Collapse eventKey="0">
-                            <div className="list-group">
-                            {
-                                SidebarItems.filter(item => item.domain === "configuration").map((item) => getLink(item))
-                            }
-                            </div>
-                        </Accordion.Collapse>
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>
+                                <span className="navbar-heading" onClick={() => this.setDomainState("configuration")}>
+                                    <FaExpand className={`ml-2 mr-2 ${getCompressionClass("configuration", true)}`}/>
+                                    <FaCompress className={`ml-2 mr-2 ${getCompressionClass("configuration", false)}`}/>
+                                    Configuration
+                                </span>
+                            </Accordion.Header>
+                            <Accordion.Body>
+                                <div className="list-group">
+                                    { SidebarItems.filter(item => item.domain === "configuration").map((item) => getLink(item))}
+                                </div>
+                            </Accordion.Body>
+                        </Accordion.Item>
                     </span>
                     <span>
-                        <Accordion.Toggle as="div" eventKey="1">
-                            <span className="navbar-heading" onClick={() => this.setDomainState("simulation")}>
-                                <FaExpand className={`ml-2 mr-2 ${getCompressionClass("simulation", true)}`}/>
-                                <FaCompress className={`ml-2 mr-2 ${getCompressionClass("simulation", false)}`}/>
-                                Simulation
-                            </span>
-                        </Accordion.Toggle>
-                        <Accordion.Collapse eventKey="1">
-                            <div className="list-group">
-                            {
-                                SidebarItems.filter(item => item.domain === "simulation").map((item) => getLink(item))
-                            }
-                            </div>
-                        </Accordion.Collapse>
+                        <Accordion.Item eventKey="1">
+                            <Accordion.Header>
+                                <span className="navbar-heading" onClick={() => this.setDomainState("simulation")}>
+                                    <FaExpand className={`ml-2 mr-2 ${getCompressionClass("simulation", true)}`}/>
+                                    <FaCompress className={`ml-2 mr-2 ${getCompressionClass("simulation", false)}`}/>
+                                    Simulation
+                                </span>
+                            </Accordion.Header>
+                            <Accordion.Body>
+                                <div className="list-group">
+                                    { SidebarItems.filter(item => item.domain === "simulation").map((item) => getLink(item)) }
+                                </div>
+                            </Accordion.Body>
+                        </Accordion.Item>
                     </span>
                 </Accordion>
                 <div className={"info-box"}>
                     <div>Portal version: {packageJson.version} </div>
-                    {/*
                     <div>Mock configurator version: {this.state.versions.mockConfig} </div>
                     <div>Mocker version: {this.state.versions.mocker} </div>
-                    */}
                     Made with ❤️ by PagoPA S.p.A.
                 </div>
             </>

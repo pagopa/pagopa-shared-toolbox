@@ -156,6 +156,20 @@ pre {
     }
   }
 
+  .accordion-button {
+    background-color: transparent;
+    border-width: 0;
+  }
+
+
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+
+  .accordion-button:not(.collapsed) {
+    color: #212529;
+  }
+
 }
 
 @media (max-width: 767.98px) {
@@ -244,22 +258,6 @@ pre {
   }
 }
 
-.configuration {
-  table {
-    table-layout: fixed;
-    width: 100%;
-  }
-
-  td.key-td-width,
-  td.description-td-width {
-    overflow: auto;
-  }
-
-  .buttons-td-width {
-    width: 10%;
-  }
-}
-
 .xsd-table {
   td:first-child {
     width: 35%;
@@ -305,7 +303,6 @@ pre {
   text-transform: uppercase;
   color: $gray-600;
   font-size: 0.75rem;
-  border-bottom: 1px solid $gray-100;
   margin-top: 10px;
   cursor: pointer;
 }
@@ -314,29 +311,7 @@ pre {
   font-size: 0.8rem;
 }
 
-.icas {
-  .fixed-td-width {
-    width: 20%;
-  }
 
-  .hidden {
-    display: none;
-  }
-}
-
-.cdis {
-  .fixed-td-width {
-    width: 18%;
-  }
-
-  .fixed-td-width-sm {
-    width: 5%;
-  }
-
-  .hidden {
-    display: none;
-  }
-}
 
 .cpts {
   .fixed-td-width {
@@ -349,18 +324,6 @@ pre {
 
   .hidden {
     display: none;
-  }
-}
-
-.massive-loading {
-
-  .hidden {
-    display: none;
-  }
-
-  pre {
-    white-space: pre-wrap;
-    word-break: keep-all
   }
 }
 

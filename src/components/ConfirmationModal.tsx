@@ -3,12 +3,10 @@ import { Modal, Button } from 'react-bootstrap';
 
 interface IProps {
     show: boolean;
-    // eslint-disable-next-line @typescript-eslint/ban-types
     handleClose: Function;
     children?: React.ReactNode;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IState {}
 
 export default class ConfirmationModal extends React.Component<IProps, IState> {

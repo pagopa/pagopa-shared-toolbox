@@ -5,14 +5,12 @@ import { FaFilter } from "react-icons/fa";
 
 interface IProps {
   configuration: any;
-  // eslint-disable-next-line @typescript-eslint/ban-types
   onFilter: (...args: any) => any;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IState {
-  type: string;
-  resource: string;
+  soapaction: string;
+  tag: string;
 }
 
 export default class Filters extends React.Component<IProps, IState> {
@@ -22,24 +20,24 @@ export default class Filters extends React.Component<IProps, IState> {
         <div className="d-flex ml-3 align-items-center">
           <FaFilter />
         </div>
-        {this.props.configuration.type?.visible && (
+        {this.props.configuration.soapaction?.visible && (
           <div className="col-md-4 align-items-center">
-            <Form.Control name="filter_type" placeholder={this.props.configuration.type.placeholder} onChange={(event) => {
+            <Form.Control name="filter_soapaction" placeholder={this.props.configuration.soapaction.placeholder} onChange={(event) => {
                 this.onFilter({
                   ...this.state,
-                  type: event.target.value,
+                  soapaction: event.target.value,
                 })
             }}
             />
           </div>
         )}
 
-        {this.props.configuration.resource?.visible && (
+        {this.props.configuration.tag?.visible && (
           <div className="col-md-4 align-items-center">
-            <Form.Control name="filter_resource" placeholder={this.props.configuration.resource.placeholder} onChange={(event) => {
+            <Form.Control name="filter_tag" placeholder={this.props.configuration.tag.placeholder} onChange={(event) => {
                 this.onFilter({
                   ...this.state,
-                  resource: event.target.value,
+                  tag: event.target.value,
                 })
               }}
             />

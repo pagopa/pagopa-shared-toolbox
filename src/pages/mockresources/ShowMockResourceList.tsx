@@ -1,10 +1,17 @@
 import React from "react";
-import axios from "axios";
 import { Button, Table } from "react-bootstrap";
 import { FaPlus, FaSpinner } from "react-icons/fa";
 import { toast } from "react-toastify";
 import MockResourceListItem from "../../components/mockresource/MockResourceListItem";
 import Paginator from "../../components/Paginator";
+import { MockConfigApi } from "../../util/apiclient";
+import { MsalContext } from "@azure/msal-react";
+import { loginRequest } from "../../util/authconfig";
+import { isErrorResponse } from "../../util/client-utils";
+import { ProblemJson } from "../../api/generated/ProblemJson";
+import { AuthenticationResult } from "@azure/msal-browser";
+import { PageInfo } from "../../api/generated/PageInfo";
+import Filters from "../../components/Filters";
 
 interface IProps {
   history: {
@@ -13,15 +20,10 @@ interface IProps {
 }
 
 interface IState {
-  pageInfo: {
-    page: 0;
-    limit: 50;
-    itemsFound: 0;
-    totalPages: 1;
-  };
+  pageInfo: PageInfo,
   filters: {
-    type: string;
-    resource: string;
+    soapaction: string;
+    tag: string;
   };
   isContentLoading: boolean;
   showDeleteModal: boolean;
@@ -31,7 +33,10 @@ interface IState {
 
 export default class ShowMockResourceList extends React.Component<IProps, IState> {
 
-  // private filter: { [item: string]: any };
+  static contextType = MsalContext;
+  context!: React.ContextType<typeof MsalContext>
+
+  private filter: { [item: string]: any };
 
   constructor(props: IProps) {
     super(props);
@@ -39,12 +44,12 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
       pageInfo: {
         page: 0,
         limit: 50,
-        itemsFound: 0,
-        totalPages: 1,
+        items_found: 0,
+        total_pages: 1,
       },
       filters: {
-        type: "",
-        resource: "",
+        soapaction: "",
+        tag: "",
       },
       isContentLoading: false,
       showDeleteModal: false,
@@ -52,18 +57,19 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
       mockResourceTarget: "",
     };
 
-    /*
     this.filter = {
-      type: {
+      soapaction: {
           visible: true,
-          placeholder: "Subsystem"
+          placeholder: "SOAP Action"
       },
-      resource: {
+      tag: {
           visible: true,
-          placeholder: "Resource"
+          placeholder: "Tag"
       }
     };
-    */
+
+    this.readPaginatedMockResourceList.bind(this);
+    this.changeMockResourceListPage.bind(this);
   }
 
   toastError(message: string) {
@@ -72,35 +78,33 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
     });
   }
 
-  generateFilters(): string {
-    let filterString = "?";
-    if (this.state.filters.resource !== "") {
-      filterString += `resource=${this.state.filters.resource}&`;
-    }
-    if (this.state.filters.type !== "") {
-      filterString += `type=${this.state.filters.type}`;
-    }
-    return filterString;
-  }
-
-  readPaginatedMockResourceList(_page: number): void {
+  readPaginatedMockResourceList = (page: number): void => {
+    
     this.setState({ isContentLoading: true });
-    let filterFields = this.generateFilters();
-    axios
-      .get(`https://wt1wacwpzh.execute-api.eu-south-1.amazonaws.com/mocker/config/resources${filterFields}`)
-      .then((res) => {
-        if (res.status === 200) {
-          this.setState({ mockResources: res.data });
+    this.context.instance.acquireTokenSilent({
+      ...loginRequest,
+      account: this.context.accounts[0]
+    })
+    .then((auth: AuthenticationResult) => {
+      MockConfigApi.getMockResources(auth.idToken, 50, page)
+      .then((response) => {
+        if (isErrorResponse(response)) {
+            const problemJson = response as ProblemJson;
+            if (problemJson.status === 500) {
+              this.toastError("An error occurred while reading mock resource list...");
+            }
+        } else {
+          this.setState({ mockResources: response.resources });   
+          this.setState({ pageInfo: response.page_info });       
         }
       })
       .catch(() => {
-        this.toastError(
-          "An error occurred while reading mock resource list..."
-        );
+        this.toastError("An error occurred while reading mock resource list...");
       })
       .finally(() => {
         this.setState({ isContentLoading: false });
-      });
+      })
+    });
   };
 
   readFilteredPaginatedMockResourceList = (filters: any) => {
@@ -108,7 +112,7 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
     this.readPaginatedMockResourceList(0);
   };
 
-  changeMockResourceListPage(requestedPage: number) {
+  changeMockResourceListPage = (requestedPage: number) => {
     this.readPaginatedMockResourceList(requestedPage);
   }
 
@@ -129,9 +133,7 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
         <div className="row my-2">
           <div className="col-md-10">
           {
-            /* TODO to be activated when paginated search-all will be updated 
             <Filters configuration={this.filter} onFilter={this.readFilteredPaginatedMockResourceList}/>
-            */
           }
           </div>
           <div className="col-md-2 text-right">
@@ -147,9 +149,10 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
                 <thead>
                   <tr>
                     <th className="fixed-td-width">Name</th>
-                    <th className="fixed-td-width">Subsystem</th>
                     <th className="fixed-td-width">URL</th>
                     <th className="fixed-td-width">Method</th>
+                    <th className="fixed-td-width text-center">SOAP Action</th>
+                    <th className="fixed-td-width">Active</th>
                     <th className="fixed-td-width text-center">Tags</th>
                     <th></th>
                   </tr>

@@ -4,7 +4,7 @@ import base64 from 'react-native-base64'
 import { Accordion, Button, Card, Form } from "react-bootstrap";
 import { FaCopy, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import getMockerURL from "../../util/envreader";
+import { ENV as env } from "../../util/env";
 
 interface IProps {
     history: {
@@ -39,7 +39,7 @@ export default class ShowSimulationMainPage extends React.Component<IProps, ISta
             isLoading: false,
             simulationManagement: {
               httpMethod: "GET",
-              root: getMockerURL(),
+              root: env.MOCKER.URL,
               resourceUrl: "",
               headers: {},
               body: "",
@@ -268,52 +268,52 @@ export default class ShowSimulationMainPage extends React.Component<IProps, ISta
                   </Card.Body>
               </Card>
               <Card>
-                <Accordion.Toggle as={Card.Header} eventKey={"simulationResponse"}>
+                
+
+              <Accordion.Item as={Card.Header} eventKey={"simulationResponse"}>
+                <Accordion.Header>
                   <h5>Response</h5>
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey={"simulationResponse"}>
-                  <>
-                    { this.state.isLoading && (<div className="text-center"><FaSpinner className="spinner" size={28}/></div>)}
-                    {
-                      !this.state.isLoading &&
-                      <Card.Body>
-                        <div className="row">
-                          <Form.Group controlId="responseBody" className="col-md-6">
-                            {
-                              (Object.keys(this.state.response?.headers).length > 0) &&
-                              <Form.Label>Headers:</Form.Label>
-                            }
-                            { 
-                              (Object.keys(this.state.response?.headers).length > 0) &&
-                              (
-                                Object.keys(this.state.response.headers).map((header: any, _key: any) => {
-                                  return (
-                                    
-                                        <div className="col-md-12">
-                                          {header}: {this.state.response.headers[header]}
-                                        </div>
-                                  );
-                                })
-                              )                   
-                            }
-                          </Form.Group>
-                        </div>
-                        <div className="row">
-                          <Form.Group controlId="responseBody" className="col-md-12">
-                            { this.state.response.status !== -1 &&
-                              <Form.Label>Status: {this.state.response.status} [Executed in {this.state.response.time} ms]</Form.Label>
-                            }                            
-                            <Form.Control as="textarea" name="body" rows={15} value={this.state.response.body} readOnly />
-                          </Form.Group>
-                        </div>
-                      </Card.Body>
-                    }
-                  </>
-                </Accordion.Collapse>
+                  </Accordion.Header>
+                <Accordion.Body>
+                  { this.state.isLoading && (<div className="text-center"><FaSpinner className="spinner" size={28}/></div>)}
+                  {
+                    !this.state.isLoading &&
+                    <Card.Body>
+                      <div className="row">
+                        <Form.Group controlId="responseBody" className="col-md-6">
+                          {
+                            (Object.keys(this.state.response?.headers).length > 0) &&
+                            <Form.Label>Headers:</Form.Label>
+                          }
+                          { 
+                            (Object.keys(this.state.response?.headers).length > 0) &&
+                            (
+                              Object.keys(this.state.response.headers).map((header: any, _key: any) => {
+                                return (    
+                                  <div className="col-md-12">
+                                    {header}: {this.state.response.headers[header]}
+                                  </div>
+                                );
+                              })
+                            )                   
+                          }
+                        </Form.Group>
+                      </div>
+                      <div className="row">
+                        <Form.Group controlId="responseBody" className="col-md-12">
+                          { this.state.response.status !== -1 &&
+                            <Form.Label>Status: {this.state.response.status} [Executed in {this.state.response.time} ms]</Form.Label>
+                          }                            
+                          <Form.Control as="textarea" name="body" rows={15} value={this.state.response.body} readOnly />
+                        </Form.Group>
+                      </div>
+                    </Card.Body>
+                  }
+                </Accordion.Body>
+              </Accordion.Item>
               </Card>
             </Accordion>
           </div>
         );
       }
-
 }

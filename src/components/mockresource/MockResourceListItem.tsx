@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import {  Tooltip } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEye, FaThumbsDown, FaThumbsUp, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../ConfirmationModal";
 
@@ -10,10 +10,12 @@ interface IProps {
   item: {
     id: string,
     name: string;
-    resourceUrl: string;
-    mockType: string;
-    httpMethod: string;
-    tag: string;
+    subsystem: string;
+    resource_url: string;
+    soap_action: string;
+    http_method: string;
+    tags: string;
+    is_active: boolean;
   };
   history: {
       push(url: string): void;
@@ -80,6 +82,8 @@ export default class MockResourceListItem extends React.Component<IProps, IState
   }
 
   render() {
+    let completeURL = `${this.props.item.subsystem}/${this.props.item.resource_url ? this.props.item.resource_url : ''}`.replace("//", "/");
+
     return (
       <>
       <tr>
@@ -97,26 +101,58 @@ export default class MockResourceListItem extends React.Component<IProps, IState
             {this.props.item.name}
           </td> 
         }
-        <td className="text-left">{this.props.item.mockType}</td>
-        <td className="text-left">{this.props.item.resourceUrl}</td>
-        <td className="text-left">
+
+        {
+          completeURL.length > 40 &&
+          <OverlayTrigger placement="top" overlay={<Tooltip id="button-tooltip">{completeURL}</Tooltip>}>
+            <td className="text-left">
+              {completeURL.substring(0, 37)}...
+            </td>              
+          </OverlayTrigger>
+        }
+        {
+          completeURL.length <= 30 &&
+          <td className="text-left">
+            {completeURL}
+          </td> 
+        }
+       
+        <td className="text-center">
           {
-            <span className="mr-3 badge badge-secondary">
-              {this.props.item.httpMethod}
+            <span className="mr-0 badge badge-info">
+              {this.props.item.http_method}
             </span>            
           }
         </td>
+
+        <td className="text-center">
+          <span className="mr-0 badge badge-secondary">
+            {this.props.item.soap_action}
+          </span>
+        </td>
+
         <td className="text-center">
           {
-            this.props.item.tag && this.props.item.tag.length > 0 &&
-            Object.keys(this.props.item.tag).map((tag: any, index: number) => (
+            this.props.item.is_active &&     
+            <FaThumbsUp className="mr-0" color="green" />
+          }
+          {
+            !this.props.item.is_active &&  
+            <FaThumbsDown className="mr-0" color="red" />
+          }
+        </td>
+
+        <td className="text-center">
+          {
+            this.props.item.tags && this.props.item.tags.length > 0 &&
+            Object.keys(this.props.item.tags).map((tag: any, index: number) => (
               <span key={index} className="mr-1 badge badge-success">
-                {this.props.item.tag[tag]}
+                {this.props.item.tags[tag]}
               </span>
             ))
           }
         </td>
-        <td className="col-md-1 text-right">
+        <td className="col-md-2 text-right">
           <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${this.props.item.id}`}>Detail</Tooltip>}>
             <FaEye role="button" className="mr-3" onClick={() => this.redirectToShowMockResourceDetail(this.props.item.id)} />
           </OverlayTrigger>        
@@ -130,10 +166,10 @@ export default class MockResourceListItem extends React.Component<IProps, IState
       </tr>
 
       <ConfirmationModal show={this.state.showDeleteModal} handleClose={this.handleDeleteMockResourceInModal}>
-        <p>Sei sicuro di voler eliminare il seguente ente creditore?</p>
+        <p>Are you sure you want to delete this mock resource?</p>
         <ul>
             <li>Name: {this.props.item.name}</li>
-            <li>Resource: [{this.props.item.httpMethod}] {this.props.item.resourceUrl}</li>
+            <li>Resource: [{this.props.item.http_method}] {this.props.item.resource_url}</li>
         </ul>
       </ConfirmationModal>
       </>
