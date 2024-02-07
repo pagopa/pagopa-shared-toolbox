@@ -1,5 +1,4 @@
 import React from "react";
-import MockResourceView from "./MockResourceView";
 
 interface IProps {
   history: {
@@ -20,10 +19,11 @@ export default class CreateMockResource extends React.Component<IProps, IState> 
 
   render(): React.ReactNode {
     return (
-        <MockResourceView
+        /*<MockResourceView
           action="create"
           history={this.props.history} 
-        />
+        />*/
+        <></>
     );
   }
 }

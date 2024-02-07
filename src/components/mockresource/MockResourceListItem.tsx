@@ -4,7 +4,6 @@ import {  Tooltip } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { FaEdit, FaEye, FaThumbsDown, FaThumbsUp, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import ConfirmationModal from "../ConfirmationModal";
 
 interface IProps {
   item: {
@@ -38,11 +37,11 @@ export default class MockResourceListItem extends React.Component<IProps, IState
   }
 
   redirectToShowMockResourceDetail(code: string) {
-    this.props.history.push("/configuration/mock-resources/" + code);
+    this.props.history.push("/mocker/mock-resources/" + code);
   }
 
   redirectToEditMockResourceDetail(code: string) {
-    this.props.history.push("/configuration/mock-resources/" + code + "?edit");
+    this.props.history.push("/mocker/mock-resources/" + code + "?edit");
   }
 
   toastError(message: string) {
@@ -164,14 +163,14 @@ export default class MockResourceListItem extends React.Component<IProps, IState
           </OverlayTrigger>
         </td>
       </tr>
-
+      {/*
       <ConfirmationModal show={this.state.showDeleteModal} handleClose={this.handleDeleteMockResourceInModal}>
         <p>Are you sure you want to delete this mock resource?</p>
         <ul>
             <li>Name: {this.props.item.name}</li>
             <li>Resource: [{this.props.item.http_method}] {this.props.item.resource_url}</li>
         </ul>
-      </ConfirmationModal>
+      </ConfirmationModal>*/}
       </>
     );
   }

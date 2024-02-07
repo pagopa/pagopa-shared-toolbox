@@ -1,6 +1,6 @@
 import React from 'react';
 import {ToastContainer} from "react-toastify";
-import {injectToken} from "../util/MsalWrapper";
+import {injectToken} from "../../util/MsalWrapper";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 

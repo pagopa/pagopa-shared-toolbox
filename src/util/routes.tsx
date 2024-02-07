@@ -1,6 +1,6 @@
 import React from "react";
 import { HashRouter, Route, Switch } from "react-router-dom";
-import Layout from "../components/Layout";
+import Layout from "../components/generic/Layout";
 import ShowMockResourceList from "../pages/mockresources/ShowMockResourceList";
 import EditMockResource from "../pages/mockresources/EditMockResource";
 import Landing from "../pages/others/Landing";
@@ -12,7 +12,7 @@ import CreateMockResource from "../pages/mockresources/CreateMockResource";
 export default class Routes extends React.Component { 
   
   componentDidMount(){
-    document.title = "PagoPA Mock Configurator"
+    document.title = "PagoPA Insights"
   }
 
   render(): React.ReactNode {
@@ -22,13 +22,13 @@ export default class Routes extends React.Component {
             <Layout {...props}>
               <Switch>
                 <Route path="/" exact component={Landing} />
-                <Route path="/configuration/mock-resources" exact component={ShowMockResourceList } />
-                <Route path="/configuration/mock-resources/create" exact component={CreateMockResource} />
-                <Route path="/configuration/mock-resources/:id" exact render={props => {
+                <Route path="/mocker/mock-resources" exact component={ShowMockResourceList } />
+                <Route path="/mocker/mock-resources/create" exact component={CreateMockResource} />
+                <Route path="/mocker/mock-resources/:id" exact render={props => {
                   const edit: boolean = new URLSearchParams(props.location.search).get("edit") !== null;
                   return edit ? <EditMockResource {...props} /> : <ShowMockResourceDetail {...props} />;
                 }}/>
-                <Route path="/simulation/" exact render={props => { return <ShowSimulationMainPage {...props} /> }} />
+                <Route path="/mocker/simulation/" exact render={props => { return <ShowSimulationMainPage {...props} /> }} />
                 <Route component={NotFound} />
               </Switch>
             </Layout>

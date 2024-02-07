@@ -8,11 +8,6 @@ const redirectUri = env.AUTH.REDIRECT_URL;
 const clientId = env.AUTH.CLIENT_ID;
 const scopes = (env.AUTH.SCOPES as string).replace(" ","").split(",");
 
-console.log("tenant: ", tenant);
-console.log("redirectUri: ", redirectUri);
-console.log("clientId: ", clientId);
-console.log("scopes: ", scopes);
-
 /**
  * Configuration object to be passed to MSAL instance on creation.
  * For a full list of MSAL.js configuration parameters, visit:

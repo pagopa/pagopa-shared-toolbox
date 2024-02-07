@@ -1,9 +1,6 @@
-import React from "react";
-import { Button, Table } from "react-bootstrap";
-import { FaPlus, FaSpinner } from "react-icons/fa";
-import { toast } from "react-toastify";
-import MockResourceListItem from "../../components/mockresource/MockResourceListItem";
-import Paginator from "../../components/Paginator";
+import React, { ChangeEvent } from "react";
+import { Box, Pagination, Typography } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { MockConfigApi } from "../../util/apiclient";
 import { MsalContext } from "@azure/msal-react";
 import { loginRequest } from "../../util/authconfig";
@@ -11,7 +8,9 @@ import { isErrorResponse } from "../../util/client-utils";
 import { ProblemJson } from "../../api/generated/ProblemJson";
 import { AuthenticationResult } from "@azure/msal-browser";
 import { PageInfo } from "../../api/generated/PageInfo";
-import Filters from "../../components/Filters";
+import { toastError } from "../../util/utilities";
+import { buildColumnDefs } from "./table/MockResourceTableColumns";
+import GenericModal from "../../components/generic/GenericModal";
 
 interface IProps {
   history: {
@@ -20,15 +19,14 @@ interface IProps {
 }
 
 interface IState {
+  isContentLoading: boolean,
+  page: number,
+  pagePaginator: number,
+  rowCountState: number,
+  showDeleteModal: boolean,
+  target: string,
   pageInfo: PageInfo,
-  filters: {
-    soapaction: string;
-    tag: string;
-  };
-  isContentLoading: boolean;
-  showDeleteModal: boolean;
   mockResources: any;
-  mockResourceTarget: string;
 }
 
 export default class ShowMockResourceList extends React.Component<IProps, IState> {
@@ -36,50 +34,31 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
   static contextType = MsalContext;
   context!: React.ContextType<typeof MsalContext>
 
-  private filter: { [item: string]: any };
-
   constructor(props: IProps) {
     super(props);
     this.state = {
+      isContentLoading: false,
+      page: 0,
+      pagePaginator: 0,
+      rowCountState: 0,
+      showDeleteModal: false,
+      target: '',
       pageInfo: {
         page: 0,
         limit: 50,
         items_found: 0,
         total_pages: 1,
       },
-      filters: {
-        soapaction: "",
-        tag: "",
-      },
-      isContentLoading: false,
-      showDeleteModal: false,
-      mockResources: [],
-      mockResourceTarget: "",
-    };
-
-    this.filter = {
-      soapaction: {
-          visible: true,
-          placeholder: "SOAP Action"
-      },
-      tag: {
-          visible: true,
-          placeholder: "Tag"
-      }
+      mockResources: []
     };
 
     this.readPaginatedMockResourceList.bind(this);
     this.changeMockResourceListPage.bind(this);
   }
 
-  toastError(message: string) {
-    toast.error(() => <div className={"toast-width"}>{message}</div>, {
-      theme: "colored",
-    });
-  }
 
-  readPaginatedMockResourceList = (page: number): void => {
-    
+
+  readPaginatedMockResourceList = (page: number): void => {    
     this.setState({ isContentLoading: true });
     this.context.instance.acquireTokenSilent({
       ...loginRequest,
@@ -91,83 +70,153 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
             if (problemJson.status === 500) {
-              this.toastError("An error occurred while reading mock resource list...");
+              toastError("An error occurred while reading mock resource list.");
             }
         } else {
-          this.setState({ mockResources: response.resources });   
-          this.setState({ pageInfo: response.page_info });       
+          this.setState({ mockResources: response.resources, pageInfo: response.page_info });       
         }
       })
       .catch(() => {
-        this.toastError("An error occurred while reading mock resource list...");
+        toastError("An error occurred while reading mock resource list.");
       })
       .finally(() => {
         this.setState({ isContentLoading: false });
       })
     });
   };
-
-  readFilteredPaginatedMockResourceList = (filters: any) => {
-    this.setState({ filters });
-    this.readPaginatedMockResourceList(0);
-  };
+  
+  deleteMockResource = (): void => {
+    this.setState({ isContentLoading: true });
+    this.context.instance.acquireTokenSilent({
+      ...loginRequest,
+      account: this.context.accounts[0]
+    })
+    /*
+    .then((auth: AuthenticationResult) => {
+      MockConfigApi.deleteMockResource(auth.idToken, this.state.target)
+      .then((response) => {
+        if (isErrorResponse(response)) {
+            const problemJson = response as ProblemJson;
+            if (problemJson.status === 404) {
+              toastError(`No mock resource found with id ${resourceId}.`);
+            } else if (problemJson.status === 500) {
+              toastError(`An error occurred while deleting mock resource with id ${resourceId}.`);
+            }
+        } 
+      })
+      .catch(() => {
+        toastError(`An error occurred while deleting mock resource with id ${resourceId}.`);
+      })
+      .finally(() => {
+        this.setState({ showDeleteModal: false, target: '' });
+      })
+    });
+    */
+    console.log("DELETED")
+    this.setState({ showDeleteModal: false, target: '' }); //todo remove ths
+  }
 
   changeMockResourceListPage = (requestedPage: number) => {
     this.readPaginatedMockResourceList(requestedPage);
   }
 
   redirectToCreateMockResource() {
-    this.props.history.push("/configuration/mock-resources/create");
+    this.props.history.push("/mocker/mock-resources/create");
   }
+
+  onClickDetail = (row: any) => {
+    this.props.history.push("/mocker/mock-resources/" + row.id);
+  };
+
+  onClickDelete = (row: any) => {
+    this.setState({ showDeleteModal: true, target: row.id });
+  };
 
   componentDidMount(): void {
     this.readPaginatedMockResourceList(0);
   }
-
+  
+  columns: Array<GridColDef> = buildColumnDefs(this.onClickDetail, this.onClickDelete);
+  
   render(): React.ReactNode {
-    return (
-      <div className="container-fluid mock-resources">
-        <div className="row">
-          <h1>Mock Resources</h1>
-        </div>
-        <div className="row my-2">
-          <div className="col-md-10">
-          {
-            <Filters configuration={this.filter} onFilter={this.readFilteredPaginatedMockResourceList}/>
-          }
-          </div>
-          <div className="col-md-2 text-right">
-            <Button onClick={() => this.redirectToCreateMockResource()}>New <FaPlus/></Button>
-          </div>
-        </div>
 
-        { this.state.isContentLoading && (<FaSpinner className="spinner"/>)}
-        {
-          !this.state.isContentLoading && (
-            <>
-              <Table striped hover responsive size="sm">
-                <thead>
-                  <tr>
-                    <th className="fixed-td-width">Name</th>
-                    <th className="fixed-td-width">URL</th>
-                    <th className="fixed-td-width">Method</th>
-                    <th className="fixed-td-width text-center">SOAP Action</th>
-                    <th className="fixed-td-width">Active</th>
-                    <th className="fixed-td-width text-center">Tags</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.mockResources.map((item: any) => {
-                    return <MockResourceListItem key={item.id} item={item} history={this.props.history} />;
-                  })}
-                </tbody>
-              </Table>
-              <Paginator pageInfo={ this.state.pageInfo } onPageChanged={ this.changeMockResourceListPage }/>
-            </>
-          )
-        }
-      </div>
+    const rowHeight = 40;
+    const headerHeight = 60;
+
+    return (
+      <>
+        <DataGrid
+          disableColumnFilter
+          disableColumnSelector
+          disableDensitySelector
+          disableSelectionOnClick
+          autoHeight={true}
+          className="CustomDataGrid"
+          columnBuffer={6}
+          columns={this.columns}
+          components={{
+            Pagination: () =>
+              this.state.pageInfo.total_pages && this.state.pageInfo.total_pages > 1 ? (
+                <Pagination
+                  color="primary"
+                  count={this.state.pageInfo.total_pages ?? 0}
+                  page={this.state.pagePaginator + 1}
+                  onChange={(_event: ChangeEvent<unknown>, value: number) => {
+                    this.changeMockResourceListPage(value - 1);
+                    this.setState({ page: value - 1, pagePaginator: value - 1 })
+                  }}
+                />
+              ) : (
+                <></>
+              ),
+            Toolbar: () => <></>,
+            NoRowsOverlay: () => (
+              <>
+                <Box p={2} sx={{ textAlign: 'center', backgroundColor: '#FFFFFF' }}>
+                  <Typography variant="body2">
+                    { this.state.isContentLoading ?  "Loading..." : "No result" }
+                  </Typography>
+                </Box>
+              </>
+            ),
+            NoResultsOverlay: () => (
+              <>
+                <Box p={2} sx={{ textAlign: 'center', backgroundColor: '#FFFFFF' }}>
+                  <Typography variant="body2">
+                    { this.state.isContentLoading ?  "Loading..." : "No result" }
+                  </Typography>
+                </Box>
+              </>
+            ),
+          }}
+          componentsProps={{
+            toolbar: {
+              quickFilterProps: { debounceMs: 500 },
+            },
+          }}
+          getRowId={(data) => data.id}
+          headerHeight={headerHeight}
+          hideFooterSelectedRowCount={true}
+          paginationMode="server"
+          rowsPerPageOptions={[50]}
+          onPageChange={(newPage) => this.changeMockResourceListPage(newPage)}
+          pageSize={50}
+          pagination
+          rowHeight={rowHeight}
+          rows={ this.state.mockResources ?? []}
+          rowCount={ this.state.rowCountState }
+          sortingMode="server"
+        />
+        <GenericModal
+          title="Warning"
+          message="Are you sure you want to delete this mock resource?"
+          openModal={this.state.showDeleteModal}
+          onConfirmLabel="Confirm"
+          onCloseLabel="Dismiss"
+          handleCloseModal={() => this.setState({ showDeleteModal: false, target: '' })}
+          handleConfirm={this.deleteMockResource}
+        />
+      </>
     );
   }
 }

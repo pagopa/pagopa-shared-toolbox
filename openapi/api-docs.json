@@ -1,10 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "@project.name@",
-    "description": "@project.description@",
+    "title": "pagoPA Mock Configurator",
+    "description": "A service that permits to configure the mocked responses used by Mocker service",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "1.1.3-2-NOD-700-mocker-fix-modifica-risorsa-di-mock"
+    "version": "1.1.3-6-NOD-700-mocker-fix-modifica-risorsa-di-mock"
   },
   "servers": [
     {
@@ -21,7 +21,7 @@
           ]
         },
         "basePath": {
-          "default": "/mock-config/auth/api/v1",
+          "default": "/mock-config/api/v1",
           "enum": [
             "/mock-config/auth/api/v1",
             "/mock-config/api/v1"
@@ -1483,20 +1483,13 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK",
+          "204": {
+            "description": "No content",
             "headers": {
               "X-Request-Id": {
                 "description": "This header identifies the call",
                 "schema": {
                   "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MockResource"
                 }
               }
             }

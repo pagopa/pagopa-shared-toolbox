@@ -4,8 +4,8 @@ import {Link} from "react-router-dom";
 import SidebarItems from "./SidebarItems";
 // eslint-disable-next-line 
 // @ts-ignore
-import packageJson from "../../package.json";
-import { ENV as env } from "../util/env";
+import packageJson from "../../../package.json";
+import { ENV as env } from "../../util/env";
 import { Accordion } from "react-bootstrap";
 import { FaCompress, FaExpand, FaHome } from "react-icons/fa";
 

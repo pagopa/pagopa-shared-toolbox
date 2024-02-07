@@ -3,7 +3,7 @@ import { Alert } from "react-bootstrap";
 
 const Landing = () => (
   <Alert className={"col-md-12"} variant={"success"}>
-    PagoPA Mock Configurator
+    PagoPA Insights
   </Alert>
 );
 

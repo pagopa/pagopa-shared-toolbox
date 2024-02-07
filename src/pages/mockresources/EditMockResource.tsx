@@ -1,5 +1,4 @@
 import React from "react";
-import MockResourceView from "./MockResourceView";
 
 interface IProps {
   match: {
@@ -23,11 +22,14 @@ export default class EditMockResource extends React.Component<IProps, IState> {
 
   render(): React.ReactNode {
     return (
+      /*
         <MockResourceView
           action="edit"
           mockResourceId={this.props.match.params.id as string}
           history={this.props.history} 
         />
+        */
+       <></>
     );
 }
 }

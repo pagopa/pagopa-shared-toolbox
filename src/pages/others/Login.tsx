@@ -2,7 +2,7 @@ import React from 'react';
 import {useIsAuthenticated} from "@azure/msal-react";
 import ReactMarkdown from "react-markdown";
 import raw from "raw.macro";
-import Topbar from "../../components/Topbar";
+import Topbar from "../../components/generic/Topbar";
 // eslint-disable-next-line
 // @ts-ignore
 import packageJson from "../../../package.json";

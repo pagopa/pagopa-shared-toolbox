@@ -58,4 +58,12 @@ export const MockConfigApi = {
         });
         return extractResponse(result, 200, onRedirectToLogin);
     },
+
+    deleteMockResource: async (token: string, resourceId: string): Promise<any> => {
+        const result = await apiClient.deleteMockResource({
+            Authorization: setJWTToken(token),
+            resourceId, 
+        });
+        return extractResponse(result, 204, onRedirectToLogin);
+    }
 };

@@ -1,12 +1,12 @@
 const SidebarItems = [
     {
         name: "Mock Resources",
-        route: "/configuration/mock-resources",
+        route: "/mocker/mock-resources",
         domain: "configuration"
     },
     {
         name: "Simulate Mocker Behavior",
-        route: "/simulation",
+        route: "/mocker/simulation",
         domain: "simulation"
     }
 ];
