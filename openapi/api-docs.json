@@ -4,7 +4,7 @@
     "title": "pagoPA Mock Configurator",
     "description": "A service that permits to configure the mocked responses used by Mocker service",
     "termsOfService": "https://www.pagopa.gov.it/",
-    "version": "1.1.3-6-NOD-700-mocker-fix-modifica-risorsa-di-mock"
+    "version": "1.1.3-7-NOD-700-mocker-fix-modifica-risorsa-di-mock"
   },
   "servers": [
     {
@@ -1143,6 +1143,24 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized",
             "headers": {
@@ -1386,6 +1404,24 @@
               }
             }
           },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Unauthorized",
             "headers": {
@@ -1490,6 +1526,152 @@
                 "description": "This header identifies the call",
                 "schema": {
                   "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Service unavailable",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          },
+          {
+            "Authorization": []
+          }
+        ]
+      },
+      "parameters": []
+    },
+    "/resources/{resourceId}/general-info": {
+      "put": {
+        "tags": [
+          "Mock Resources"
+        ],
+        "summary": "Partially update an existing mock resource, changing only the general info",
+        "operationId": "updateMockResourceGeneralInfo",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "path",
+            "description": "The identifier related to the mock resource",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MockResourceGeneralInfo"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Request-Id": {
+                "description": "This header identifies the call",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemJson"
                 }
               }
             }
@@ -1857,6 +2039,35 @@
             "example": "There was an error processing the request"
           }
         }
+      },
+      "MockResourceGeneralInfo": {
+        "required": [
+          "is_active",
+          "name",
+          "tags"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name or description related to the mock resources, for human readability.",
+            "example": "Get enrolled organization with ID 77777777777"
+          },
+          "is_active": {
+            "type": "boolean",
+            "description": "The status flag that permits to activate or not the mock resource for Mocker evaluation.",
+            "example": true
+          },
+          "tags": {
+            "type": "array",
+            "description": "The set of tags on which the mock resource is related to.",
+            "items": {
+              "type": "string",
+              "description": "The set of tags on which the mock resource is related to."
+            }
+          }
+        },
+        "description": "The general information about mock resource, used for partial update."
       },
       "Archetype": {
         "required": [

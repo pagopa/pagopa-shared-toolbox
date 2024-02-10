@@ -45,6 +45,7 @@
     "env-var": "^7.4.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.6",
+    "formik": "^2.2.9",
     "fp-ts": "^2.11.3",
     "generated": "^0.0.3",
     "gh-pages": "^5.0.0",
@@ -67,7 +68,8 @@
     "regex-replace": "^2.3.1",
     "typeface-lora": "^1.1.13",
     "typeface-roboto-mono": "^1.1.13",
-    "typeface-titillium-web": "^1.1.13"
+    "typeface-titillium-web": "^1.1.13",
+    "xml-formatter": "^3.6.2"
   },
   "devDependencies": {
     "@babel/core": "^7.15.8",

@@ -1,4 +1,5 @@
 import { MockResource } from "../api/generated/MockResource";
+import { MockResourceGeneralInfo } from "../api/generated/MockResourceGeneralInfo";
 import { MockResourceList } from "../api/generated/MockResourceList";
 import { WithDefaultsT, createClient } from "../api/generated/client";
 import { extractResponse } from "./client-utils";
@@ -55,6 +56,32 @@ export const MockConfigApi = {
         const result = await apiClient.getMockResource({
             Authorization: setJWTToken(token),
             resourceId, 
+        });
+        return extractResponse(result, 200, onRedirectToLogin);
+    },
+
+    createMockResource: async (token: string, mockResource: MockResource): Promise<MockResource> => {
+        const result = await apiClient.createMockResource({
+            Authorization: setJWTToken(token),
+            body: mockResource, 
+        });
+        return extractResponse(result, 201, onRedirectToLogin);
+    },
+
+    updateMockResource: async (token: string, resourceId: string, mockResource: MockResource): Promise<MockResource> => {
+        const result = await apiClient.updateMockResource({
+            Authorization: setJWTToken(token),
+            resourceId,
+            body: mockResource, 
+        });
+        return extractResponse(result, 200, onRedirectToLogin);
+    },
+
+    updateMockResourceGeneralInfo: async (token: string, resourceId: string, mockResource: MockResourceGeneralInfo): Promise<MockResource> => {
+        const result = await apiClient.updateMockResourceGeneralInfo({
+            Authorization: setJWTToken(token),
+            resourceId,
+            body: mockResource, 
         });
         return extractResponse(result, 200, onRedirectToLogin);
     },

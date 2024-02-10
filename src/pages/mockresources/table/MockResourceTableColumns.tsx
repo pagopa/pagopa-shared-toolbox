@@ -1,4 +1,4 @@
-import {Box, Button, Grid, Typography} from '@mui/material';
+import {Box, IconButton, Typography} from '@mui/material';
 import {GridColDef, GridColumnHeaderParams, GridRenderCellParams} from '@mui/x-data-grid';
 import React, {CSSProperties, ReactNode} from 'react';
 import { CheckCircleOutline, HighlightOff, RemoveCircle, RemoveRedEye } from '@mui/icons-material';
@@ -8,37 +8,50 @@ import { CheckCircleOutline, HighlightOff, RemoveCircle, RemoveRedEye } from '@m
 export function buildColumnDefs(onClickDetail: (row: any) => void, onClickDelete: (row: any) => void) {
   return [
     {
+      field: 'is_active',
+      cellClassName: 'justifyContentNormal',
+      headerName: '',
+      align: 'center',
+      hideSortIcons: true,
+      disableColumnMenu: true,
+      editable: false,
+      renderHeader: showCustomHeader,
+      renderCell: (params) => showStatus(params),
+      sortable: false,
+      flex: 1,
+    },
+    {
       field: 'name',
-      cellClassName: 'justifyContentBold',
+      cellClassName: 'justifyContentNormal',
       headerName: 'Name',
       align: 'left',
       headerAlign: 'center',
       editable: false,
       disableColumnMenu: true,
       renderHeader: showCustomHeader,
-      renderCell: (params: any) => renderCell(params, undefined),
+      renderCell: (params: any) => showName(params, 40),
       sortable: false,
-      flex: 3,
+      flex: 4,
     },
     {
       field: 'complete_url',
-      cellClassName: 'justifyContentNormal',
+      cellClassName: 'justifyContentItalic',
       headerName: 'URL',
       align: 'left',
       headerAlign: 'center',
       editable: false,
       disableColumnMenu: true,
       renderHeader: showCustomHeader,
-      renderCell: (params) => showCompleteURL(params),
+      renderCell: (params) => showCompleteURL(params, 60),
       sortable: false,
-      flex: 3,
+      flex: 5,
     },
     {
       field: 'http_method',
       cellClassName: 'justifyContentNormal',
       headerName: 'Method',
-      align: 'center',
-      headerAlign: 'center',
+      align: 'left',
+      headerAlign: 'left',
       editable: false,
       disableColumnMenu: true,
       renderHeader: showCustomHeader,
@@ -50,40 +63,27 @@ export function buildColumnDefs(onClickDetail: (row: any) => void, onClickDelete
       field: 'soap_action',
       cellClassName: 'justifyContentNormal',
       headerName: 'SOAP Action',
-      align: 'center',
-      headerAlign: 'center',
+      align: 'left',
+      headerAlign: 'left',
       editable: false,
       disableColumnMenu: true,
       renderHeader: showCustomHeader,
       renderCell: (params) => renderCell(params, undefined),
       sortable: false,
-      flex: 2,
+      flex: 3,
     },
     {
       field: 'tags',
       cellClassName: 'justifyContentNormal',
       headerName: 'Tags',
-      align: 'center',
-      headerAlign: 'center',
+      align: 'left',
+      headerAlign: 'left',
       editable: false,
       disableColumnMenu: true,
       renderHeader: showCustomHeader,
       renderCell: (params) => renderCell(params, undefined),
       sortable: false,
-      flex: 2,
-    },
-    {
-      field: 'is_active',
-      cellClassName: 'justifyContentNormal',
-      headerName: 'Active',
-      align: 'center',
-      hideSortIcons: true,
-      disableColumnMenu: true,
-      editable: false,
-      renderHeader: showCustomHeader,
-      renderCell: (params) => showStatus(params),
-      sortable: false,
-      flex: 0,
+      flex: 1,
     },
     {
       field: 'actions',
@@ -95,12 +95,12 @@ export function buildColumnDefs(onClickDetail: (row: any) => void, onClickDelete
       disableColumnMenu: true,
       editable: false,
       getActions: (params: any) => {
-        const resourceDetail = (<Button variant='naked' startIcon={<RemoveRedEye/>} onClick={() => onClickDetail(params)}></Button>);
-        const resourceDelete = (<Button variant='naked' startIcon={<RemoveCircle/>} onClick={() => onClickDelete(params)}></Button>);
+        const resourceDetail = (<IconButton onClick={() => onClickDetail(params)}><RemoveRedEye sx={{ color: 'seagreen', fontSize: '24px' }}/></IconButton>);
+        const resourceDelete = (<IconButton onClick={() => onClickDelete(params)}><RemoveCircle sx={{ color: 'error.dark', fontSize: '20px' }}/></IconButton>);
         return [resourceDetail, resourceDelete];
       },
       sortable: false,
-      flex: 1,
+      flex: 2,
     },
   ] as Array<GridColDef>;
 }
@@ -143,44 +143,24 @@ export function renderCell(params: GridRenderCellParams, value: ReactNode = para
       </React.Fragment>
     );
   }
+
+  export function showName(params: GridRenderCellParams, maxSize: number) {
+    params.row.name = params.row.name.length > maxSize ? `${params.row.name.substring(0, maxSize - 3)}...` : params.row.name;
+    return renderCell(params,  undefined);
+  }
   
-  export function showCompleteURL(params: GridRenderCellParams) {
-    let completeURL = `${params.row.subsystem}/${params.row.resource_url ? params.row.resource_url : ''}`.replace("//", "/");
-    return (
-      <React.Fragment>
-        {renderCell(
-          params,
-          <>
-            <Grid container sx={{ width: '100%' }}>
-              <Grid item xs={12} sx={{ width: '100%' }}>
-                <Typography
-                  variant="body2"
-                  color="primary"
-                  sx={{
-                    fontWeight: 'fontWeightMedium',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical' as const,
-                  }}
-                >
-                  {completeURL}
-                </Typography>
-              </Grid>
-            </Grid>
-          </>
-        )}
-      </React.Fragment>
-    );
+  export function showCompleteURL(params: GridRenderCellParams, maxSize: number) {
+    params.row.complete_url = `${params.row.subsystem}/${params.row.resource_url ? params.row.resource_url : ''}`.replace("//", "/");
+    params.row.complete_url = params.row.complete_url.length > maxSize ? `${params.row.complete_url.substring(0, maxSize - 3)}...` : params.row.complete_url;
+    return renderCell(params,  undefined);
   }
   
   export function showStatus(params: GridRenderCellParams) {
     return renderCell(params,        
-      <Box>
-        { params.row.is_active && <CheckCircleOutline color="success" /> }
-        { !params.row.is_active && <HighlightOff color="error"/> }
-      </Box>
+      <>
+        { params.row.is_active && <CheckCircleOutline color="success" sx={{marginLeft: '20px'}} /> }
+        { !params.row.is_active && <HighlightOff color="error" sx={{marginLeft: '20px'}} /> }
+      </>
     );
   }
   
