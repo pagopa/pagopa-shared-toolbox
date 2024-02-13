@@ -1,6 +1,6 @@
 {
-  "short_name": "APIConfig",
-  "name": "pagoPA API Config",
+  "short_name": "pagoPA Insights",
+  "name": "pagoPA Insights",
   "icons": [
     {
       "src": "./android-chrome-96x96.png",
