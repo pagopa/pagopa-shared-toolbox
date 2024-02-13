@@ -2,7 +2,7 @@
   "name": "pagopa-insights-fe",
   "homepage": "ui",
   "license": "MIT",
-  "version": "0.2.3-10-fix-deploy-pipeline",
+  "version": "0.2.3-11-fix-deploy-pipeline",
   "scripts": {
     "envconfig": "chmod +x envconfig.sh && . ./envconfig.sh && chmod +x version.sh && ./version.sh",
     "clean": "npm-run-all clean:*",
