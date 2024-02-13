@@ -65,4 +65,4 @@ yarn-error.log
 /test-report.xml
 /public/version.json
 
-./identity/.terraform/
+.identity/.terraform/
