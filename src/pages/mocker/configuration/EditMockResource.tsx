@@ -1,61 +1,61 @@
-
 import { Grid, Stack } from "@mui/material";
 import { ButtonNaked } from "@pagopa/mui-italia";
 import React from "react";
-import Title from "../../components/pages/Title";
-import { ArrowBack } from "@mui/icons-material";
-import GenericModal from "../../components/generic/GenericModal";
-import { MsalContext } from "@azure/msal-react";
-import { loginRequest } from "../../util/authconfig";
+import Title from "../../../components/pages/Title";
+import { MockResourceHandlingForm } from "../forms/MockResourceHandlingForm";
+import GenericModal from "../../../components/generic/GenericModal";
+import { MockResource } from "../../../api/generated/MockResource";
+import { loginRequest } from "../../../util/authconfig";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { MockConfigApi } from "../../util/apiclient";
-import { isErrorResponse } from "../../util/client-utils";
-import { ProblemJson } from "../../api/generated/ProblemJson";
-import { toastError } from "../../util/utilities";
-import { MockResource } from "../../api/generated/MockResource";
-import { MockRule } from "../../api/generated/MockRule";
-import { MockRuleHandlingForm } from "./forms/MockRuleHandlingForm";
+import { MockConfigApi } from "../../../util/apiclient";
+import { isErrorResponse } from "../../../util/client-utils";
+import { ProblemJson } from "../../../api/generated/ProblemJson";
+import { toastError } from "../../../util/utilities";
+import { MsalContext } from "@azure/msal-react";
+import { ArrowBack } from "@mui/icons-material";
 
 interface IProps {
   match: {
       params: Record<string, unknown>;
   };
   history: {
-    push(url: string): void;
-    goBack(): void;
-    replace(url: string): void;
-  };
+      push(url: string): void;
+      goBack(): void;
+      replace(url: string): void;
+    };
 }
-  
+
 interface IState {
   isContentLoading: boolean,
   showConfirmationModal: boolean,
   isOperationSuccessful: boolean,
   mockResource?: MockResource,
-  mockRule?: MockRule,
+  mockResourceId: string,
 }
 
-
-export default class CreateMockRule extends React.Component<IProps, IState> {
+export default class EditMockResource extends React.Component<IProps, IState> {
 
   static contextType = MsalContext;
   context!: React.ContextType<typeof MsalContext>
-
+  
   constructor(props: IProps) {
     super(props);
     this.state = {
       isContentLoading: false,
       showConfirmationModal: false,
       isOperationSuccessful: false,
-      mockRule: undefined,
-    };
+      mockResourceId: '',
+    }
+
+    this.readMockResource.bind(this);
+    this.updateResource.bind(this);
+    this.setMockResource.bind(this);
+    this.getMockResource.bind(this);
   }
-
-
 
   readMockResource = (): void => {
     let resourceId = this.props.match.params['id'] as string;
-    this.setState({ isContentLoading: true });
+    this.setState({ mockResourceId: resourceId, isContentLoading: true });
     this.context.instance.acquireTokenSilent({
       ...loginRequest,
       account: this.context.accounts[0]
@@ -83,22 +83,21 @@ export default class CreateMockRule extends React.Component<IProps, IState> {
     });
   }
 
-  createRule = (): void => {
+  updateResource = (): void => {
     this.setState({ isContentLoading: true });
     this.context.instance.acquireTokenSilent({
       ...loginRequest,
       account: this.context.accounts[0]
     })
-    .then((_auth: AuthenticationResult) => {
-      /*
-      MockConfigApi.createMockResource(auth.idToken, this.state.mockResource!)
+    .then((auth: AuthenticationResult) => {
+      MockConfigApi.updateMockResourceGeneralInfo(auth.idToken, this.state.mockResourceId, this.state.mockResource!)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
-            if (problemJson.status === 409) {
-              toastError(`A mock resource already exists with same data.`);
+            if (problemJson.status === 404) {
+              toastError(`No mock resource found with id ${this.state.mockResourceId}.`);
             } else if (problemJson.status === 500) {
-              toastError(`An error occurred while creating a new mock resource.`);
+              toastError(`An error occurred while updating general info for mock resource.`);
             }
         } else {
           this.setState({ mockResource: response, isOperationSuccessful: true });
@@ -110,19 +109,24 @@ export default class CreateMockRule extends React.Component<IProps, IState> {
       .finally(() => {
         this.setState({ isContentLoading: false, showConfirmationModal: false });
       })
-      */
     });
   }
  
+ 
 
 
-  setMockRule = (mockRuleFromForm: MockRule) => {
-    this.setState({ mockRule: mockRuleFromForm });
+  getMockResource = () : any => {
+    this.readMockResource();
+    return this.state.mockResource;
+  }
+
+  setMockResource = (mockResource: MockResource): void => {
+    this.setState({ mockResource });
   }
 
 
 
-  onSubmitShowModal = () => {
+  onSubmitShowModal = (): void => {
     this.setState({ showConfirmationModal: true });
   }
 
@@ -142,6 +146,10 @@ export default class CreateMockRule extends React.Component<IProps, IState> {
 
 
 
+  componentDidMount(): void {
+    this.readMockResource();
+  }
+
   render(): React.ReactNode {
     this.redirectOnSuccess();
     return (
@@ -155,27 +163,27 @@ export default class CreateMockRule extends React.Component<IProps, IState> {
 
           <Grid container mt={3}>
             <Grid item xs={11} mb={5}>
-              <Title title='Create new mock rule' mbTitle={1} variantTitle="h4"/>
+              <Title title='Update mock resource generic info' mbTitle={1} variantTitle="h4"/>
             </Grid>            
           </Grid>
 
-          <MockRuleHandlingForm 
+          <MockResourceHandlingForm 
             redirectToPreviousPage={this.redirectToPreviousPage}
             onSubmitShowModal={this.onSubmitShowModal}
+            setMockResource={this.setMockResource}
             mockResource={this.state.mockResource}
-            setMockRule={this.setMockRule}
-            operation="CREATE"
+            operation="EDIT"
           />
         </Grid>
 
         <GenericModal
           title="Comfirmation"
-          message="Are you sure you want to create this mock rule?"
+          message="Are you sure you want to update this mock resource?"
           openModal={this.state.showConfirmationModal}
           onConfirmLabel="Confirm"
           onCloseLabel="Dismiss"
           handleCloseModal={() => this.setState({ showConfirmationModal: false })}
-          handleConfirm={this.createRule}
+          handleConfirm={this.updateResource}
         />
       </Grid>    
     );

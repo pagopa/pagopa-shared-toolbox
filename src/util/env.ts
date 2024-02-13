@@ -3,6 +3,10 @@ import {getConfig} from "./config";
 
 export const ENV = {
     ENV: env.get('REACT_APP_ENV').required().default('dev').asString(),
+    FEATURES: {
+        MOCKER: env.get('REACT_APP_FEATURE_MOCKER').required().asBool(),
+        AUTHORIZER: env.get('REACT_APP_FEATURE_AUTHORIZER').required().asBool(),
+    },
     AUTH: {
         CLIENT_ID: env.get('REACT_APP_MOCKCONFIG_CLIENT_ID').required().asString(),
         REDIRECT_URL: env.get('REACT_APP_MOCKCONFIG_REDIRECT_URI').required().asString(),

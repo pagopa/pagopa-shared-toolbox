@@ -4,7 +4,7 @@ import base64 from 'react-native-base64'
 import { Accordion, Button, Card, Form } from "react-bootstrap";
 import { FaCopy, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { ENV as env } from "../../util/env";
+import { ENV as env } from "../../../util/env";
 
 interface IProps {
     history: {

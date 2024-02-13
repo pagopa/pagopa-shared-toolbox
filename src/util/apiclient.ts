@@ -1,6 +1,7 @@
 import { MockResource } from "../api/generated/MockResource";
 import { MockResourceGeneralInfo } from "../api/generated/MockResourceGeneralInfo";
 import { MockResourceList } from "../api/generated/MockResourceList";
+import { MockRule } from "../api/generated/MockRule";
 import { WithDefaultsT, createClient } from "../api/generated/client";
 import { extractResponse } from "./client-utils";
 import { ENV as env } from "./env";
@@ -68,6 +69,15 @@ export const MockConfigApi = {
         return extractResponse(result, 201, onRedirectToLogin);
     },
 
+    createMockRule: async (token: string, resourceId: string, mockRule: MockRule): Promise<MockResource> => {
+        const result = await apiClient.createMockRule({
+            Authorization: setJWTToken(token),
+            resourceId,
+            body: mockRule, 
+        });
+        return extractResponse(result, 201, onRedirectToLogin);
+    },
+
     updateMockResource: async (token: string, resourceId: string, mockResource: MockResource): Promise<MockResource> => {
         const result = await apiClient.updateMockResource({
             Authorization: setJWTToken(token),
@@ -82,6 +92,16 @@ export const MockConfigApi = {
             Authorization: setJWTToken(token),
             resourceId,
             body: mockResource, 
+        });
+        return extractResponse(result, 200, onRedirectToLogin);
+    },
+
+    updateMockRule: async (token: string, resourceId: string, ruleId: string, mockRule: MockRule): Promise<MockResource> => {
+        const result = await apiClient.updateMockRule({
+            Authorization: setJWTToken(token),
+            resourceId,
+            ruleId,
+            body: mockRule, 
         });
         return extractResponse(result, 200, onRedirectToLogin);
     },

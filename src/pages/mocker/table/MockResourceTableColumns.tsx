@@ -2,6 +2,7 @@ import {Box, IconButton, Typography} from '@mui/material';
 import {GridColDef, GridColumnHeaderParams, GridRenderCellParams} from '@mui/x-data-grid';
 import React, {CSSProperties, ReactNode} from 'react';
 import { CheckCircleOutline, HighlightOff, RemoveCircle, RemoveRedEye } from '@mui/icons-material';
+import { stringfyList } from '../../../util/utilities';
 
 
 
@@ -81,9 +82,9 @@ export function buildColumnDefs(onClickDetail: (row: any) => void, onClickDelete
       editable: false,
       disableColumnMenu: true,
       renderHeader: showCustomHeader,
-      renderCell: (params) => renderCell(params, undefined),
+      renderCell: (params) => showLabels(params),
       sortable: false,
-      flex: 1,
+      flex: 2,
     },
     {
       field: 'actions',
@@ -150,7 +151,7 @@ export function renderCell(params: GridRenderCellParams, value: ReactNode = para
   }
   
   export function showCompleteURL(params: GridRenderCellParams, maxSize: number) {
-    params.row.complete_url = `${params.row.subsystem}/${params.row.resource_url ? params.row.resource_url : ''}`.replace("//", "/");
+    params.row.complete_url = `${params.row.subsystem}/${params.row.resource_url ? params.row.resource_url : ''}`.replace('//', "");
     params.row.complete_url = params.row.complete_url.length > maxSize ? `${params.row.complete_url.substring(0, maxSize - 3)}...` : params.row.complete_url;
     return renderCell(params,  undefined);
   }
@@ -162,5 +163,12 @@ export function renderCell(params: GridRenderCellParams, value: ReactNode = para
         { !params.row.is_active && <HighlightOff color="error" sx={{marginLeft: '20px'}} /> }
       </>
     );
+  }
+
+  export function showLabels(params: GridRenderCellParams) {
+    if(typeof params.row.tags === 'object') {
+      params.row.tags = stringfyList(params.row.tags);
+    }    
+    return renderCell(params, undefined);
   }
   

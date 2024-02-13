@@ -1,13 +1,13 @@
 import { styled } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { theme } from '@pagopa/mui-italia';
 
 export const StyledDataGrid = styled(DataGrid)({
   border: 'none !important',
   '& .MuiDataGrid-main': {
-    background: `${theme.palette.background.default}`,
+    background: `#1976d2`,
     padding: '0 24px 24px 24px',
     marginTop: '24px',
+    borderRadius: 16,
   },
   '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-root .MuiDataGrid-cell:focus-within':
     { outline: 'none' },
@@ -16,7 +16,7 @@ export const StyledDataGrid = styled(DataGrid)({
     wordWrap: 'break-word !important',
     lineHeight: '25px !important',
   },
-  '& .MuiDataGrid-columnHeaders': { borderBottom: 'none !important', padding: '24px' },
+  '& .MuiDataGrid-columnHeaders': { borderBottom: 'none !important', color: 'white', padding: '24px' },
   '.justifyContentBold': {
     fontSize: '16px',
     fontWeight: '600',
@@ -29,13 +29,14 @@ export const StyledDataGrid = styled(DataGrid)({
   '.MuiDataGrid-cell ': { padding: '0px', borderBottom: 'none' },
   '.MuiDataGrid-columnHeaders': { borderBottom: 'none' },
   '.MuiDataGrid-row': {
+    borderRadius: 5,
     backgroundColor: 'white',
     '&.Mui-selected': {
-      backgroundColor: 'transparent',
-      '&:hover': { backgroundColor: 'transparent' },
+      backgroundColor: '#cde6ff',
+      '&:hover': { backgroundColor: '#cde6ff' },
     },
     '&:hover': {
-      backgroundColor: 'rgba(23, 50, 77, 0.04)',
+      backgroundColor: '#cde6ff',
     },
   },
   '.justifyContentNormal': {

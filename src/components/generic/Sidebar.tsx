@@ -20,8 +20,8 @@ interface IProps {
 
 interface IState {
     domains: {
-        configuration: boolean;
-        simulation: boolean;
+        mocker: boolean;
+        authorizer: boolean;
     };
     versions: {
         mocker: string;
@@ -37,8 +37,8 @@ export default class Sidebar extends React.Component<IProps, IState> {
 
         this.state = {
             domains: {
-                configuration: true,
-                simulation: false,
+                mocker: true,
+                authorizer: false
             },
             versions: {
                 mocker: "",
@@ -152,38 +152,44 @@ export default class Sidebar extends React.Component<IProps, IState> {
                     </div>
                 </Link>
                 <Accordion onSelect={(activeIndex) => this.handleAccordion(activeIndex)}>
-                    <span>
-                        <Accordion.Item eventKey="0">
-                            <Accordion.Header>
-                                <span className="navbar-heading" onClick={() => this.setDomainState("configuration")}>
-                                    <FaExpand className={`ml-2 mr-2 ${getCompressionClass("configuration", true)}`}/>
-                                    <FaCompress className={`ml-2 mr-2 ${getCompressionClass("configuration", false)}`}/>
-                                    Configuration
-                                </span>
-                            </Accordion.Header>
-                            <Accordion.Body>
-                                <div className="list-group">
-                                    { SidebarItems.filter(item => item.domain === "configuration").map((item) => getLink(item))}
-                                </div>
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    </span>
-                    <span>
-                        <Accordion.Item eventKey="1">
-                            <Accordion.Header>
-                                <span className="navbar-heading" onClick={() => this.setDomainState("simulation")}>
-                                    <FaExpand className={`ml-2 mr-2 ${getCompressionClass("simulation", true)}`}/>
-                                    <FaCompress className={`ml-2 mr-2 ${getCompressionClass("simulation", false)}`}/>
-                                    Simulation
-                                </span>
-                            </Accordion.Header>
-                            <Accordion.Body>
-                                <div className="list-group">
-                                    { SidebarItems.filter(item => item.domain === "simulation").map((item) => getLink(item)) }
-                                </div>
-                            </Accordion.Body>
-                        </Accordion.Item>
-                    </span>
+                    {
+                        env.FEATURES.MOCKER &&
+                        <span>
+                            <Accordion.Item eventKey="0">
+                                <Accordion.Header>
+                                    <span className="navbar-heading" onClick={() => this.setDomainState("mocker")}>
+                                        <FaExpand className={`ml-2 mr-2 ${getCompressionClass("mocker", true)}`}/>
+                                        <FaCompress className={`ml-2 mr-2 ${getCompressionClass("mocker", false)}`}/>
+                                        Mocker
+                                    </span>
+                                </Accordion.Header>
+                                <Accordion.Body>
+                                    <div className="list-group">
+                                        { SidebarItems.filter(item => item.domain === "mocker").map((item) => getLink(item))}
+                                    </div>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        </span>
+                    }
+                    {
+                        env.FEATURES.AUTHORIZER &&
+                        <span>
+                            <Accordion.Item eventKey="1">
+                                <Accordion.Header>
+                                    <span className="navbar-heading" onClick={() => this.setDomainState("authorizer")}>
+                                        <FaExpand className={`ml-2 mr-2 ${getCompressionClass("authorizer", true)}`}/>
+                                        <FaCompress className={`ml-2 mr-2 ${getCompressionClass("authorizer", false)}`}/>
+                                        Authorizer
+                                    </span>
+                                </Accordion.Header>
+                                <Accordion.Body>
+                                    <div className="list-group">
+                                        { SidebarItems.filter(item => item.domain === "authorizer").map((item) => getLink(item)) }
+                                    </div>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        </span>
+                    }
                 </Accordion>
                 <div className={"info-box"}>
                     <div>Portal version: {packageJson.version} </div>

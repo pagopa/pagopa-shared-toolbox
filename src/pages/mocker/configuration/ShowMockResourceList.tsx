@@ -1,17 +1,17 @@
 import React, { ChangeEvent } from "react";
 import { Box, Grid, Pagination, Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
-import { MockConfigApi } from "../../util/apiclient";
+import { MockConfigApi } from "../../../util/apiclient";
 import { MsalContext } from "@azure/msal-react";
-import { loginRequest } from "../../util/authconfig";
-import { isErrorResponse } from "../../util/client-utils";
-import { ProblemJson } from "../../api/generated/ProblemJson";
+import { loginRequest } from "../../../util/authconfig";
+import { isErrorResponse } from "../../../util/client-utils";
+import { ProblemJson } from "../../../api/generated/ProblemJson";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { PageInfo } from "../../api/generated/PageInfo";
-import { toastError } from "../../util/utilities";
-import { buildColumnDefs } from "./table/MockResourceTableColumns";
-import GenericModal from "../../components/generic/GenericModal";
-import { StyledDataGrid } from "../../components/table/StyledDataGrid";
+import { PageInfo } from "../../../api/generated/PageInfo";
+import { toastError } from "../../../util/utilities";
+import { buildColumnDefs } from "../table/MockResourceTableColumns";
+import GenericModal from "../../../components/generic/GenericModal";
+import { StyledDataGrid } from "../../../components/table/StyledDataGrid";
 import { Add } from "@mui/icons-material";
 import { ButtonNaked } from "@pagopa/mui-italia";
 
@@ -147,15 +147,15 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
   
   render(): React.ReactNode {
 
-    const rowHeight = 40;
+    const rowHeight = 50;
     const headerHeight = 60;
 
     return (
       <Grid container item xs={12}>
         <Grid item xs={12} display="flex" flexDirection="column" pb={8} px={3}>
           <Grid container alignItems={'center'} spacing={0}>
-            <Grid item xs={11} alignItems={'center'} >
-              <Typography variant="h3" sx={{fontWeight: 'bold'}}>Mock Resources</Typography>
+            <Grid item xs={11} alignItems={'center'} mb={2}>
+              <Typography variant="h3" sx={{fontWeight: 'bold', textAlign: "center", color: "#1976d2"}}>Mock Resources</Typography>
             </Grid>
             <Grid item xs={1}>
               <ButtonNaked size="large" component="button" onClick={() => this.redirectToCreateMockResource()} startIcon={<Add/>} sx={{ fontSize: '18px', color: 'primary.main'}} weight="default">

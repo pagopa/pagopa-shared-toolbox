@@ -1,20 +1,19 @@
 import { MsalContext } from "@azure/msal-react";
 import React from "react";
-import { loginRequest } from "../../util/authconfig";
+import { loginRequest } from "../../../util/authconfig";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { MockConfigApi } from "../../util/apiclient";
-import { isErrorResponse } from "../../util/client-utils";
-import { ProblemJson } from "../../api/generated/ProblemJson";
-import { toastError } from "../../util/utilities";
-import { MockResource } from "../../api/generated/MockResource";
+import { MockConfigApi } from "../../../util/apiclient";
+import { isErrorResponse } from "../../../util/client-utils";
+import { ProblemJson } from "../../../api/generated/ProblemJson";
+import { getFormattedCondition, stringfyList, toastError } from "../../../util/utilities";
+import { MockResource } from "../../../api/generated/MockResource";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Divider, Grid, Paper, Stack, Typography } from '@mui/material';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import { Add, ArrowBack, CheckCircleOutline, Delete, Edit, ExpandMore, HighlightOff } from '@mui/icons-material';
-import Title from "../../components/pages/Title";
+import Title from "../../../components/pages/Title";
 import xmlFormat from "xml-formatter";
-import { Condition_typeEnum, MockCondition } from "../../api/generated/MockCondition";
-import { MockResponse } from "../../api/generated/MockResponse";
-import GenericModal from "../../components/generic/GenericModal";
+import { MockResponse } from "../../../api/generated/MockResponse";
+import GenericModal from "../../../components/generic/GenericModal";
 
 interface IProps {
     match: {
@@ -168,9 +167,9 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
 
   getFormattedTags(tags: readonly string[]) {
     if (tags.length == 0) {
-      return <Chip sx={{color: "transparent"}}></Chip>
+      return <Chip id={`no-chip`} sx={{color: "transparent"}}></Chip>
     }
-    return tags.map(tag => <Chip label={tag} sx={{
+    return tags.map(tag => <Chip label={tag} id={`${tag}-chip`} sx={{
       fontWeight: 'fontWeightMedium', 
       color: "white", 
       backgroundColor: 
@@ -181,47 +180,13 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
     }}></Chip>)
   }
 
-  getFormattedCondition(condition: MockCondition) {
-    let conditionValue = <></>;
-    switch (condition.condition_type) {
-      case Condition_typeEnum.ANY:
-        conditionValue = <>can be <b>any non-null value</b></>;
-        break;
-      case Condition_typeEnum.REGEX:
-        conditionValue = <>must follows the regular expression <b>{condition.condition_value}</b></>;
-        break;
-      case Condition_typeEnum.NULL:
-        conditionValue = <>must be <b>null</b></>;
-        break;
-      case Condition_typeEnum.EQ:
-        conditionValue = <>must be <b>equals</b> to <b>{condition.condition_value}</b></>;
-        break;
-      case Condition_typeEnum.NEQ:
-        conditionValue = <>must be <b>not equals</b> to <b>{condition.condition_value}</b></>;
-        break;
-      case Condition_typeEnum.GE:
-        conditionValue = <>must be <b>greater</b> than or <b>equals</b> to <b>{condition.condition_value}</b></>;
-        break;
-      case Condition_typeEnum.GT:
-        conditionValue = <>must be <b>greater</b> than <b>{condition.condition_value}</b></>;
-        break;
-      case Condition_typeEnum.LE:
-        conditionValue = <>must be <b>lower</b> than or <b>equals</b> to <b>{condition.condition_value}</b></>;
-        break;
-      case Condition_typeEnum.LT:
-        conditionValue = <>must be <b>lower</b> than <b>{condition.condition_value}</b></>;
-        break;
-    }    
-    return (<>Field <b>{condition.field_name}</b> in <b>{condition.analyzed_content_type}</b> <b>{condition.field_position}</b> {conditionValue}.</>);
-  }
-
   getFormattedResponseInfo(response: MockResponse) {
     let headers = response.headers.map(header => 
       <Typography variant="body2" sx={{ fontSize: '14px'}}>
         <b>{header.name}:</b> <Typography variant="caption" sx={{ fontSize: '14px'}}>{header.value}</Typography>
       </Typography>
     );
-    let injected_parameters = response.injected_parameters && response.injected_parameters.length > 0 ? response.injected_parameters.toString() : 'none'
+    let injected_parameters = response.injected_parameters && response.injected_parameters.length > 0 ? stringfyList(response.injected_parameters) : 'none'
     return (
       <Box>
         <Typography variant="body2" sx={{ fontSize: '14px'}}>
@@ -257,8 +222,8 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
   redirectToAddRulePage(): void {
     this.props.history.push(`/mocker/mock-resources/${this.state.mockResource?.id}/rules/create`);
   }
-  redirectOnEditRulePage(): void {
-    throw new Error("Method not implemented.");
+  redirectOnEditRulePage(ruleId: string): void {
+    this.props.history.push(`/mocker/mock-resources/${this.state.mockResource?.id}/rules/${ruleId}/edit`);
   }
   redirectToPreviousPage() {
     this.props.history.goBack();
@@ -306,6 +271,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
                 mbTitle={1}
                 variantTitle="h4"
                 variantSubTitle="subtitle1"
+                titleFontColor="#1976d2"
                 subTitleFontSize='14px'
                 subTitleFontColor="#757575"
               />
@@ -384,7 +350,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
                       </Grid>
 
                       <Grid item xs={2}>
-                        <ButtonNaked id={`${rule.id}-edit-btn`} size="small" component="button" onClick={() => this.redirectOnEditRulePage()} startIcon={<Edit/>} sx={{ color: 'primary.main' }} weight="default" />
+                        <ButtonNaked id={`${rule.id}-edit-btn`} size="small" component="button" onClick={() => this.redirectOnEditRulePage(rule.id!)} startIcon={<Edit/>} sx={{ color: 'primary.main' }} weight="default" />
                         <ButtonNaked id={`${rule.id}-delete-btn`} size="small" component="button" disabled={rule.tags.find(tag => tag === 'Parachute') !== undefined} onClick={() => {this.onClickDeleteRule(rule.id!)}} startIcon={<Delete/>} sx={{ color: 'error.main' }} weight="default" />
                       </Grid>
 
@@ -416,7 +382,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
                                 rule.conditions.map(condition => 
                                   <Grid item id={`${condition.id}-condition`} xs={12}>
                                     <Typography variant="body2">
-                                      <li>{this.getFormattedCondition(condition)}</li>
+                                      <li>{getFormattedCondition(condition)}</li>
                                     </Typography>
                                   </Grid>
                                 )
