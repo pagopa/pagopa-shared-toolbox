@@ -140,7 +140,6 @@
     "node-fetch": "^2.6.1",
     "svgo": "^2.8.0",
     "validator": "^13.7.0",
-    "postcss": "^8.3.0",
     "node-forge": "^1.0.0"
   },
   "browserslist": {
