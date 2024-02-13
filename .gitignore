@@ -64,5 +64,3 @@ yarn-error.log
 /swagger.json
 /test-report.xml
 /public/version.json
-
-.identity/.terraform/
