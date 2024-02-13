@@ -2,8 +2,8 @@ import React from "react";
 import { Alert } from "react-bootstrap";
 
 const Landing = () => (
-  <Alert className={"col-md-12"} variant={"success"}>
-    PagoPA Mock Configurator
+  <Alert className={"col-md-12"} color={"#1976d2"}>
+    Oops! Work in progress!
   </Alert>
 );
 

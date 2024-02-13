@@ -1,10 +1,18 @@
 import React from "react";
+import {AuthenticatedTemplate, UnauthenticatedTemplate} from "@azure/msal-react";
 import Routes from "./util/routes";
+import Login from "./pages/others/Login";
 
 export default function App() {
   return (
-    <div>
-      <Routes />
-    </div>
+      <div>
+          <AuthenticatedTemplate>
+              <Routes/>
+          </AuthenticatedTemplate>
+
+          <UnauthenticatedTemplate>
+              <Login/>
+          </UnauthenticatedTemplate>
+      </div>
   );
 }
