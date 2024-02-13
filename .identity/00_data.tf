@@ -3,6 +3,11 @@ data "azurerm_storage_account" "tf_storage_account"{
   resource_group_name = "io-infra-rg"
 }
 
+data "azurerm_user_assigned_identity" "identity_cd" {
+  name = "${local.product}-nodo-01-github-cd-identity"
+  resource_group_name = "${local.product}-identity-rg"
+}
+
 data "github_organization_teams" "all" {
   root_teams_only = true
   summary_only    = true

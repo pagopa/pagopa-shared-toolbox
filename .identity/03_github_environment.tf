@@ -21,14 +21,14 @@ resource "github_repository_environment" "github_repository_environment" {
 
 locals {
   env_secrets = {
-    "CLIENT_ID" : module.github_runner_app.application_id,
+    "CD_CLIENT_ID" : data.azurerm_user_assigned_identity.identity_cd.client_id,
     "TENANT_ID" : data.azurerm_client_config.current.tenant_id,
     "SUBSCRIPTION_ID" : data.azurerm_subscription.current.subscription_id,
 
-    "AUTH_CLIENT_ID": data.azurerm_key_vault_secret.key_vault_auth_client_id,
-    "AUTH_REDIRECT_URI": data.azurerm_key_vault_secret.key_vault_auth_redirect_url,
-    "AUTH_TENANT": data.azurerm_key_vault_secret.key_vault_auth_tenant,
-    "AUTH_SCOPES": data.azurerm_key_vault_secret.key_vault_auth_scopes,
+    "AUTH_CLIENT_ID": data.azurerm_key_vault_secret.key_vault_auth_client_id.value,
+    "AUTH_REDIRECT_URI": data.azurerm_key_vault_secret.key_vault_auth_redirect_url.value,
+    "AUTH_TENANT": data.azurerm_key_vault_secret.key_vault_auth_tenant.value,
+    "AUTH_SCOPES": data.azurerm_key_vault_secret.key_vault_auth_scopes.value,
     "BLOB_CONNECTION_STRING" : data.azurerm_key_vault_secret.key_vault_blob_connection_string.value
   }
   env_variables = {
@@ -95,4 +95,21 @@ resource "github_actions_secret" "secret_cucumber_token" {
   repository      = local.github.repository
   secret_name     = "CUCUMBER_PUBLISH_TOKEN"
   plaintext_value = data.azurerm_key_vault_secret.key_vault_cucumber_token.value
+}
+
+
+############
+## Labels ##
+############
+
+resource "github_issue_label" "patch" {
+  repository = local.github.repository
+  name       = "patch"
+  color      = "FF0000"
+}
+
+resource "github_issue_label" "ignore_for_release" {
+  repository = local.github.repository
+  name       = "ignore-for-release"
+  color      = "008000"
 }
