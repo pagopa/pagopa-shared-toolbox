@@ -122,7 +122,7 @@ jobs:
           REACT_APP_MOCKCONFIG_BASEPATH=/mock-config/api/v1
           REACT_APP_MOCKER_URL='${{ vars.MOCKER_HOST_FE }}'
 
-          export REACT_APP_PUBLIC_URL='/'
+          export REACT_APP_PUBLIC_URL='/ui'
           
           REACT_APP_AUTH_CLIENT_ID=${{ secrets.AUTH_CLIENT_ID }}
           REACT_APP_AUTH_REDIRECT_URI=${{ secrets.AUTH_REDIRECT_URI }}
