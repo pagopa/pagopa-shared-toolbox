@@ -1,6 +1,6 @@
 {
   "name": "pagopa-insights-fe",
-  "homepage": "https://pagopa.github.io/pagopa-mock-config-fe/",
+  "homepage": "https://pagopa.github.io/pagopa-insights-fe/",
   "license": "MIT",
   "version": "0.2.2",
   "scripts": {
@@ -21,7 +21,7 @@
     "test:local": "jest --coverage --ci",
     "clean": "npm-run-all clean:*",
     "clean:api": "rimraf src/api/generated && rimraf openapi/generated",
-    "generate:api": "wget https://raw.githubusercontent.com/pagopa/pagopa-mock-config-be/NOD-700-mocker-fix-modifica-risorsa-di-mock/openapi/openapi.json -O ./openapi/api-docs.json && jq 'walk(if type == \"object\" and has(\"parameters\") then .parameters |= map(select(.name != \"X-Request-Id\")) else . end)' ./openapi/api-docs.json > ./openapi/api-docs.json.temp && mv ./openapi/api-docs.json.temp ./openapi/api-docs.json && yarn run clean:api && mkdirp openapi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openapi/api-docs.json > openapi/generated/swagger20.json && node openapi/scripts/api_fixPreGen.js && gen-api-models --api-spec openapi/generated/swagger20.json --out-dir src/api/generated --no-strict --request-types --response-decoders --client && node openapi/scripts/api_fixPostGen.js",
+    "generate:api": "wget https://raw.githubusercontent.com/pagopa/pagopa-mock-config-be/main/openapi/openapi.json -O ./openapi/api-docs.json && jq 'walk(if type == \"object\" and has(\"parameters\") then .parameters |= map(select(.name != \"X-Request-Id\")) else . end)' ./openapi/api-docs.json > ./openapi/api-docs.json.temp && mv ./openapi/api-docs.json.temp ./openapi/api-docs.json && yarn run clean:api && mkdirp openapi/generated && api-spec-converter --from=openapi_3 --to=swagger_2 openapi/api-docs.json > openapi/generated/swagger20.json && node openapi/scripts/api_fixPreGen.js && gen-api-models --api-spec openapi/generated/swagger20.json --out-dir src/api/generated --no-strict --request-types --response-decoders --client && node openapi/scripts/api_fixPostGen.js",
     "generate": "npm-run-all generate:*",
     "prettify": "prettier --write \"./**/*.{ts,tsx}\""
   },
