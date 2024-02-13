@@ -92,8 +92,8 @@
   "include": [
     "src/**/*",
     // this is the eslint-only inclusion
-    ".eslintrc.js",
-    "jest.config.js"
+    //".eslintrc.js",
+    //"jest.config.js"
   ],
   "exclude": [
     "__mocks__",
