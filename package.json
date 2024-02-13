@@ -2,7 +2,7 @@
   "name": "pagopa-insights-fe",
   "homepage": "https://pagopa.github.io/pagopa-insights-fe/",
   "license": "MIT",
-  "version": "0.2.3",
+  "version": "0.2.3-1-fix-deploy-pipeline",
   "scripts": {
     "envconfig": "chmod +x envconfig.sh && . ./envconfig.sh && chmod +x version.sh && ./version.sh",
     "prebuild": "npm-run-all prebuild:* && chmod +x version.sh && ./version.sh",
