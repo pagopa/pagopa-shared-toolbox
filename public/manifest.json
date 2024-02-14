@@ -1,6 +1,6 @@
 {
-  "short_name": "pagoPA Insights",
-  "name": "pagoPA Insights",
+  "short_name": "pagoPA Toolbox",
+  "name": "pagoPA Shared Toolbox",
   "icons": [
     {
       "src": "./android-chrome-96x96.png",

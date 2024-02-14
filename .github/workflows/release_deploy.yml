@@ -131,16 +131,22 @@ jobs:
 
           if [ "${{ inputs.environment }}" = "dev" ]; then        
             export REACT_APP_FEATURE_MOCKER='true'
+            export REACT_APP_FEATURE_MOCKER_ARCHETYPES='false'
+            export REACT_APP_FEATURE_MOCKER_SIMULATOR='false'
             export REACT_APP_FEATURE_AUTHORIZER='false'
           fi
 
           if [ "${{ inputs.environment }}" = "uat" ]; then        
             export REACT_APP_FEATURE_MOCKER='true'
+            export REACT_APP_FEATURE_MOCKER_ARCHETYPES='false'
+            export REACT_APP_FEATURE_MOCKER_SIMULATOR='false'
             export REACT_APP_FEATURE_AUTHORIZER='false'
           fi
 
           if [ "${{ inputs.environment }}" = "prod" ]; then        
             export REACT_APP_FEATURE_MOCKER='false'
+            export REACT_APP_FEATURE_MOCKER_ARCHETYPES='false'
+            export REACT_APP_FEATURE_MOCKER_SIMULATOR='false'
             export REACT_APP_FEATURE_AUTHORIZER='false'
           fi
 

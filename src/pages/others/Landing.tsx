@@ -3,7 +3,7 @@ import { Alert } from "react-bootstrap";
 
 const Landing = () => (
   <Alert className={"col-md-12"} color={"#1976d2"}>
-    Oops! Work in progress!
+    Work in progress!
   </Alert>
 );
 

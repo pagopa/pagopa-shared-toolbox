@@ -14,7 +14,7 @@ import EditMockRule from "../pages/mocker/configuration/EditMockRule";
 export default class Routes extends React.Component { 
   
   componentDidMount(){
-    document.title = "PagoPA Insights"
+    document.title = "PagoPA Shared Toolbox"
   }
 
   render(): React.ReactNode {

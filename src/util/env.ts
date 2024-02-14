@@ -5,6 +5,8 @@ export const ENV = {
     ENV: env.get('REACT_APP_ENV').required().default('dev').asString(),
     FEATURES: {
         MOCKER: env.get('REACT_APP_FEATURE_MOCKER').required().asBool(),
+        MOCKER_ARCHETYPES: env.get('REACT_APP_FEATURE_MOCKER_ARCHETYPES').required().asBool(),
+        MOCKER_SIMULATOR: env.get('REACT_APP_FEATURE_MOCKER_SIMULATOR').required().asBool(),
         AUTHORIZER: env.get('REACT_APP_FEATURE_AUTHORIZER').required().asBool(),
     },
     AUTH: {

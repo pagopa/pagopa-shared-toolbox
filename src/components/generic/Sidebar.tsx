@@ -124,8 +124,8 @@ export default class Sidebar extends React.Component<IProps, IState> {
 
         const domains: any = this.state.domains;
 
-        function getClass(item: any) {
-            return getPath(location.pathname).split("/")[1] === item.route.substring(1) && getPath(location.pathname).includes(getPath(item.route)) ? "active" : "";
+        function getClass(route: any) {
+            return getPath(location.pathname).split("/")[1] === route.substring(1) && getPath(location.pathname).includes(getPath(route)) ? "active" : "";
         }
 
         function getPath(path: string) {
@@ -134,14 +134,6 @@ export default class Sidebar extends React.Component<IProps, IState> {
 
         function getCompressionClass(domain: string, expand: boolean) {
             return domains[domain] === expand ? "d-inline" : "d-none";
-        }
-
-        function getLink(item: any) {
-            return (
-                <Link to={item.route} key={item.name} className={`list-group-item-action ${getClass(item)}`}>
-                    <span>{item.name}</span>
-                </Link>
-            );
         }
 
         return (
@@ -164,8 +156,22 @@ export default class Sidebar extends React.Component<IProps, IState> {
                                     </span>
                                 </Accordion.Header>
                                 <Accordion.Body>
-                                    <div className="list-group">
-                                        { SidebarItems.filter(item => item.domain === "mocker").map((item) => getLink(item))}
+                                    <div className="list-group">     
+                                        {
+                                            env.FEATURES.MOCKER_ARCHETYPES &&                       
+                                            <Link to={"/mocker/archetypes"} key={"Archetypes and schema"} className={`list-group-item-action ${getClass("/mocker/archetypes")}`}>
+                                                <span>{"Archetypes and schema"}</span>
+                                            </Link>
+                                        }
+                                        <Link to={"/mocker/mock-resources"} key={"Resources"} className={`list-group-item-action ${getClass("/mocker/mock-resources")}`}>
+                                            <span>{"Resources"}</span>
+                                        </Link>
+                                        {
+                                            env.FEATURES.MOCKER_SIMULATOR &&  
+                                            <Link to={"/mocker/simulation"} key={"Simulation"} className={`list-group-item-action ${getClass("/mocker/simulation")}`}>
+                                                <span>{"Archetypes and schema"}</span>
+                                            </Link>
+                                        }
                                     </div>
                                 </Accordion.Body>
                             </Accordion.Item>
@@ -183,9 +189,9 @@ export default class Sidebar extends React.Component<IProps, IState> {
                                     </span>
                                 </Accordion.Header>
                                 <Accordion.Body>
-                                    <div className="list-group">
-                                        { SidebarItems.filter(item => item.domain === "authorizer").map((item) => getLink(item)) }
-                                    </div>
+                                    <Link to={"/authorizer/operation"} key={"Operations"} className={`list-group-item-action ${getClass("/authorizer/operation")}`}>
+                                        <span>{"Operations"}</span>
+                                    </Link>
                                 </Accordion.Body>
                             </Accordion.Item>
                         </span>
