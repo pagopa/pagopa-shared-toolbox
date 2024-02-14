@@ -40,9 +40,9 @@ locals {
     "CDN_PROFILE" : "pagopa-${var.env_short}-insights-fe-cdn-profile",
     "REACT_APP_URL_STORAGE" : "https://pagopa${var.env_short}insightsfesa.z6.web.core.windows.net",
 
-    "REACT_APP_MOCKCONFIG_HOST" : var.env == "prod" ? "https://api.platform.pagopa.it/" : "https://api.${var.env}.platform.pagopa.it/",
-    "REACT_APP_MOCKCONFIG_BASEPATH" : "/mock-config/api/v1",
-    "REACT_APP_MOCKER_URL" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it/mocker/v1/" ,
+    "MOCK_CONFIG_HOST" : var.env == "prod" ? "https://api.platform.pagopa.it/" : "https://api.${var.env}.platform.pagopa.it/",
+    "MOCK_CONFIG_BASEPATH" : "/mock-config/api/v1",
+    "MOCKER_URL" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it/mocker/v1/" ,
   }
 }
 
