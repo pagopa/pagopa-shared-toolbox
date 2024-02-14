@@ -38,10 +38,11 @@ locals {
     "CDN_RESOURCE_GROUP" : "pagopa-${var.env_short}-pagopa-insights-fe-rg",
     "CDN_ENDPOINT" : "pagopa-${var.env_short}-insights-fe-cdn-endpoint",
     "CDN_PROFILE" : "pagopa-${var.env_short}-insights-fe-cdn-profile",
-
-    "SELFCARE_HOST_FE" : var.env == "prod" ? "https://shared.pagopa.it" : "https://${var.env}.shared.pagopa.it",
-    "SELFCARE_API_BE" : var.env == "prod" ? "https://api.platform.pagopa.it" : "https://api.${var.env}.platform.pagopa.it" ,
     "REACT_APP_URL_STORAGE" : "https://pagopa${var.env_short}insightsfesa.z6.web.core.windows.net",
+
+    "REACT_APP_MOCKCONFIG_HOST" : var.env == "prod" ? "https://api.platform.pagopa.it/" : "https://api.${var.env}.platform.pagopa.it/",
+    "REACT_APP_MOCKCONFIG_BASEPATH" : "/mock-config/api/v1",
+    "REACT_APP_MOCKER_URL" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it/mocker/v1/" ,
   }
 }
 

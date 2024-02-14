@@ -124,10 +124,10 @@ jobs:
 
           export REACT_APP_PUBLIC_URL='/ui'
           
-          export REACT_APP_AUTH_CLIENT_ID='${{ secrets.AUTH_CLIENT_ID }}''
-          export REACT_APP_AUTH_REDIRECT_URI='${{ secrets.AUTH_REDIRECT_URI }}''
-          export REACT_APP_AUTH_TENANT='${{ secrets.AUTH_TENANT }}''
-          export REACT_APP_AUTH_SCOPES='${{ secrets.AUTH_SCOPES }}''
+          export REACT_APP_AUTH_CLIENT_ID='${{ secrets.AUTH_CLIENT_ID }}'
+          export REACT_APP_AUTH_REDIRECT_URI='${{ secrets.AUTH_REDIRECT_URI }}'
+          export REACT_APP_AUTH_TENANT='${{ secrets.AUTH_TENANT }}'
+          export REACT_APP_AUTH_SCOPES='${{ secrets.AUTH_SCOPES }}'
 
           if [ "${{ inputs.environment }}" = "dev" ]; then        
             export REACT_APP_FEATURE_MOCKER='true'

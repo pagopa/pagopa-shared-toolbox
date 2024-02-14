@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Recreate config file and assignment
-echo "// Generated automatically, please don't write here" > ./src/env-config.js
+echo "// Generated automatically, please don't write here" > ./public/env-config.js
 echo "" >> ./public/env-config.js
 echo "window._env_ = {" >> ./public/env-config.js
 
