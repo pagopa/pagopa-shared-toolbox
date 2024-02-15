@@ -42,7 +42,7 @@ locals {
     "MOCKER_BASEPATH" : "/mocker/v1",
 
     "AUTH_CLIENT_ID": var.client_id,
-    "AUTH_REDIRECT_URI": var.env == "prod" ? "https://shared.dev.platform.pagopa.it/" : "https://shared.${var.env}.platform.pagopa.it/",
+    "AUTH_REDIRECT_URI": var.env == "prod" ? "https://shared.platform.pagopa.it/" : "https://shared.${var.env}.platform.pagopa.it/",
     "AUTH_TENANT": "https://login.microsoftonline.com/7788edaf-0346-4068-9d79-c868aed15b3d",
     "AUTH_SCOPES": "api://${var.prefix}-${var.env_short}-shared-toolbox/user_impersonation",
   }

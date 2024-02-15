@@ -120,7 +120,8 @@ jobs:
 
           export REACT_APP_MOCKERCONFIG_HOST='${{ vars.MOCKER_CONFIG_HOST }}'
           export REACT_APP_MOCKERCONFIG_BASEPATH='${{ vars.MOCKER_CONFIG_BASEPATH }}'
-          export REACT_APP_MOCKER_URL='${{ vars.MOCKER_URL }}'
+          export REACT_APP_MOCKER_HOST='${{ vars.MOCKER_HOST }}'
+          export REACT_APP_MOCKER_BASEPATH='${{ vars.MOCKER_BASEPATH }}'
 
           export REACT_APP_PUBLIC_URL='/ui'
           
