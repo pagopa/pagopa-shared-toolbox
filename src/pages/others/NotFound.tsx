@@ -3,7 +3,7 @@ import { Alert } from "react-bootstrap";
 
 const NotFound = () => (
   <Alert className={"col-md-12"} color={"#1976d2"}>
-    Oops! Work in progress!
+    Oops! The page did not exists!
   </Alert>
 );
 

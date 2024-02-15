@@ -112,35 +112,42 @@ jobs:
       - name: Set Node.js 16
         uses: actions/setup-node@v3
         with:
-          node-version: 16.10.0
+          node-version: 16.14.0
 
       - name: Build
         run: |
           export REACT_APP_ENV='${{ inputs.environment }}'
 
-          REACT_APP_MOCKCONFIG_HOST='${{ vars.MOCKER_CONFIG_HOST_FE }}'
-          REACT_APP_MOCKCONFIG_BASEPATH=/mock-config/api/v1
-          REACT_APP_MOCKER_URL='${{ vars.MOCKER_HOST_FE }}'
+          export REACT_APP_MOCKERCONFIG_HOST='${{ vars.MOCKER_CONFIG_HOST }}'
+          export REACT_APP_MOCKERCONFIG_BASEPATH='${{ vars.MOCKER_CONFIG_BASEPATH }}'
+          export REACT_APP_MOCKER_HOST='${{ vars.MOCKER_HOST }}'
+          export REACT_APP_MOCKER_BASEPATH='${{ vars.MOCKER_BASEPATH }}'
 
-          export REACT_APP_PUBLIC_URL='/'
+          export REACT_APP_PUBLIC_URL='/ui'
           
-          REACT_APP_AUTH_CLIENT_ID=${{ secrets.AUTH_CLIENT_ID }}
-          REACT_APP_AUTH_REDIRECT_URI=${{ secrets.AUTH_REDIRECT_URI }}
-          REACT_APP_AUTH_TENANT=${{ secrets.AUTH_TENANT }}
-          REACT_APP_AUTH_SCOPES=${{ secrets.AUTH_SCOPES }}
+          export REACT_APP_AUTH_CLIENT_ID='${{ vars.AUTH_CLIENT_ID }}'
+          export REACT_APP_AUTH_REDIRECT_URI='${{ vars.AUTH_REDIRECT_URI }}'
+          export REACT_APP_AUTH_TENANT='${{ vars.AUTH_TENANT }}'
+          export REACT_APP_AUTH_SCOPES='${{ vars.AUTH_SCOPES }}'
 
           if [ "${{ inputs.environment }}" = "dev" ]; then        
             export REACT_APP_FEATURE_MOCKER='true'
+            export REACT_APP_FEATURE_MOCKER_ARCHETYPES='false'
+            export REACT_APP_FEATURE_MOCKER_SIMULATOR='false'
             export REACT_APP_FEATURE_AUTHORIZER='false'
           fi
 
           if [ "${{ inputs.environment }}" = "uat" ]; then        
             export REACT_APP_FEATURE_MOCKER='true'
+            export REACT_APP_FEATURE_MOCKER_ARCHETYPES='false'
+            export REACT_APP_FEATURE_MOCKER_SIMULATOR='false'
             export REACT_APP_FEATURE_AUTHORIZER='false'
           fi
 
           if [ "${{ inputs.environment }}" = "prod" ]; then        
             export REACT_APP_FEATURE_MOCKER='false'
+            export REACT_APP_FEATURE_MOCKER_ARCHETYPES='false'
+            export REACT_APP_FEATURE_MOCKER_SIMULATOR='false'
             export REACT_APP_FEATURE_AUTHORIZER='false'
           fi
 
@@ -153,7 +160,7 @@ jobs:
         # from https://github.com/Azure/login/commits/master
         uses: azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2
         with:
-          client-id: ${{ secrets.CLIENT_ID }}
+          client-id: ${{ secrets.CD_CLIENT_ID }}
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 

@@ -2,17 +2,17 @@ import { MsalContext } from "@azure/msal-react";
 import React from "react";
 import { loginRequest } from "../../../util/authconfig";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { MockConfigApi } from "../../../util/apiclient";
+import { MockerConfigApi } from "../../../util/apiclient";
 import { isErrorResponse } from "../../../util/client-utils";
-import { ProblemJson } from "../../../api/generated/ProblemJson";
+import { ProblemJson } from "../../../api/generated/mocker-config/ProblemJson";
 import { getFormattedCondition, stringfyList, toastError } from "../../../util/utilities";
-import { MockResource } from "../../../api/generated/MockResource";
+import { MockResource } from "../../../api/generated/mocker-config/MockResource";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Divider, Grid, Paper, Stack, Typography } from '@mui/material';
 import { ButtonNaked } from '@pagopa/mui-italia';
 import { Add, ArrowBack, CheckCircleOutline, Delete, Edit, ExpandMore, HighlightOff } from '@mui/icons-material';
 import Title from "../../../components/pages/Title";
 import xmlFormat from "xml-formatter";
-import { MockResponse } from "../../../api/generated/MockResponse";
+import { MockResponse } from "../../../api/generated/mocker-config/MockResponse";
 import GenericModal from "../../../components/generic/GenericModal";
 
 interface IProps {
@@ -64,7 +64,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockConfigApi.getMockResource(auth.idToken, resourceId)
+      MockerConfigApi.getMockResource(auth.idToken, resourceId)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
@@ -99,7 +99,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
         account: this.context.accounts[0]
       })
       .then((auth: AuthenticationResult) => {
-        MockConfigApi.updateMockResource(auth.idToken, resourceId, mockResource!)
+        MockerConfigApi.updateMockResource(auth.idToken, resourceId, mockResource!)
         .then((response) => {
           if (isErrorResponse(response)) {
               const problemJson = response as ProblemJson;
@@ -140,7 +140,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
         account: this.context.accounts[0]
       })
       .then((auth: AuthenticationResult) => {
-        MockConfigApi.updateMockResource(auth.idToken, resourceId, mockResource!)
+        MockerConfigApi.updateMockResource(auth.idToken, resourceId, mockResource!)
         .then((response) => {
           if (isErrorResponse(response)) {
               const problemJson = response as ProblemJson;

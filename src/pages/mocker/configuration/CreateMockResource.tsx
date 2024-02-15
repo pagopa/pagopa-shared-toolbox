@@ -9,11 +9,11 @@ import GenericModal from "../../../components/generic/GenericModal";
 import { MsalContext } from "@azure/msal-react";
 import { loginRequest } from "../../../util/authconfig";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { MockConfigApi } from "../../../util/apiclient";
+import { MockerConfigApi } from "../../../util/apiclient";
 import { isErrorResponse } from "../../../util/client-utils";
-import { ProblemJson } from "../../../api/generated/ProblemJson";
+import { ProblemJson } from "../../../api/generated/mocker-config/ProblemJson";
 import { toastError } from "../../../util/utilities";
-import { MockResource } from "../../../api/generated/MockResource";
+import { MockResource } from "../../../api/generated/mocker-config/MockResource";
 
 interface IProps {
   history: {
@@ -55,7 +55,7 @@ export default class CreateMockResource extends React.Component<IProps, IState> 
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockConfigApi.createMockResource(auth.idToken, this.state.mockResource!)
+      MockerConfigApi.createMockResource(auth.idToken, this.state.mockResource!)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;

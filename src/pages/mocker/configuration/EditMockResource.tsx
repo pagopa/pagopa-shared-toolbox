@@ -4,12 +4,12 @@ import React from "react";
 import Title from "../../../components/pages/Title";
 import { MockResourceHandlingForm } from "../forms/MockResourceHandlingForm";
 import GenericModal from "../../../components/generic/GenericModal";
-import { MockResource } from "../../../api/generated/MockResource";
+import { MockResource } from "../../../api/generated/mocker-config/MockResource";
 import { loginRequest } from "../../../util/authconfig";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { MockConfigApi } from "../../../util/apiclient";
+import { MockerConfigApi } from "../../../util/apiclient";
 import { isErrorResponse } from "../../../util/client-utils";
-import { ProblemJson } from "../../../api/generated/ProblemJson";
+import { ProblemJson } from "../../../api/generated/mocker-config/ProblemJson";
 import { toastError } from "../../../util/utilities";
 import { MsalContext } from "@azure/msal-react";
 import { ArrowBack } from "@mui/icons-material";
@@ -61,7 +61,7 @@ export default class EditMockResource extends React.Component<IProps, IState> {
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockConfigApi.getMockResource(auth.idToken, resourceId)
+      MockerConfigApi.getMockResource(auth.idToken, resourceId)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
@@ -90,7 +90,7 @@ export default class EditMockResource extends React.Component<IProps, IState> {
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockConfigApi.updateMockResourceGeneralInfo(auth.idToken, this.state.mockResourceId, this.state.mockResource!)
+      MockerConfigApi.updateMockResourceGeneralInfo(auth.idToken, this.state.mockResourceId, this.state.mockResource!)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;

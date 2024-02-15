@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_KEY: pagopa_pagopa-insights-fe
+  PROJECT_KEY: pagopa_pagopa-shared-toolbox
 
 permissions:
   id-token: write

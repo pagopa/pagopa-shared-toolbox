@@ -2,8 +2,8 @@ import React from "react";
 // import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 // import base64 from "react-native-base64"
 // import MockConditionListItem from "./MockConditionListItem";
-// import { MockCondition } from "../../api/generated/MockCondition";
-// import { MockResponse } from "../../api/generated/MockResponse";
+// import { MockCondition } from "../../api/generated/mocker-config/MockCondition";
+// import { MockResponse } from "../../api/generated/mocker-config/MockResponse";
 
 interface IProps {
 //   item: {
