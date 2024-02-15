@@ -31,14 +31,15 @@ locals {
     "CONTAINER_APP_ENVIRONMENT_NAME" : local.container_app_environment.name,
     "CONTAINER_APP_ENVIRONMENT_RESOURCE_GROUP_NAME" : local.container_app_environment.resource_group,
     "STORAGE_ACCOUNT" : "pagopa${var.env_short}sharedtoolboxsa",
-    "CDN_RESOURCE_GROUP" : "pagopa-${var.env_short}-shared-toolbox-rg",
+    "CDN_RESOURCE_GROUP" : "pagopa-${var.env_short}-pagopa-shared-toolbox-rg",
     "CDN_ENDPOINT" : "pagopa-${var.env_short}-shared-toolbox-cdn-endpoint",
     "CDN_PROFILE" : "pagopa-${var.env_short}-shared-toolbox-cdn-profile",
     "REACT_APP_URL_STORAGE" : "https://pagopa${var.env_short}sharedtoolboxsa.z6.web.core.windows.net",
 
     "MOCKER_CONFIG_HOST" : var.env == "prod" ? "https://api.platform.pagopa.it" : "https://api.${var.env}.platform.pagopa.it",
     "MOCKER_CONFIG_BASEPATH" : "/mocker-config/api/v1",
-    "MOCKER_URL" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it/mocker/v1",
+    "MOCKER_HOST" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it",
+    "MOCKER_BASEPATH" : "/mocker/v1",
 
     "AUTH_CLIENT_ID": var.client_id,
     "AUTH_REDIRECT_URI": var.env == "prod" ? "https://shared.dev.platform.pagopa.it/" : "https://shared.${var.env}.platform.pagopa.it/",
