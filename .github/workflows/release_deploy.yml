@@ -118,16 +118,16 @@ jobs:
         run: |
           export REACT_APP_ENV='${{ inputs.environment }}'
 
-          export REACT_APP_MOCKCONFIG_HOST='${{ vars.MOCK_CONFIG_HOST }}'
-          export REACT_APP_MOCKCONFIG_BASEPATH='${{ vars.MOCK_CONFIG_BASEPATH }}'
+          export REACT_APP_MOCKERCONFIG_HOST='${{ vars.MOCKER_CONFIG_HOST }}'
+          export REACT_APP_MOCKERCONFIG_BASEPATH='${{ vars.MOCKER_CONFIG_BASEPATH }}'
           export REACT_APP_MOCKER_URL='${{ vars.MOCKER_URL }}'
 
           export REACT_APP_PUBLIC_URL='/ui'
           
-          export REACT_APP_AUTH_CLIENT_ID='${{ secrets.AUTH_CLIENT_ID }}'
-          export REACT_APP_AUTH_REDIRECT_URI='${{ secrets.AUTH_REDIRECT_URI }}'
-          export REACT_APP_AUTH_TENANT='${{ secrets.AUTH_TENANT }}'
-          export REACT_APP_AUTH_SCOPES='${{ secrets.AUTH_SCOPES }}'
+          export REACT_APP_AUTH_CLIENT_ID='${{ vars.AUTH_CLIENT_ID }}'
+          export REACT_APP_AUTH_REDIRECT_URI='${{ vars.AUTH_REDIRECT_URI }}'
+          export REACT_APP_AUTH_TENANT='${{ vars.AUTH_TENANT }}'
+          export REACT_APP_AUTH_SCOPES='${{ vars.AUTH_SCOPES }}'
 
           if [ "${{ inputs.environment }}" = "dev" ]; then        
             export REACT_APP_FEATURE_MOCKER='true'

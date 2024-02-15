@@ -25,24 +25,25 @@ locals {
     "TENANT_ID" : data.azurerm_client_config.current.tenant_id,
     "SUBSCRIPTION_ID" : data.azurerm_subscription.current.subscription_id,
 
-    "AUTH_CLIENT_ID": data.azurerm_key_vault_secret.key_vault_auth_client_id.value,
-    "AUTH_REDIRECT_URI": data.azurerm_key_vault_secret.key_vault_auth_redirect_url.value,
-    "AUTH_TENANT": data.azurerm_key_vault_secret.key_vault_auth_tenant.value,
-    "AUTH_SCOPES": data.azurerm_key_vault_secret.key_vault_auth_scopes.value,
     "BLOB_CONNECTION_STRING" : data.azurerm_key_vault_secret.key_vault_blob_connection_string.value
   }
   env_variables = {
     "CONTAINER_APP_ENVIRONMENT_NAME" : local.container_app_environment.name,
     "CONTAINER_APP_ENVIRONMENT_RESOURCE_GROUP_NAME" : local.container_app_environment.resource_group,
-    "STORAGE_ACCOUNT" : "pagopa${var.env_short}insightsfesa",
-    "CDN_RESOURCE_GROUP" : "pagopa-${var.env_short}-pagopa-insights-fe-rg",
-    "CDN_ENDPOINT" : "pagopa-${var.env_short}-insights-fe-cdn-endpoint",
-    "CDN_PROFILE" : "pagopa-${var.env_short}-insights-fe-cdn-profile",
-    "REACT_APP_URL_STORAGE" : "https://pagopa${var.env_short}insightsfesa.z6.web.core.windows.net",
+    "STORAGE_ACCOUNT" : "pagopa${var.env_short}sharedtoolboxsa",
+    "CDN_RESOURCE_GROUP" : "pagopa-${var.env_short}-shared-toolbox-rg",
+    "CDN_ENDPOINT" : "pagopa-${var.env_short}-shared-toolbox-cdn-endpoint",
+    "CDN_PROFILE" : "pagopa-${var.env_short}-shared-toolbox-cdn-profile",
+    "REACT_APP_URL_STORAGE" : "https://pagopa${var.env_short}sharedtoolboxsa.z6.web.core.windows.net",
 
-    "MOCK_CONFIG_HOST" : var.env == "prod" ? "https://api.platform.pagopa.it" : "https://api.${var.env}.platform.pagopa.it",
-    "MOCK_CONFIG_BASEPATH" : "/mock-config/api/v1",
-    "MOCKER_URL" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it/mocker/v1" ,
+    "MOCKER_CONFIG_HOST" : var.env == "prod" ? "https://api.platform.pagopa.it" : "https://api.${var.env}.platform.pagopa.it",
+    "MOCKER_CONFIG_BASEPATH" : "/mocker-config/api/v1",
+    "MOCKER_URL" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it/mocker/v1",
+
+    "AUTH_CLIENT_ID": var.client_id,
+    "AUTH_REDIRECT_URI": var.env == "prod" ? "https://shared.dev.platform.pagopa.it/" : "https://shared.${var.env}.platform.pagopa.it/",
+    "AUTH_TENANT": "https://login.microsoftonline.com/7788edaf-0346-4068-9d79-c868aed15b3d",
+    "AUTH_SCOPES": "api://${var.prefix}-${var.env_short}-shared-toolbox/user_impersonation",
   }
 }
 

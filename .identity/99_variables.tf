@@ -1,7 +1,7 @@
 locals {
   github = {
     org        = "pagopa"
-    repository = "pagopa-insights-fe"
+    repository = "pagopa-shared-toolbox"
   }
 
   prefix         = "pagopa"
@@ -12,8 +12,8 @@ locals {
   app_name = "github-${local.github.org}-${local.github.repository}-${var.prefix}-${local.domain}-${var.env}-aks"
 
   cdn = {
-    name                = "${local.prefix}-${var.env_short}-insights-fe-cdn-profile"
-    resource_group_name = "${local.prefix}-${var.env_short}-pagopa-insights-fe-rg"
+    name                = "${local.prefix}-${var.env_short}-shared-toolbox-cdn-profile"
+    resource_group_name = "${local.prefix}-${var.env_short}-pagopa-shared-toolbox-rg"
   }
 
   container_app_environment = {
@@ -53,4 +53,8 @@ variable "github_repository_environment" {
     custom_branch_policies = true
     reviewers_teams        = ["pagopa-team-core"]
   }
+}
+
+variable "client_id" {
+  type = string
 }

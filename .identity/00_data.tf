@@ -38,26 +38,6 @@ data "azurerm_key_vault_secret" "key_vault_cucumber_token" {
   key_vault_id = data.azurerm_key_vault.key_vault.id
 }
 
-data "azurerm_key_vault_secret" "key_vault_auth_client_id" {
-  name = "auth-clientid"
-  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
-}
-
-data "azurerm_key_vault_secret" "key_vault_auth_redirect_url" {
-  name = "auth-redirect-url"
-  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
-}
-
-data "azurerm_key_vault_secret" "key_vault_auth_scopes" {
-  name = "auth-scopes"
-  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
-}
-
-data "azurerm_key_vault_secret" "key_vault_auth_tenant" {
-  name = "auth-tenant"
-  key_vault_id = data.azurerm_key_vault.domain_key_vault.id
-}
-
 data "azurerm_key_vault_secret" "key_vault_blob_connection_string" {
   name = "web-storage-blob-connection-string"
   key_vault_id = data.azurerm_key_vault.domain_key_vault.id
