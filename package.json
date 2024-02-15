@@ -2,7 +2,7 @@
   "name": "pagopa-shared-toolbox",
   "homepage": "ui",
   "license": "MIT",
-  "version": "0.2.3-19-fix-deploy-pipeline",
+  "version": "0.2.4",
   "scripts": {
     "envconfig": "chmod +x envconfig.sh && . ./envconfig.sh && chmod +x version.sh && ./version.sh",
     "clean": "npm-run-all clean:*",
