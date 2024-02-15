@@ -1,3 +1,3 @@
 ## pagoPA Shared Toolbox ##
-Welcome to **pagoPA InsShared Toolboxights**!  
+Welcome to **pagoPA Shared Toolbox**!  
 ...
