@@ -8,12 +8,12 @@ import GenericModal from "../../../components/generic/GenericModal";
 import { MsalContext } from "@azure/msal-react";
 import { loginRequest } from "../../../util/authconfig";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { MockConfigApi } from "../../../util/apiclient";
+import { MockerConfigApi } from "../../../util/apiclient";
 import { isErrorResponse } from "../../../util/client-utils";
-import { ProblemJson } from "../../../api/generated/ProblemJson";
+import { ProblemJson } from "../../../api/generated/mocker-config/ProblemJson";
 import { toastError } from "../../../util/utilities";
-import { MockResource } from "../../../api/generated/MockResource";
-import { MockRule } from "../../../api/generated/MockRule";
+import { MockResource } from "../../../api/generated/mocker-config/MockResource";
+import { MockRule } from "../../../api/generated/mocker-config/MockRule";
 import { MockRuleHandlingForm } from "../forms/MockRuleHandlingForm";
 
 interface IProps {
@@ -64,7 +64,7 @@ export default class EditMockRule extends React.Component<IProps, IState> {
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockConfigApi.getMockResource(auth.idToken, resourceId)
+      MockerConfigApi.getMockResource(auth.idToken, resourceId)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
@@ -94,7 +94,7 @@ export default class EditMockRule extends React.Component<IProps, IState> {
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockConfigApi.updateMockRule(auth.idToken, this.state.mockResource!.id!, this.state.mockRule!.id!, this.state.mockRule!)
+      MockerConfigApi.updateMockRule(auth.idToken, this.state.mockResource!.id!, this.state.mockRule!.id!, this.state.mockRule!)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;

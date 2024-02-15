@@ -1,6 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { Condition_typeEnum, MockCondition } from "../api/generated/MockCondition";
+import { Condition_typeEnum, MockCondition } from "../api/generated/mocker-config/MockCondition";
 import { ComplexContentTypeEnum } from "./constants";
 
 export const appendInList = (list: readonly any[], value: any): any[] => {

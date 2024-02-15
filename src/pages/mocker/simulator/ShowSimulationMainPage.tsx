@@ -39,7 +39,7 @@ export default class ShowSimulationMainPage extends React.Component<IProps, ISta
             isLoading: false,
             simulationManagement: {
               httpMethod: "GET",
-              root: env.MOCKER.URL,
+              root: env.MOCKER.BASEPATH,
               resourceUrl: "",
               headers: {},
               body: "",

@@ -1,8 +1,8 @@
-import { MockResource } from "../api/generated/MockResource";
-import { MockResourceGeneralInfo } from "../api/generated/MockResourceGeneralInfo";
-import { MockResourceList } from "../api/generated/MockResourceList";
-import { MockRule } from "../api/generated/MockRule";
-import { WithDefaultsT, createClient } from "../api/generated/client";
+import { MockResource } from "../api/generated/mocker-config/MockResource";
+import { MockResourceGeneralInfo } from "../api/generated/mocker-config/MockResourceGeneralInfo";
+import { MockResourceList } from "../api/generated/mocker-config/MockResourceList";
+import { MockRule } from "../api/generated/mocker-config/MockRule";
+import { WithDefaultsT, createClient } from "../api/generated/mocker-config/client";
 import { extractResponse } from "./client-utils";
 import { ENV as env } from "./env";
 
@@ -23,12 +23,12 @@ function fetchWithHeader(input: RequestInfo | URL, init?: RequestInit): Promise<
     return fetch(input, {...init, headers});
 }
 
-const mockConfigHost = env.MOCKCONFIG.HOST;
-const mockConfigBasePath = env.MOCKCONFIG.BASEPATH;
+const mockerConfigHost = env.MOCKERCONFIG.HOST;
+const mockerConfigBasePath = env.MOCKERCONFIG.BASEPATH;
 
 export const apiClient = createClient({
-    baseUrl: mockConfigHost as string,
-    basePath: mockConfigBasePath as string,
+    baseUrl: mockerConfigHost as string,
+    basePath: mockerConfigBasePath as string,
     fetchApi: fetchWithHeader,
     withDefaults: withEmptyApiKey
 });
@@ -42,7 +42,7 @@ const onRedirectToLogin = () => {
     // todo redirect
 }
 
-export const MockConfigApi = {
+export const MockerConfigApi = {
 
     getMockResources: async (token: string, limit: number, page: number): Promise<MockResourceList> => {
         const result = await apiClient.getMockResources({

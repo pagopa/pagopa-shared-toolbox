@@ -1,13 +1,13 @@
 import React, { ChangeEvent } from "react";
 import { Box, Grid, Pagination, Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
-import { MockConfigApi } from "../../../util/apiclient";
+import { MockerConfigApi } from "../../../util/apiclient";
 import { MsalContext } from "@azure/msal-react";
 import { loginRequest } from "../../../util/authconfig";
 import { isErrorResponse } from "../../../util/client-utils";
-import { ProblemJson } from "../../../api/generated/ProblemJson";
+import { ProblemJson } from "../../../api/generated/mocker-config/ProblemJson";
 import { AuthenticationResult } from "@azure/msal-browser";
-import { PageInfo } from "../../../api/generated/PageInfo";
+import { PageInfo } from "../../../api/generated/mocker-config/PageInfo";
 import { toastError } from "../../../util/utilities";
 import { buildColumnDefs } from "../table/MockResourceTableColumns";
 import GenericModal from "../../../components/generic/GenericModal";
@@ -68,7 +68,7 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockConfigApi.getMockResources(auth.idToken, 50, page)
+      MockerConfigApi.getMockResources(auth.idToken, 50, page)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
@@ -97,7 +97,7 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
         account: this.context.accounts[0]
       })
       .then((auth: AuthenticationResult) => {
-        MockConfigApi.deleteMockResource(auth.idToken, resourceId!)
+        MockerConfigApi.deleteMockResource(auth.idToken, resourceId!)
         .then((response) => {
 
           if (response !== undefined && isErrorResponse(response)) {

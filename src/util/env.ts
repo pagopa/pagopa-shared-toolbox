@@ -15,11 +15,12 @@ export const ENV = {
         TENANT: env.get('REACT_APP_AUTH_TENANT').required().asString(),
         SCOPES: getConfig('REACT_APP_AUTH_SCOPES', {required: true}),
     },
-    MOCKCONFIG: {
-        HOST: env.get('REACT_APP_MOCKCONFIG_HOST').required().asString(),
-        BASEPATH: env.get('REACT_APP_MOCKCONFIG_BASEPATH').required().asString(),
+    MOCKERCONFIG: {
+        HOST: env.get('REACT_APP_MOCKERCONFIG_HOST').required().asString(),
+        BASEPATH: env.get('REACT_APP_MOCKERCONFIG_BASEPATH').required().asString(),
     },
     MOCKER: {
-        URL: env.get('REACT_APP_MOCKER_URL').required().asString(),
+        HOST: env.get('REACT_APP_MOCKER_HOST').required().asString(),
+        BASEPATH: env.get('REACT_APP_MOCKER_BASEPATH').required().asString(),
     }
 }

@@ -19,7 +19,7 @@
     "test": "jest --coverage --ci --testResultsProcessor jest-sonar-reporter",
     "test:local": "jest --coverage --ci",
     "clean:api": "rimraf src/api/generated && rimraf openapi/generated",
-    "generate:api": "chmod +x generateapi.sh && ./generateapi.sh pagopa-mock-config-be mocker-config && ./generateapi.sh pagopa-authorizer-config authorizer-config",
+    "generate:api": "chmod +x generateapi.sh && yarn run clean:api && ./generateapi.sh pagopa-mock-config-be mocker-config && ./generateapi.sh pagopa-platform-authorizer-config authorizer-config",
     "generate": "npm-run-all generate:*",
     "prettify": "prettier --write \"./**/*.{ts,tsx}\""
   },

@@ -1,14 +1,14 @@
 import { useFormik } from "formik";
-import { MockResource } from "../../../api/generated/MockResource";
+import { MockResource } from "../../../api/generated/mocker-config/MockResource";
 import { Paper, Grid, Typography, Stack, Button, Divider, TextField, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, Box, } from "@mui/material";
 import React from "react";
-import { MockRule } from "../../../api/generated/MockRule";
+import { MockRule } from "../../../api/generated/mocker-config/MockRule";
 import { appendInList, getFormattedComplexContentType, getFormattedCondition, getFormattedConditionByType, stringfyList } from "../../../util/utilities";
-import { Analyzed_content_typeEnum, Condition_typeEnum, Field_positionEnum, MockCondition } from "../../../api/generated/MockCondition";
+import { Analyzed_content_typeEnum, Condition_typeEnum, Field_positionEnum, MockCondition } from "../../../api/generated/mocker-config/MockCondition";
 import { ComplexContentTypeEnum } from "../../../util/constants";
 import { Add, CheckCircleOutline, Delete, HighlightOff } from "@mui/icons-material";
 import { ButtonNaked } from "@pagopa/mui-italia";
-import { MockResponse } from "../../../api/generated/MockResponse";
+import { MockResponse } from "../../../api/generated/mocker-config/MockResponse";
 
 type Props = {
   redirectToPreviousPage: () => void,

@@ -1,8 +1,8 @@
 import { useFormik } from "formik";
-import { Http_methodEnum, MockResource } from "../../../api/generated/MockResource";
+import { Http_methodEnum, MockResource } from "../../../api/generated/mocker-config/MockResource";
 import { Paper, Grid, Typography, Divider, Select, MenuItem, Switch, FormControl, Stack, Button, FormControlLabel, TextField, InputLabel, } from "@mui/material";
 import React from "react";
-import { MockResponse } from "../../../api/generated/MockResponse";
+import { MockResponse } from "../../../api/generated/mocker-config/MockResponse";
 
 type Props = {
   redirectToPreviousPage: () => void,

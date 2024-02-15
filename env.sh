@@ -9,9 +9,9 @@ echo "window._env_ = {" >> ./public/env-config.js
 # add them to env-config.js
 
 
-for mockconfig_var in $(env | grep -i REACT_APP); do
-    varname=$(printf '%s\n' "$mockconfig_var" | sed -e 's/=.*//')
-    varvalue=$(printf '%s\n' "$mockconfig_var" | sed -e 's/^[^=]*=//')
+for mocker_config_var in $(env | grep -i REACT_APP); do
+    varname=$(printf '%s\n' "$mocker_config_var" | sed -e 's/=.*//')
+    varvalue=$(printf '%s\n' "$mocker_config_var" | sed -e 's/^[^=]*=//')
 
     echo "  $varname: \"$varvalue\"," >> ./public/env-config.js
 done
