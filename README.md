@@ -1,6 +1,6 @@
-# API Config - FrontEnd
+# pagoPA Shared Toolbox
 
-The project is useful to configure the mocked responses used by Mocker service.
+The project is an aggregator of pagoPA platform application, make usable by a dedicated frontend interface.
 
 ## Prerequisites
 
@@ -24,8 +24,7 @@ The build is minified and the filenames include the hashes.
 
 ### `yarn generate`
 
-It generates the client API scripts able to interact with the backend APIs according to its Swagger.\
-See [here](https://github.com/pagopa/pagopa-mock-config-be/blob/main/openapi/openapi.json) for more details about.
+It generates the client API scripts able to interact with the backend APIs according to the Swagger defined for each application.\
 
 
 ### `yarn start`
@@ -38,6 +37,3 @@ It should be something like the following image
 
 The page will reload if you make edits and you will also see any lint errors in the console.
 
-### `yarn test`
-
-Launches the test created using [Jest](https://jestjs.io/).
