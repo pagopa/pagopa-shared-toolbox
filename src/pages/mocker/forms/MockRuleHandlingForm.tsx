@@ -56,6 +56,15 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
     return !isHttpStatusInvalid(values.status) /* ... */;
   }
 
+  const getFirstAvailableOrder = (mockResource?: MockResource) => {
+    const rulesWithoutParachute = mockResource?.rules.slice(0, length - 1) || [];
+    if (rulesWithoutParachute.length == 0) {
+      return 1;
+    } else {
+      return rulesWithoutParachute[rulesWithoutParachute.length - 1].order + 1;
+    }
+  }
+
   const checkIfRuleOrderIsAlreadyTaken = () => {
     let rules = mockResource?.rules;
     let ruleWithTakenOrder = rules?.find((rule) => (rule.order === formik.values.order && rule.id !== mockRule?.id));
@@ -144,7 +153,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
     } else {
       return {
         name: "",
-        order: -1,
+        order: getFirstAvailableOrder(mockResource),
         is_active: true,
         conditions: [],
         tags: [],
@@ -244,7 +253,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={2}>
-            <TextField id="order" label="Order" type="number" placeholder="0" value={formik.values.order} onChange={formik.handleChange} error={formik.touched.order && Boolean(formik.errors.order)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+            <TextField id="order" label="Order" type="number" value={formik.values.order} onChange={formik.handleChange} error={formik.touched.order && Boolean(formik.errors.order)} InputLabelProps={{ shrink: true }} inputProps={{ max: 9999, min: 1}} sx={{ width: "100%" }}/>
           </Grid>
           <Grid item xs={10}>
             <Typography variant="body2">{checkIfRuleOrderIsAlreadyTaken()}</Typography>
@@ -333,7 +342,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
         <Divider style={{ marginBottom: 20 }} />
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={2}>
-            <TextField id="status" label="Status code" type="number" placeholder="200" value={formik.values.status} onChange={formik.handleChange} error={formik.touched.status && Boolean(formik.errors.status)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+            <TextField id="status" label="Status code" type="number" placeholder="200" value={formik.values.status} onChange={formik.handleChange} error={formik.touched.status && Boolean(formik.errors.status)} InputLabelProps={{ shrink: true }} inputProps={{ max: 599, min: 200}} sx={{ width: "100%" }}/>
           </Grid>
           <Grid item xs={10}>
             <TextField id="injected_parameters" label="Injected parameters (split by comma)" placeholder="req.param1.value1, req.param2.value2, ..." value={formik.values.injected_parameters} onChange={formik.handleChange} error={formik.touched.injected_parameters && Boolean(formik.errors.injected_parameters)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>

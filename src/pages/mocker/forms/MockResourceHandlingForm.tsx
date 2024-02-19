@@ -3,6 +3,8 @@ import { Http_methodEnum, MockResource } from "../../../api/generated/mocker-con
 import { Paper, Grid, Typography, Divider, Select, MenuItem, Switch, FormControl, Stack, Button, FormControlLabel, TextField, InputLabel, } from "@mui/material";
 import React from "react";
 import { MockResponse } from "../../../api/generated/mocker-config/MockResponse";
+import { stringfyList } from "../../../util/utilities";
+
 
 type Props = {
   redirectToPreviousPage: () => void,
@@ -12,6 +14,9 @@ type Props = {
   mockResource?: MockResource
 };
 
+type FormikSupportData = {
+  stringified_special_headers: string
+}
 
 export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowModal, operation, setMockResource, mockResource}: Props) => {
   
@@ -19,7 +24,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
 
   const isHttpStatusInvalid = (value: number | undefined) => !value || value < 200 || value > 599
 
-  const validateFormData = (values: Partial<MockResource & MockResponse>) =>
+  const validateFormData = (values: Partial<MockResource & MockResponse & FormikSupportData>) =>
     Object.fromEntries(
       Object.entries({
         ...{
@@ -31,7 +36,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
     ).filter(([_key, value]) => value)
   );
 
-  const enableSubmit = (values: Partial<MockResource & MockResponse>) => {
+  const enableSubmit = (values: Partial<MockResource & MockResponse & FormikSupportData>) => {
     if (operation === "EDIT") {
       return !isStringInvalid(values.name);
     } else {
@@ -39,20 +44,21 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
     }
   }
 
-  const initialFormData = (mockResource?: MockResource): MockResource & MockResponse => {
+  const initialFormData = (mockResource?: MockResource): MockResource & MockResponse & FormikSupportData => {
     if (operation === 'EDIT' && mockResource) {
       return {
         name: mockResource!.name,
         subsystem: mockResource!.subsystem,
         resource_url: mockResource!.resource_url,
         http_method: mockResource!.http_method,
-        soap_action: mockResource!.soap_action,
         is_active: mockResource!.is_active,
         rules: mockResource!.rules,
         tags: mockResource!.tags,
+        special_headers: mockResource!.special_headers,
         status: 0,
         headers: [],
-        injected_parameters: [],    
+        injected_parameters: [], 
+        stringified_special_headers: stringfyList(mockResource!.special_headers, (header) => `${header.name}:${header.value}`),
       };
     } else {
       return {
@@ -60,6 +66,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
         http_method: Http_methodEnum.GET,
         is_active: true,
         subsystem: "",
+        special_headers: [],
         rules: [
           {
             name: "Parachute Rule",
@@ -77,7 +84,8 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
         tags: [],
         status: 200,
         headers: [],
-        injected_parameters: [],      
+        injected_parameters: [],
+        stringified_special_headers: "",
       };
     }
   };  
@@ -88,7 +96,6 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
     let mockResource = formik.values;
     mockResource.subsystem = `/${mockResource.subsystem}/`.replace(/\/\//g, "/");
     mockResource.resource_url = `/${mockResource.resource_url}/`.replace(/\/\//g, "/");
-    console.log("urls:", mockResource.subsystem, mockResource.resource_url);
 
     // set tags
     if (mockResource.tags.length > 0 && typeof mockResource.tags === 'string') {
@@ -102,6 +109,17 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
       // set parachute body
       let body = mockResource.body;
       mockResource.rules[0].response.body = btoa(body ? body : '');
+
+      // set special headers
+      let stringifiedSpecialHeaders = formik.values.stringified_special_headers;
+      if (stringifiedSpecialHeaders.length > 0) {
+        let rawHeaders = stringifiedSpecialHeaders.split(",").map(tag => tag.trim());
+        let headers = rawHeaders.map(header => {
+          let split = header.split(":");
+          return {name: split[0], value: split[1]};
+        });
+        mockResource.special_headers = headers;
+      }
 
       // set parachute response headers
       if (mockResource.headers.length > 0 && typeof mockResource.headers === 'string') {
@@ -124,7 +142,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
     onSubmitShowModal();
   }
 
-  const formik = useFormik<MockResource & MockResponse>({
+  const formik = useFormik<MockResource & MockResponse & FormikSupportData>({
     initialValues: initialFormData(mockResource),
     validate: validateFormData,
     onSubmit: () => {},
@@ -149,16 +167,16 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
           </Grid>
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
-          <Grid item xs={4}>
+          <Grid item xs={5}>
             <TextField id="subsystem" label="Resource subsystem" placeholder="/subsystem/path" disabled={operation === "EDIT"} required={true} value={formik.values.subsystem} onChange={formik.handleChange} error={formik.touched.subsystem && Boolean(formik.errors.subsystem)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={5}>
             <TextField id="resource_url" label="Resource URL" placeholder="/path/to/resource?params" disabled={operation === "EDIT"} value={formik.values.resource_url} onChange={formik.handleChange} error={formik.touched.resource_url && Boolean(formik.errors.resource_url)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
           </Grid>
           <Grid item xs={2}>
             <FormControl fullWidth key={`http_method`}>
               <InputLabel>HTTP Method</InputLabel>
-              <Select id="http_method" disabled={operation === "EDIT"} required={true} value={formik.values.http_method} onChange={(e) => {formik.setFieldValue('http_method', e.target.value); console.log("-dff.ds", formik.values.http_method)}} error={formik.touched.http_method && Boolean(formik.errors.http_method)}>
+              <Select id="http_method" disabled={operation === "EDIT"} required={true} value={formik.values.http_method} onChange={(e) => {formik.setFieldValue('http_method', e.target.value)}} error={formik.touched.http_method && Boolean(formik.errors.http_method)}>
                 {Object.keys(Http_methodEnum).map((method) => (
                   <MenuItem key={method} value={method}>
                     {method}
@@ -167,8 +185,10 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={3}>
-            <TextField id="soap_action" label="SOAP action" placeholder="SOAPAction" disabled={operation === "EDIT"} value={formik.values.soap_action} onChange={formik.handleChange} error={formik.touched.soap_action && Boolean(formik.errors.soap_action)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+        </Grid>
+        <Grid container alignItems={"center"} spacing={1} mb={2}>
+          <Grid item xs={12}>
+            <TextField id="stringified_special_headers" label="Special Headers" placeholder="SOAPAction:x, X-Host-Url:y, ..." disabled={operation === "EDIT"} value={formik.values.stringified_special_headers} onChange={formik.handleChange} error={formik.touched.stringified_special_headers && Boolean(formik.errors.stringified_special_headers)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
           </Grid>
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>

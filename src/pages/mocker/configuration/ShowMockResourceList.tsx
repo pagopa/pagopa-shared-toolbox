@@ -101,7 +101,6 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
         .then((response) => {
 
           if (response !== undefined && isErrorResponse(response)) {
-            console.log("res: ", response);
             const problemJson = response as ProblemJson;
             if (problemJson.status === 404) {
               toastError(`No mock resource found with id ${this.state.targetResource}.`);
@@ -154,8 +153,8 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
       <Grid container item xs={12}>
         <Grid item xs={12} display="flex" flexDirection="column" pb={8} px={3}>
           <Grid container alignItems={'center'} spacing={0}>
-            <Grid item xs={11} alignItems={'center'} mb={2}>
-              <Typography variant="h3" sx={{fontWeight: 'bold', textAlign: "center", color: "#1976d2"}}>Mock Resources</Typography>
+            <Grid item xs={11} alignItems={'center'}>
+              <Typography variant="h4">Mock Resources</Typography>
             </Grid>
             <Grid item xs={1}>
               <ButtonNaked size="large" component="button" onClick={() => this.redirectToCreateMockResource()} startIcon={<Add/>} sx={{ fontSize: '18px', color: 'primary.main'}} weight="default">
@@ -172,7 +171,7 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
                 disableSelectionOnClick
                 autoHeight={true}
                 className="CustomDataGrid"
-                columnBuffer={6}
+                columnBuffer={2}
                 columns={this.columns}
                 components={{
                   Pagination: () =>

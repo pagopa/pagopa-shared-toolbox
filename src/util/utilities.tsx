@@ -2,6 +2,7 @@ import React from "react";
 import { toast } from "react-toastify";
 import { Condition_typeEnum, MockCondition } from "../api/generated/mocker-config/MockCondition";
 import { ComplexContentTypeEnum } from "./constants";
+import { Http_methodEnum, MockResource } from "../api/generated/mocker-config/MockResource";
 
 export const appendInList = (list: readonly any[], value: any): any[] => {
   var newList = [];
@@ -17,6 +18,20 @@ export const stringfyList = (list: readonly any[], mapValue?: (value: any) => st
     return list.map((value) => mapValue(value)).join(", ");
   }
   return list.join(", ");
+}
+
+export const generateCURLRequest = (url: string, request?: MockResource): string => {
+  let curl = `curl -X ${request?.http_method} \\\n--location '${url}'`;
+  if (request?.special_headers) {
+    request?.special_headers.forEach((header) => {
+      curl += ` \\\n--header '${header.name}: ${header.value}'`;
+    });
+  }
+  if (request?.http_method !== Http_methodEnum.GET && request?.http_method !== Http_methodEnum.DELETE) {
+    curl += ` \\\n--header 'content-type: text'`;
+    curl += ` \\\n--data 'write-here-your-body'`;
+  }
+  return curl;
 }
 
 export const toastError = (message: string) => {

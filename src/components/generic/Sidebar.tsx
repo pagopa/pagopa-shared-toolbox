@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import {Link} from "react-router-dom";
 import SidebarItems from "./SidebarItems";
 // eslint-disable-next-line 
@@ -23,10 +22,6 @@ interface IState {
         mocker: boolean;
         authorizer: boolean;
     };
-    versions: {
-        mocker: string;
-        mockerConfig: string;
-    };
 }
 
 
@@ -39,10 +34,6 @@ export default class Sidebar extends React.Component<IProps, IState> {
             domains: {
                 mocker: true,
                 authorizer: false
-            },
-            versions: {
-                mocker: "",
-                mockerConfig: "",
             }
         };
     }
@@ -68,9 +59,6 @@ export default class Sidebar extends React.Component<IProps, IState> {
                 });
             }
         });
-
-        this.getMockerInfo();
-        this.getMockerConfigInfo();
     }
 
     handleAccordion(activeIndex: any) {
@@ -92,30 +80,6 @@ export default class Sidebar extends React.Component<IProps, IState> {
             domains[key] = key === domain;
             this.setState({domains});
         });
-    }
-
-    getMockerInfo(): void {
-        axios.get(`${env.MOCKER.HOST}/mocker/info`)
-        .then((res) => {
-            if (res.status === 200) {
-                let versions = this.state.versions;
-                versions.mocker = res.data.version;
-                this.setState({ versions });
-            }
-        })
-        .catch(() => {});
-    }
-
-    getMockerConfigInfo(): void {
-        axios.get(`${env.MOCKERCONFIG.HOST}${env.MOCKERCONFIG.BASEPATH}/info`)
-        .then((res) => {
-            if (res.status === 200) {
-                let versions = this.state.versions;
-                versions.mockerConfig = res.data.version;
-                this.setState({ versions });
-            }
-        })
-        .catch(() => {});
     }
 
 
@@ -201,8 +165,6 @@ export default class Sidebar extends React.Component<IProps, IState> {
                 </Accordion>
                 <div className={"info-box"}>
                     <div>Portal version: {packageJson.version} </div>
-                    <div>Mock configurator version: {this.state.versions.mockerConfig} </div>
-                    <div>Mocker version: {this.state.versions.mocker} </div>
                     Made with ❤️ by PagoPA S.p.A.
                 </div>
             </>
