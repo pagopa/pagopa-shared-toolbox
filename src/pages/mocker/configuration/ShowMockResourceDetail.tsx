@@ -112,7 +112,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
             const problemJson = response as ProblemJson;
             if (problemJson.status === 404) {
               toastError(`No mock resource found with id ${this.state.mockResource?.id!}.`);
-            } else if (problemJson.status === 404) {
+            } else if (problemJson.status === 400) {
               toastError(`There are three or more rules with same order, the swap is not possible.`);
             } else if (problemJson.status === 500) {
               toastError(`An error occurred while updating general info for mock resource.`);
