@@ -4,6 +4,7 @@ import { Paper, Grid, Typography, Divider, Select, MenuItem, Switch, FormControl
 import React from "react";
 import { MockResponse } from "../../../api/generated/mocker-config/MockResponse";
 import { stringfyList } from "../../../util/utilities";
+import { getInjectedParameterTooltip, getSpecialHeadersTooltip } from "../../../util/tooltips";
 
 
 type Props = {
@@ -188,7 +189,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={12}>
-            <TextField id="stringified_special_headers" label="Special Headers" placeholder="SOAPAction:x, X-Host-Url:y, ..." disabled={operation === "EDIT"} value={formik.values.stringified_special_headers} onChange={formik.handleChange} error={formik.touched.stringified_special_headers && Boolean(formik.errors.stringified_special_headers)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+            <TextField id="stringified_special_headers" label={<>Special Headers (split by comma) {getSpecialHeadersTooltip()}</>} placeholder="SOAPAction:value1, X-Host-Url:value2, ..." disabled={operation === "EDIT"} value={formik.values.stringified_special_headers} onChange={formik.handleChange} error={formik.touched.stringified_special_headers && Boolean(formik.errors.stringified_special_headers)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
           </Grid>
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
@@ -214,7 +215,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
               <TextField id="status" label="Status code" type="number" placeholder="200" value={formik.values.status} onChange={formik.handleChange} error={formik.touched.status && Boolean(formik.errors.status)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
             </Grid>
             <Grid item xs={10}>
-              <TextField id="injected_parameters" label="Injected parameters (split by comma)" placeholder="req.param1.value1, req.param2.value2, ..." value={formik.values.injected_parameters} onChange={formik.handleChange} error={formik.touched.injected_parameters && Boolean(formik.errors.injected_parameters)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+              <TextField id="injected_parameters" label={<>Injected parameters (split by comma) {getInjectedParameterTooltip()}</>} placeholder="req.param1.value1, req.param2.value2, ..." value={formik.values.injected_parameters} onChange={formik.handleChange} error={formik.touched.injected_parameters && Boolean(formik.errors.injected_parameters)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
             </Grid>
           </Grid>
           <Grid container alignItems={"center"} spacing={1} mb={2}>
@@ -224,7 +225,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
           </Grid>
           <Grid container alignItems={"center"} spacing={1} mb={2}>
             <Grid item xs={12}>
-              <TextField id="body" multiline label="Parachute body response (in string, XML or JSON)" rows={20} value={formik.values.body} onChange={formik.handleChange} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
+              <TextField id="body" multiline label="Parachute body response (in string, XML or JSON)" rows={20} value={formik.values.body} onChange={formik.handleChange} InputProps={{ sx: {fontSize: '8px', typography: 'caption'} }} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
             </Grid>
           </Grid>
         </Paper>

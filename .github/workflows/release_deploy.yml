@@ -90,7 +90,7 @@ jobs:
     steps:
       - name: Make Release
         id: release
-        uses: pagopa/github-actions-template/node-release@v1.6.6
+        uses: pagopa/github-actions-template/node-release@d2952cbcfaf4708ff5aeabdacf24056d082b8034
         with:
           semver: ${{ needs.setup.outputs.semver }}
           github_token: ${{ secrets.BOT_TOKEN_GITHUB }}

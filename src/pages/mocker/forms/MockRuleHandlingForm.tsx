@@ -9,6 +9,7 @@ import { ComplexContentTypeEnum } from "../../../util/constants";
 import { Add, CheckCircleOutline, Delete, HighlightOff } from "@mui/icons-material";
 import { ButtonNaked } from "@pagopa/mui-italia";
 import { MockResponse } from "../../../api/generated/mocker-config/MockResponse";
+import { getInjectedParameterTooltip, getRuleConditionTooltip } from "../../../util/tooltips";
 
 type Props = {
   redirectToPreviousPage: () => void,
@@ -185,7 +186,9 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
     
     // set response headers
     let headers = formikValues.headers;
-    if (headers.length > 0 && typeof headers === 'string') {
+    if (headers.length === 0) {
+      headers = [];
+    } else if (headers.length > 0 && typeof headers === 'string') {
       let rawHeaders = (formikValues.headers as unknown as string).split(",").map(tag => tag.trim());
       let splitHeaders = rawHeaders.map(header => {
         let split = header.split(":");
@@ -194,9 +197,11 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
       headers = splitHeaders;
     }
 
-    // set parachute response headers
+    // set parachute injected params
     let injected_parameters = formikValues.injected_parameters;
-    if (injected_parameters.length > 0 && typeof injected_parameters === 'string') {
+    if (injected_parameters.length === 0) {
+      injected_parameters = [];
+    } else if (injected_parameters.length > 0 && typeof injected_parameters === 'string') {
       injected_parameters = (injected_parameters as unknown as string).split(",").map(tag => tag.trim());
     }
 
@@ -272,7 +277,10 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
       <Paper elevation={8} sx={{ marginBottom: 2, borderRadius: 4, p: 4 }}>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={11}>
-            <Typography variant="h5">Conditions</Typography>
+            <Typography variant="h5">
+              Conditions
+              {getRuleConditionTooltip()}
+            </Typography>
           </Grid>
         </Grid>
         <Divider style={{ marginBottom: 20 }} />
@@ -345,7 +353,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
             <TextField id="status" label="Status code" type="number" placeholder="200" value={formik.values.status} onChange={formik.handleChange} error={formik.touched.status && Boolean(formik.errors.status)} InputLabelProps={{ shrink: true }} inputProps={{ max: 599, min: 200}} sx={{ width: "100%" }}/>
           </Grid>
           <Grid item xs={10}>
-            <TextField id="injected_parameters" label="Injected parameters (split by comma)" placeholder="req.param1.value1, req.param2.value2, ..." value={formik.values.injected_parameters} onChange={formik.handleChange} error={formik.touched.injected_parameters && Boolean(formik.errors.injected_parameters)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+            <TextField id="injected_parameters" label={<>Injected parameters (split by comma) {getInjectedParameterTooltip()}</>} placeholder="req.param1.value1, req.param2.value2, ..." value={formik.values.injected_parameters} onChange={formik.handleChange} error={formik.touched.injected_parameters && Boolean(formik.errors.injected_parameters)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
           </Grid>
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
@@ -355,7 +363,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={12}>
-            <TextField id="body" multiline label="Body response (in string, XML or JSON)" rows={20} value={formik.values.body} onChange={formik.handleChange} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
+            <TextField id="body" multiline label="Body response (in string, XML or JSON)" rows={20} value={formik.values.body} onChange={formik.handleChange} InputProps={{ sx: {fontSize: '8px', typography: 'caption'} }} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
           </Grid>
         </Grid>    
 

@@ -153,9 +153,9 @@ export default class EditMockResource extends React.Component<IProps, IState> {
   render(): React.ReactNode {
     this.redirectOnSuccess();
     return (
-      <Grid container mb={11}>
-        <Grid item p={3} xs={11}>
-          <Stack direction="row" mt={2}>
+      <Grid container mb={12}>
+        <Grid item xs={12}>
+          <Stack direction="row">
             <ButtonNaked size="small" component="button" onClick={() => this.redirectToPreviousPage()} startIcon={<ArrowBack/>} sx={{color: 'primary.main', mr: '20px'}} weight="default">
               Back
             </ButtonNaked>

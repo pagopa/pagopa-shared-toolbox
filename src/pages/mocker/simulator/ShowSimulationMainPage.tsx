@@ -1,319 +1,273 @@
 import React from "react";
-import axios, { Method } from "axios";
-import base64 from 'react-native-base64'
-import { Accordion, Button, Card, Form } from "react-bootstrap";
-import { FaCopy, FaPlus, FaSpinner, FaTrash } from "react-icons/fa";
-import { toast } from "react-toastify";
 import { ENV as env } from "../../../util/env";
+import { Box, Divider, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Stack, TextField, Typography } from "@mui/material";
+import { Http_methodEnum } from "../../../api/generated/mocker-config/MockResource";
+import Title from "../../../components/pages/Title";
+import { ButtonNaked } from "@pagopa/mui-italia";
+import { ArrowBack, Send } from "@mui/icons-material";
+import axios from "axios";
+import { getFormattedBody } from "../../../util/utilities";
+
 
 interface IProps {
-    history: {
-      push(url: string): void;
-    };
-    location: any
-  }
+  match: {
+    params: Record<string, unknown>;
+  };
+  history: {
+    push(url: string): void;
+    goBack(): void;
+  };
+  location: any;
+}
   
-  interface IState {
-    isLoading: boolean;
-    simulationManagement: {
-      httpMethod: string,
-      root: string,
-      resourceUrl: string,
-      headers: any,
-      body: string,
-      headerKey: string,
-      headerValue: string,
-    },
-    response: {
-      body: string,
-      status: number,
-      headers: any,
-      time: number
-    }
-  }
+interface IState {
+  isLoading: boolean;
+  simulation: {
+    httpMethod: string,
+    root: string,
+    url: string,
+    headers?: string,
+    body?: string
+  },
+  response: IResponse
+}
+
+interface IResponse {
+  body: string,
+  status: number,
+  headers: any,
+  time: number
+}
 
 export default class ShowSimulationMainPage extends React.Component<IProps, IState> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            isLoading: false,
-            simulationManagement: {
-              httpMethod: "GET",
-              root: env.MOCKER.BASEPATH,
-              resourceUrl: "",
-              headers: {},
-              body: "",
-              headerKey: "",
-              headerValue: "",
-            },
-            response: {
-              body: "",
-              status: -1,
-              headers: {},
-              time: -1
-            }
-        }
-        let queryParam = new URLSearchParams(props.location.search).get("url");
-        if (queryParam !== null) {
-          this.state.simulationManagement.resourceUrl = base64.decode(queryParam).replace(/^.*\/mocker\//g, "");
-        }
+
+  httpMethodRegEx = new RegExp(/-X (.*) \\/gm);
+  locationRegEx = new RegExp(/--location '(.*)'/gm);
+  headerRegEx = new RegExp(/--header '(.*)'/gm);
+  bodyRegEx = new RegExp(/--data '([\s\S\n\t]*)'/gm);
+
+  constructor(props: IProps) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      simulation: {
+        httpMethod: "GET",
+        root: env.MOCKER.HOST + env.MOCKER.BASEPATH,
+        url: "",
+      },
+      response: {
+        body: "",
+        status: 0,
+        headers: [],
+        time: 0
+      }
+    }
+  }
+
+
+
+  sendRequestToMocker() {
+    let headers = {
+      "X-Source-Client": "pagopa-shared-toolbox"
+    };
+
+    const headerList = this.state.simulation.headers?.split(",");
+    headerList?.forEach((header) => {
+      const headerContent = header.trim().split(":");
+      (headers as any)[headerContent[0]] = headerContent[1];
+    })
+
+    axios.request({
+      baseURL: this.state.simulation.root,
+      url: this.state.simulation.url,
+      method: this.state.simulation.httpMethod,
+      data: this.state.simulation.body,
+      headers: headers
+    })
+    .then((res) => {
+      let response = {
+        body: res.data,
+        status: res.status,
+        headers: res.headers,
+        time: 0
+      }
+      this.setState({response});
+      console.log(this.state.response);
+    })
+    .catch((res) => {
+      let response = {
+        body: res.response.data,
+        status: res.response.status,
+        headers: res.response.headers,
+        time: 0
+      }
+      this.setState({response});
+      console.log(this.state.response);
+    });
+  }
+
+
+
+  isStringInvalid = (value: string | undefined) => !value || value === "";
+
+  initFromCURL(cURL: string) {
+    let simulation = this.state.simulation;
+    // set URL
+    let decodedCURL = atob(cURL);
+    var match;
+    while (match = this.locationRegEx.exec(decodedCURL)) {
+      simulation.url = match[1];
+    }
+    simulation.url = simulation.url.replace(env.MOCKER.HOST, "");
+    simulation.url = simulation.url.replace(env.MOCKER.BASEPATH, "");
+    // set HTTP method
+    while (match = this.httpMethodRegEx.exec(decodedCURL)) {
+      simulation.httpMethod = match[1];
+    }
+    // set headers
+    let headers = [];
+    while (match = this.headerRegEx.exec(decodedCURL)) {
+      headers.push(match[1]);
+    }
+    simulation.headers = headers.join(", ");
+    // set body
+    while (match = this.bodyRegEx.exec(decodedCURL)) {
+      simulation.body = match[1];
+      simulation.body = atob(simulation.body);
     }
 
-      toastError(message: string) {
-        toast.error(() => <div className={"toast-width"}>{message}</div>, {
-          theme: "colored",
-        });
-      }
+    this.setState({ simulation });
+  }
 
-      toastOK(message: string) {
-        toast.success(() => <div className={"toast-width"}>{message}</div>, {
-          theme: "colored",
-        });
-      }
+  setField(name: string, value?: unknown) {
+    let simulation = this.state.simulation;
+    (simulation as any)[name] = value;
+    this.setState({ simulation });
+  }
 
-      validateRequestFields(): boolean {
-        let simulation = this.state.simulationManagement;
-        return (
-          (simulation.httpMethod !== "") &&
-          (simulation.resourceUrl.trim() !== "")
-        );
-      }
-    
-      generateAndCopyCURL(): string {
-        let request = this.state.simulationManagement;
-        console.log("headers: " + JSON.stringify(request.headers));
-        let curl = `curl -X ${request.httpMethod} --location '${request.root}${request.resourceUrl}'`;
-        Object.keys(request.headers).forEach((key) => {
-          curl += ` \\\n--header '${key}: ${request.headers[key]}'`;
-        });
-        if (request.body !== "") {
-          curl += ` \\\n--data '${request.body}'`;
-        }
-        navigator.clipboard.writeText(curl);
-        this.toastOK("Generated cURL copied to clipboard!");
-        return curl;
-      }
 
-      handleChange(event: any): void {
-        const key = event.target.name as string;
-        const value = event.target.value;
-        let simulationManagement = this.state.simulationManagement;
-        simulationManagement = {...simulationManagement, [key]: value};
-        this.setState({simulationManagement});         
-      }
 
-      addHeader(): void {
-        let simulationManagement = this.state.simulationManagement;
-        simulationManagement.headers[simulationManagement.headerKey] = simulationManagement.headerValue;
-        simulationManagement.headerKey = "";
-        simulationManagement.headerValue = "";
-        this.setState({simulationManagement}); 
+  getFormattedResponse = (response: IResponse) => {
+    let headers: any = [];
+    Object.keys(response.headers).forEach((headerName: string) => {
+      if (!headerName.startsWith("access-control-")) {
+        headers.push(
+          <Typography variant="body2" sx={{ fontSize: '14px'}}>
+            <b>{headerName}: </b><Typography variant="caption" sx={{ fontSize: '14px'}}>{response.headers[headerName]}</Typography>
+          </Typography>
+        )
       }
+    });
+    return (
+      <Box>
+          <Typography variant="body2" sx={{ fontSize: '14px'}}>
+            <b>Status:</b> <Typography variant="caption" sx={{ fontSize: '14px'}}>{response.status}</Typography>
+          </Typography>
+          <Divider/>
+          {headers}
+      </Box>
+    );
+  }
 
-      removeHeader(header: any): void {
-        let simulationManagement = this.state.simulationManagement;
-        delete simulationManagement.headers[header];
-        this.setState({simulationManagement}); 
-      }
 
-      sendRequest(): void {
-        this.setState({isLoading: true});
-        let request = this.state.simulationManagement;
-        // defining time counting in interceptor
-        axios.interceptors.request.use(function (config) {
-          if (config.headers !== undefined) {
-            config.headers['request-startTime'] = new Date().getTime().toString();
-          }
-          return config;
-        }, function (error) {
-          return Promise.reject(error);
-        });
-        axios.interceptors.response.use(function (response) {
-          const currentTime = new Date().getTime();
-          if (response.config.headers !== undefined) {
-            const startTime = Number.parseInt(response.config.headers['request-startTime']);
-            response.headers['request-duration'] = (currentTime - startTime).toString();
-          }              
-          return response;
-        }, function (error) {
-          return Promise.reject(error);
-        });
-        // executing request to Mocker
-        axios.request({
-          method: request.httpMethod.toLowerCase() as Method,
-          url: request.resourceUrl,
-          baseURL: request.root,
-          data: request.body,
-          headers: request.headers
-        }).then((res) => {
-          let body = res.data;
-          const time = Number.parseInt(res.headers['request-duration']);
-          let headers = res.headers;
-          delete headers['request-duration'];          
-          if (res.headers["content-type"] === "application/json") {
-            body = JSON.stringify(body);
-          } else if (res.headers["content-type"] === "application/xml" || res.headers["content-type"] === "text/xml") {
-            body = (body as string).replace(/\\"/g, '"').replace(/\n/g, '\n');
-          }          
-          let response = {
-            body: body,
-            status: res.status,
-            headers: headers,
-            time: time
-          };
-          this.setState({ response });
-        })
-        .catch(() => {
-          this.toastError("An error occurred while executing the simulation...");
-        })
-        .finally(() => {
-          this.setState({isLoading: false});
-        });
-      }
 
-      componentDidMount(): void {
-      }
-    
-      render(): React.ReactNode {
-        let simulation = this.state.simulationManagement;
-        return (
-          <div className="container-fluid mock-resources">
-            <div className="row">
-              <h1>Simulate Mocker behavior</h1>
-            </div>
-            <Accordion>
-              <Card>
-                <Card.Header>
-                  <h5>Request</h5>
-                </Card.Header>
-                
-                  <Card.Body>
-                    <div className="row">
-                      <Form.Group controlId="httpMethod" className="col-md-1">
-                        <Form.Label>Method<span className="text-danger">*</span>:</Form.Label>
-                        <Form.Control as="select" name="httpMethod" defaultValue="" value={simulation.httpMethod} onChange={(e) => this.handleChange(e)} >
-                          <option value="GET">GET</option>
-                          <option value="POST">POST</option>
-                          <option value="PUT">PUT</option>
-                          <option value="DELETE">DELETE</option>
-                          <option value="HEAD">HEAD</option>
-                          <option value="OPTIONS">OPTIONS</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group className="col-md-5">
-                        <Form.Label>URL root path:</Form.Label>
-                        <Form.Control name="root" value={simulation.root} readOnly/>
-                      </Form.Group>
-                      <Form.Group className="col-md-6">
-                        <Form.Label>Resource URL<span className="text-danger">*</span>:</Form.Label>
-                        <Form.Control name="resourceUrl" value={simulation.resourceUrl} placeholder="path/to/resource" onChange={(e) => this.handleChange(e)} />
-                      </Form.Group>
-                    </div>
-                    <div className="row">
-                      <Form.Group controlId="headers" className="col-md-12">
-                        <Form.Label>Request headers:</Form.Label>
-                        <div className="row">
-                          <div className="col-md-3">
-                            <Form.Control name="headerKey" value={simulation.headerKey} placeholder="Header Key" onChange={(e) => this.handleChange(e)} />  
-                          </div>
-                          <div className="col-md-3">
-                            <Form.Control name="headerValue" value={simulation.headerValue} placeholder="Header Value" onChange={(e) => this.handleChange(e)} />  
-                          </div>
-                          <div>
-                            <Button className="float-md-right"	onClick={() => this.addHeader()} disabled={ simulation.headerKey.trim() === "" }><FaPlus/></Button>
-                          </div>
-                        </div>
-                      </Form.Group>
-                    </div>
-                    <div className="row">
-                      <Form.Group controlId="addedHeaders" className="col-md-12">
-                        <Form.Label>Added headers:</Form.Label>
-                        <div>
-                          { 
-                            (Object.keys(simulation.headers).length === 0) && 
-                            <span>No added headers</span> 
-                          }
-                          { 
-                            (Object.keys(simulation.headers).length !== 0) &&
-                            (
-                              Object.keys(simulation.headers).map((header: any, key: any) => {
-                                return (
-                                  <Card key={key}>
-                                    <Card.Body>
-                                      <div className="col-md-12">
-                                        {header}: {simulation.headers[header]}
-                                        <Button className="float-md-right"	onClick={() => this.removeHeader(header)}>
-                                          <FaTrash/>
-                                        </Button>
-                                      </div>
-                                    </Card.Body>
-                                  </Card>
-                                );
-                              })
-                            )                   
-                          }
-                        </div>
-                      </Form.Group>
-                    </div> 
-                    <div className="row">
-                      <Form.Group controlId="body" className="col-md-12">
-                        <Form.Label>Request body:</Form.Label>
-                        <Form.Control as="textarea" name="body" rows={15} value={simulation.body} onChange={(e) => this.handleChange(e)} />
-                      </Form.Group>
-                    </div>
-                    <div className="row mt-3">
-                      <Button className="ml-2 float-md-right" variant="primary" onClick={() => this.sendRequest()} disabled={!this.validateRequestFields()}>Send Request</Button> 
-                      <Button className="ml-2 float-md-right" variant="primary" onClick={() => this.generateAndCopyCURL()} disabled={!this.validateRequestFields()}>Copy cURL <FaCopy /></Button> 
-                    </div>
-                  </Card.Body>
-              </Card>
-              <Card>
-                
+  redirectToPreviousPage() {
+    this.props.history.goBack();
+  }
 
-              <Accordion.Item as={Card.Header} eventKey={"simulationResponse"}>
-                <Accordion.Header>
-                  <h5>Response</h5>
-                  </Accordion.Header>
-                <Accordion.Body>
-                  { this.state.isLoading && (<div className="text-center"><FaSpinner className="spinner" size={28}/></div>)}
-                  {
-                    !this.state.isLoading &&
-                    <Card.Body>
-                      <div className="row">
-                        <Form.Group controlId="responseBody" className="col-md-6">
-                          {
-                            (Object.keys(this.state.response?.headers).length > 0) &&
-                            <Form.Label>Headers:</Form.Label>
-                          }
-                          { 
-                            (Object.keys(this.state.response?.headers).length > 0) &&
-                            (
-                              Object.keys(this.state.response.headers).map((header: any, _key: any) => {
-                                return (    
-                                  <div className="col-md-12">
-                                    {header}: {this.state.response.headers[header]}
-                                  </div>
-                                );
-                              })
-                            )                   
-                          }
-                        </Form.Group>
-                      </div>
-                      <div className="row">
-                        <Form.Group controlId="responseBody" className="col-md-12">
-                          { this.state.response.status !== -1 &&
-                            <Form.Label>Status: {this.state.response.status} [Executed in {this.state.response.time} ms]</Form.Label>
-                          }                            
-                          <Form.Control as="textarea" name="body" rows={15} value={this.state.response.body} readOnly />
-                        </Form.Group>
-                      </div>
-                    </Card.Body>
-                  }
-                </Accordion.Body>
-              </Accordion.Item>
-              </Card>
-            </Accordion>
-          </div>
-        );
-      }
+
+
+  componentDidMount(): void {
+    const query = new URLSearchParams(location.href.split('?')[1]);
+    const cURL = query.get('curl');
+    if (cURL !== null) {
+      this.initFromCURL(cURL);
+    }
+  }
+
+
+
+  render(): React.ReactNode {
+      return (
+        <Grid container mb={12}>
+          <Grid item xs={12}>
+            <Stack direction="row">
+              <ButtonNaked size="small" component="button" onClick={() => this.redirectToPreviousPage()} startIcon={<ArrowBack/>} sx={{color: 'primary.main', mr: '20px'}} weight="default">
+                Back
+              </ButtonNaked>
+            </Stack>
+            <Grid container mt={3}>
+              <Grid item xs={11} mb={2}>
+                <Title title="Simulate mocking process" mbTitle={1} variantTitle="h4"/>
+              </Grid>            
+            </Grid>
+
+            <Paper elevation={8} sx={{ marginBottom: 2, borderRadius: 4, p: 4 }}>
+              <Grid container alignItems={'center'} spacing={0} mb={2}>
+                <Grid item xs={11}>
+                  <Typography variant="h5">Request</Typography>
+                </Grid>
+                <Grid item xs={1}>
+                  <ButtonNaked size="small" component="button" onClick={() => this.sendRequestToMocker()} startIcon={<Send/>} sx={{color: 'green', mr: '20px'}} weight="default">Send</ButtonNaked>
+                </Grid>
+              </Grid>
+              <Divider style={{marginBottom: 20}}/>
+              <Grid container alignItems={"center"} spacing={1} mb={2}>
+                <Grid item xs={3}>
+                <TextField id="mocker_url" label="Mocker URL" disabled={true} value={this.state.simulation.root} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+                </Grid>
+                <Grid item xs={7}>
+                  <TextField id="subsystem" label="URL" placeholder="/resource/path" required={true} value={this.state.simulation.url} onChange={(event) => this.setField("url", event.target.value)} error={this.isStringInvalid(this.state.simulation.url)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+                </Grid>
+                <Grid item xs={2}>
+                  <FormControl fullWidth key={`http_method`}>
+                    <InputLabel>HTTP Method</InputLabel>
+                    <Select id="http_method" required={true} value={this.state.simulation.httpMethod} onChange={(event) => this.setField("httpMethod", event.target.value)}>
+                      {Object.keys(Http_methodEnum).map((method) => (
+                        <MenuItem key={method} value={method}>
+                          {method}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <Grid container alignItems={"center"} spacing={1} mb={2}>
+                <Grid item xs={12}>
+                  <TextField id="headers" label="Headers (split by comma)" placeholder="header1:value, header2:value, ..." value={this.state.simulation.headers} onChange={(event) => this.setField("headers", event.target.value)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+                </Grid>
+              </Grid>
+              <Grid container alignItems={"center"} spacing={1} mb={2}>
+                <Grid item xs={12}>
+                  <TextField id="body" multiline label="Request (in string, XML or JSON)" rows={15} value={this.state.simulation.body} onChange={(event) => this.setField("body", event.target.value)} InputProps={{ sx: {fontSize: '8px', typography: 'caption'} }} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
+                </Grid>
+              </Grid>
+            </Paper>
+            
+            <Paper elevation={8} sx={{ marginBottom: 2, borderRadius: 4, p: 4 }}>
+              <Grid container alignItems={'center'} spacing={0} mb={2}>
+                <Grid item xs={12}>
+                  <Typography variant="h5">Response</Typography>
+                </Grid>
+              </Grid>
+              <Divider style={{marginBottom: 20}}/>
+              {
+                this.state.response.status > 0 &&
+                <Grid container alignItems={'center'} spacing={0} mb={2}>
+                  <Grid item sx={{ width: '100%' }}>
+                    <Box sx={{ width: '100%', marginBottom: 2, borderRadius: 4, p: 1, backgroundColor: '#f6f6f6', typography: 'caption' }}>
+                      {this.getFormattedResponse(this.state.response)}
+                      <Box sx={{ marginBottom: 1, marginTop: 1, borderRadius: 4, p: 1, backgroundColor: 'white', fontSize: '8px', typography: 'caption', whiteSpace: 'pre-wrap' }}>
+                        {getFormattedBody(this.state.response.body, false)}
+                      </Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+              }
+            </Paper>
+          </Grid>
+        </Grid>
+      );
+    }
 }
+
