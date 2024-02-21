@@ -31,7 +31,7 @@ export default class Routes extends React.Component {
                 <Route path="/mocker/mock-resources/:id/rules/create" exact component={CreateMockRule} />
                 <Route path="/mocker/mock-resources/:id/rules/:ruleid/edit" exact component={EditMockRule} />
                 
-                <Route path="/mocker/simulation/" exact render={props => { return <ShowSimulationMainPage {...props} /> }} />
+                <Route path="/mocker/simulation" exact render={props => { return <ShowSimulationMainPage {...props} /> }} />
                 <Route component={NotFound} />
               </Switch>
             </Layout>
