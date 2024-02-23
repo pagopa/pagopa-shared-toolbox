@@ -72,14 +72,14 @@ jobs:
         run: echo "semver=${{env.SEMVER}}" >> $GITHUB_OUTPUT
 
       # Set Environment
-      - run: echo "ENVIRNOMENT=${{ inputs.environment}}" >> $GITHUB_ENV
+      - run: echo "ENVIRONMENT=${{ inputs.environment}}" >> $GITHUB_ENV
 
       - if: ${{ inputs.environment == null || inputs.environment == '' }}
-        run: echo "ENVIRNOMENT=dev" >> $GITHUB_ENV
+        run: echo "ENVIRONMENT=dev" >> $GITHUB_ENV
 
       - id: get_env
         name: Set Output
-        run: echo "environment=${{env.ENVIRNOMENT}}" >> $GITHUB_OUTPUT
+        run: echo "environment=${{env.ENVIRONMENT}}" >> $GITHUB_OUTPUT
 
   release:
     name: Create a New Release
@@ -116,7 +116,7 @@ jobs:
 
       - name: Build
         run: |
-          export REACT_APP_ENV='${{ inputs.environment }}'
+          export REACT_APP_ENV='${{ needs.setup.outputs.environment }}'
 
           export REACT_APP_MOCKERCONFIG_HOST='${{ vars.MOCKER_CONFIG_HOST }}'
           export REACT_APP_MOCKERCONFIG_BASEPATH='${{ vars.MOCKER_CONFIG_BASEPATH }}'
@@ -164,7 +164,7 @@ jobs:
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
-      - name: Deploy ${{ inputs.environment }}
+      - name: Deploy ${{ needs.setup.outputs.environment }}
         uses: azure/CLI@v1
         with:
           azcliversion: latest

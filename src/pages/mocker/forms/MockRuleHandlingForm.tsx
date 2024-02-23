@@ -3,7 +3,7 @@ import { MockResource } from "../../../api/generated/mocker-config/MockResource"
 import { Paper, Grid, Typography, Stack, Button, Divider, TextField, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, Box, } from "@mui/material";
 import React from "react";
 import { MockRule } from "../../../api/generated/mocker-config/MockRule";
-import { appendInList, getFormattedComplexContentType, getFormattedCondition, getFormattedConditionByType, stringfyList } from "../../../util/utilities";
+import { appendInList, getFirstAvailableOrder, getFormattedComplexContentType, getFormattedCondition, getFormattedConditionByType, stringfyList } from "../../../util/utilities";
 import { Analyzed_content_typeEnum, Condition_typeEnum, Field_positionEnum, MockCondition } from "../../../api/generated/mocker-config/MockCondition";
 import { ComplexContentTypeEnum } from "../../../util/constants";
 import { Add, CheckCircleOutline, Delete, HighlightOff } from "@mui/icons-material";
@@ -41,6 +41,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
 
   const isConditionAnyOrNull = (value: Condition_typeEnum | undefined) => value === Condition_typeEnum.ANY || value === Condition_typeEnum.NULL
 
+  const isDefaultRule = () => operation === 'EDIT' && formik.values.tags.includes('Default')
 
   const validateFormData = (values: Partial<MockRule & FormikSupportData>) =>
     Object.fromEntries(
@@ -57,14 +58,6 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
     return !isHttpStatusInvalid(values.status) /* ... */;
   }
 
-  const getFirstAvailableOrder = (mockResource?: MockResource) => {
-    const rulesWithoutParachute = mockResource?.rules.slice(0, length - 1) || [];
-    if (rulesWithoutParachute.length == 0) {
-      return 1;
-    } else {
-      return rulesWithoutParachute[rulesWithoutParachute.length - 1].order + 1;
-    }
-  }
 
   const checkIfRuleOrderIsAlreadyTaken = () => {
     let rules = mockResource?.rules;
@@ -197,7 +190,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
       headers = splitHeaders;
     }
 
-    // set parachute injected params
+    // set default injected params
     let injected_parameters = formikValues.injected_parameters;
     if (injected_parameters.length === 0) {
       injected_parameters = [];
@@ -218,7 +211,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
       name: formikValues.name,
       is_active: formikValues.is_active,
       order: formikValues.order,
-      tags: [],
+      tags: formikValues.tags,
       conditions: formikValues.conditions,
       response: response
     };
@@ -226,8 +219,6 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
     if (formikValues.tags.length > 0 && typeof formikValues.tags === 'string') {
       mockRule.tags = (formikValues.tags as unknown as string).split(",").map(tag => tag.trim());  
     }
-
-
 
     setMockRule(mockRule);
 
@@ -253,12 +244,12 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
         <Divider style={{ marginBottom: 20 }} />
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={12}>
-            <TextField id="name" label="Rule name" placeholder="Rule name" required={true} value={formik.values.name} onChange={formik.handleChange} error={formik.touched.name && Boolean(formik.errors.name)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }} />
+            <TextField id="name" label="Rule name" placeholder="Rule name" disabled={isDefaultRule()} required={true} value={formik.values.name} onChange={formik.handleChange} error={formik.touched.name && Boolean(formik.errors.name)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }} />
           </Grid>
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={2}>
-            <TextField id="order" label="Order" type="number" value={formik.values.order} onChange={formik.handleChange} error={formik.touched.order && Boolean(formik.errors.order)} InputLabelProps={{ shrink: true }} inputProps={{ max: 9999, min: 1}} sx={{ width: "100%" }}/>
+            <TextField id="order" label="Order" type="number" disabled={isDefaultRule()} value={formik.values.order} onChange={formik.handleChange} error={formik.touched.order && Boolean(formik.errors.order)} InputLabelProps={{ shrink: true }} inputProps={{ max: 9999, min: 1}} sx={{ width: "100%" }}/>
           </Grid>
           <Grid item xs={10}>
             <Typography variant="body2">{checkIfRuleOrderIsAlreadyTaken()}</Typography>
@@ -266,10 +257,10 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mb={2}>
           <Grid item xs={9}>
-            <TextField id="tags" label="Tags (split by comma)" placeholder="tag1, tag2, ..." value={formik.values.tags} onChange={formik.handleChange} error={formik.touched.tags && Boolean(formik.errors.tags)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+            <TextField id="tags" label="Tags (split by comma)" placeholder="tag1, tag2, ..." disabled={isDefaultRule()} value={formik.values.tags} onChange={formik.handleChange} error={formik.touched.tags && Boolean(formik.errors.tags)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
           </Grid>
           <Grid item xs={3}>
-            <FormControlLabel label="Is active?" control={<Switch id="is_active" value={formik.values.is_active} onChange={formik.handleChange} checked={formik.values.is_active}/>} sx={{ ml: 10 }}/>
+            <FormControlLabel label="Is active?" control={<Switch id="is_active" disabled={isDefaultRule()} value={formik.values.is_active} onChange={formik.handleChange} checked={formik.values.is_active}/>} sx={{ ml: 10 }}/>
           </Grid>
         </Grid>
       </Paper>
@@ -316,7 +307,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
             <TextField id="condition_value" label="Condition value" placeholder="Value" disabled={isConditionAnyOrNull(formik.values.condition_type)} value={isConditionAnyOrNull(formik.values.condition_type) ? '' : formik.values.condition_value!} onChange={formik.handleChange} error={formik.touched.condition_value && Boolean(formik.errors.condition_value)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
           </Grid>
           <Grid item xs={1}>
-            <ButtonNaked size="small" component="button" onClick={addConditionInRule} startIcon={<Add/>} sx={{color: 'primary.main'}} weight="default"/>
+            <ButtonNaked size="small" component="button" onClick={addConditionInRule} disabled={isDefaultRule()} startIcon={<Add/>} sx={{color: 'primary.main'}} weight="default"/>
           </Grid>
         </Grid>
         <Grid container alignItems={"center"} spacing={1} mt={3} mb={2}>

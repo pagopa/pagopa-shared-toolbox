@@ -33,9 +33,9 @@ interface IState {
 }
 
 interface IResponse {
-  body: string,
+  body?: string,
   status: number,
-  headers: any,
+  headers?: any,
   time: number
 }
 
@@ -86,23 +86,23 @@ export default class ShowSimulationMainPage extends React.Component<IProps, ISta
     })
     .then((res) => {
       let response = {
-        body: res.data,
+        body: typeof res.data === 'string' ? res.data : JSON.stringify(res.data),
         status: res.status,
         headers: res.headers,
         time: 0
       }
       this.setState({response});
-      console.log(this.state.response);
     })
     .catch((res) => {
-      let response = {
-        body: res.response.data,
-        status: res.response.status,
-        headers: res.response.headers,
-        time: 0
+      if (res.response) {
+        let response = {
+          body: typeof res.response === 'string' ? res.response :JSON.stringify(res.response.data),
+          status: res.response.status,
+          headers: res.response.headers,
+          time: 0
+        }
+        this.setState({response});
       }
-      this.setState({response});
-      console.log(this.state.response);
     });
   }
 
