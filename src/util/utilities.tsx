@@ -21,7 +21,6 @@ export const appendInList = (list: readonly any[], value: any): any[] => {
 export const stringfyList = (list: readonly any[], mapValue?: (value: any) => string): string => {
   if (typeof list === 'string') {
     let stringList = [list];
-    console.log("str:", stringList);
     return stringList.join(", ");
   }
   if (mapValue) {
@@ -40,9 +39,9 @@ export const generateCURLRequest = (url: string, mockResource?: MockResource, se
   }
   let contentType = "text/plain";
   let content = "write-here-your-body";
-  let parachuteRule = mockResource?.rules[mockResource.rules.length - 1];
-  if (parachuteRule !== undefined && parachuteRule.response.body !== undefined) {
-    let decodedBody = atob(parachuteRule.response.body);
+  let defaultRule = mockResource?.rules[mockResource.rules.length - 1];
+  if (defaultRule !== undefined && defaultRule.response.body !== undefined) {
+    let decodedBody = atob(defaultRule.response.body);
     if (decodedBody.startsWith("{")) {
       contentType = "application/json";
       content = '{\n\t"content": "..."\n}';
@@ -199,6 +198,17 @@ export const getFormattedComplexContentType = (type: ComplexContentTypeEnum | st
   }
   return value;
 }
+
+
+export const getFirstAvailableOrder = (mockResource?: MockResource) => {
+  const rulesWithoutDefault = mockResource?.rules.slice(0, length - 1) || [];
+  if (rulesWithoutDefault.length == 0) {
+    return 1;
+  } else {
+    return rulesWithoutDefault[rulesWithoutDefault.length - 1].order + 1;
+  }
+}
+
 
 
 export const toastOK = (message: string) => {

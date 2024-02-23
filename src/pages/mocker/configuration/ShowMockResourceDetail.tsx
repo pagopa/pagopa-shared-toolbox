@@ -5,11 +5,11 @@ import { AuthenticationResult } from "@azure/msal-browser";
 import { MockerConfigApi } from "../../../util/apiclient";
 import { isErrorResponse } from "../../../util/client-utils";
 import { ProblemJson } from "../../../api/generated/mocker-config/ProblemJson";
-import { generateCURLRequest, getFormattedBody, getFormattedCondition, getFormattedResponseInfo, toastError, toastOK } from "../../../util/utilities";
+import { appendInList, generateCURLRequest, getFirstAvailableOrder, getFormattedBody, getFormattedCondition, getFormattedResponseInfo, toastError, toastOK } from "../../../util/utilities";
 import { MockResource } from "../../../api/generated/mocker-config/MockResource";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Chip, Divider, Grid, Paper, Stack, TextField, Typography } from '@mui/material';
 import { ButtonNaked } from '@pagopa/mui-italia';
-import { Add, ArrowBack, CheckCircleOutline, ContentCopy, Delete, Edit, ExpandMore, HighlightOff, PlayCircle, Save, SwapVert } from '@mui/icons-material';
+import { Add, ArrowBack, CheckCircleOutline, ContentCopy, Delete, Edit, ExpandMore, FileCopy, HighlightOff, PlayCircle, Save, SwapVert } from '@mui/icons-material';
 import Title from "../../../components/pages/Title";
 import GenericModal from "../../../components/generic/GenericModal";
 import { SpecialRequestHeader } from "../../../api/generated/mocker-config/SpecialRequestHeader";
@@ -263,6 +263,23 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
     this.setState({ mockResource, swappedRules });
   }
 
+
+  duplicateRule(ruleId: string): void {
+    let mockResource = this.state.mockResource!;
+    let ruleToBeDuplicated = mockResource.rules.find((rule) => rule.id === ruleId);
+    if (ruleToBeDuplicated) {
+      let duplicated = {
+        ...ruleToBeDuplicated, 
+        id: undefined, 
+        name: ruleToBeDuplicated.name.concat(" [duplicated]"),
+        order: getFirstAvailableOrder(this.state.mockResource)
+      };
+      mockResource.rules = appendInList(mockResource.rules, duplicated);
+      this.setState({ mockResource });
+      this.updateResource();
+    }
+  }
+
   updateSwappedRules() {
     let swappedRules = this.state.swappedRules;
     let mockResource = this.state.mockResource;
@@ -274,7 +291,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
         alreadySwapped.push(ruleToBeSwapped.id!);
       }
     });
-    this.setState({ mockResource });
+    this.setState({ mockResource, swappedRules: [] });
   }
 
   activateSwapOrder() {
@@ -461,23 +478,24 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
                     <AccordionSummary id={`${rule.id}-header`} expandIcon={<ExpandMore />}>
                       <Grid item xs={1}>
                         {
-                          this.state.swappingOrder === true && !rule.tags.includes('Parachute') &&
+                          this.state.swappingOrder === true && !rule.tags.includes('Default') &&
                           <TextField id="order" label=" " type="number" value={rule.order} onChange={(event) => this.swapRuleOrder(rule.id!, Number(event.target.value))} sx={{ width: '70%' }} size="small" inputProps={{ max: 9999, min: 1, style: { fontSize: 13, padding: 0, paddingLeft: 10 } }} InputLabelProps={{ shrink: false }}/>
                         }
                         {
-                          (this.state.swappingOrder === false || rule.tags.includes('Parachute')) &&
+                          (this.state.swappingOrder === false || rule.tags.includes('Default')) &&
                           <TextField id="order" label=" " type="number" value={rule.order} disabled={true} sx={{ width: '70%' }} size="small" inputProps={{ style: { fontSize: 13, padding: 0, paddingLeft: 10 } }} InputLabelProps={{ shrink: false }}/>
                         }
                       </Grid>
-                      <Grid item xs={9}>
+                      <Grid item xs={8}>
                         <Typography sx={{ width: '90%', flexShrink: 0, fontStyle: this.state.expandedRule === rule.id ? "italic" : "normal", fontSize: this.state.expandedRule === rule.id ? "15px" : "13px" }}>
                           {rule.name}
                         </Typography>
                       </Grid>
 
-                      <Grid item xs={2}>
+                      <Grid item xs={3}>
+                        <ButtonNaked id={`${rule.id}-duplicate-btn`} size="small" component="button" disabled={rule.tags.find(tag => tag === 'Default') !== undefined} onClick={() => this.duplicateRule(rule.id!)} startIcon={<FileCopy/>} sx={{ color: 'primary.main' }} weight="default" />
                         <ButtonNaked id={`${rule.id}-edit-btn`} size="small" component="button" onClick={() => this.redirectOnEditRulePage(rule.id!)} startIcon={<Edit/>} sx={{ color: 'primary.main' }} weight="default" />
-                        <ButtonNaked id={`${rule.id}-delete-btn`} size="small" component="button" disabled={rule.tags.find(tag => tag === 'Parachute') !== undefined} onClick={() => {this.onClickDeleteRule(rule.id!)}} startIcon={<Delete/>} sx={{ color: 'error.main' }} weight="default" />
+                        <ButtonNaked id={`${rule.id}-delete-btn`} size="small" component="button" disabled={rule.tags.find(tag => tag === 'Default') !== undefined} onClick={() => {this.onClickDeleteRule(rule.id!)}} startIcon={<Delete/>} sx={{ color: 'error.main' }} weight="default" />
                       </Grid>
 
                     </AccordionSummary>
@@ -530,7 +548,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
                           <Box sx={{ width: '100%', marginBottom: 2, borderRadius: 4, p: 1, backgroundColor: '#f6f6f6', typography: 'caption' }}>
                             {getFormattedResponseInfo(rule.response)}
                             <Box sx={{ marginBottom: 1, marginTop: 1, borderRadius: 4, p: 1, backgroundColor: 'white', fontSize: '8px', typography: 'caption', whiteSpace: 'pre-wrap' }}>
-                              {getFormattedBody(rule.response.body)}
+                              {getFormattedBody(rule.response.body, true)}
                             </Box>
                           </Box>
                         </Grid>

@@ -70,10 +70,10 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
         special_headers: [],
         rules: [
           {
-            name: "Parachute Rule",
+            name: "Default Rule",
             conditions: [],
             order: 10000,
-            tags: ["Parachute"],
+            tags: ["Default"],
             is_active: true,
             response: {
               status: 200,
@@ -107,7 +107,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
 
       mockResource.rules[0].response.status = mockResource.status;
 
-      // set parachute body
+      // set default body
       let body = mockResource.body;
       mockResource.rules[0].response.body = btoa(body ? body : '');
 
@@ -122,7 +122,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
         mockResource.special_headers = headers;
       }
 
-      // set parachute response headers
+      // set default response headers
       if (mockResource.headers.length > 0 && typeof mockResource.headers === 'string') {
         let rawHeaders = (mockResource.headers as unknown as string).split(",").map(tag => tag.trim());
         let headers = rawHeaders.map(header => {
@@ -132,7 +132,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
         mockResource.rules[0].response.headers = headers;
       }
 
-      // set parachute response headers
+      // set default response headers
       if (mockResource.injected_parameters.length > 0 && typeof mockResource.injected_parameters === 'string') {
         mockResource.rules[0].response.injected_parameters = (mockResource.injected_parameters as unknown as string).split(",").map(tag => tag.trim());
       }
@@ -206,7 +206,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
         <Paper elevation={8} sx={{ marginBottom: 2, borderRadius: 4, p: 4 }}>
           <Grid container alignItems={"center"} spacing={1} mb={2}>
             <Grid item xs={11}>
-              <Typography variant="h5">Parachute rule response</Typography>
+              <Typography variant="h5">Default rule response</Typography>
             </Grid>
           </Grid>
           <Divider style={{ marginBottom: 20 }} />
@@ -225,7 +225,7 @@ export const MockResourceHandlingForm = ({redirectToPreviousPage, onSubmitShowMo
           </Grid>
           <Grid container alignItems={"center"} spacing={1} mb={2}>
             <Grid item xs={12}>
-              <TextField id="body" multiline label="Parachute body response (in string, XML or JSON)" rows={20} value={formik.values.body} onChange={formik.handleChange} InputProps={{ sx: {fontSize: '8px', typography: 'caption'} }} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
+              <TextField id="body" multiline label="Default body response (in string, XML or JSON)" rows={20} value={formik.values.body} onChange={formik.handleChange} InputProps={{ sx: {fontSize: '8px', typography: 'caption'} }} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
             </Grid>
           </Grid>
         </Paper>
