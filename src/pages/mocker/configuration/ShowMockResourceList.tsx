@@ -54,9 +54,10 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
       targetResource: undefined,
       pageInfo: {
         page: 0,
-        limit: 50,
+        limit: 10,
         items_found: 0,
         total_pages: 1,
+        total_items: 0,
       },
       mockResources: [],
       search: {}
@@ -77,7 +78,7 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockerConfigApi.getMockResources(auth.idToken, 50, page, search.resourceName, search.resourceTag)
+      MockerConfigApi.getMockResources(auth.idToken, 10, page, search.resourceName, search.resourceTag)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
@@ -196,6 +197,11 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
               </ButtonNaked>
             </Grid>
           </Grid>
+          <Grid container alignItems={'right'} >
+            <Grid item xs={1} alignItems={'center'}>
+              <Typography variant="subtitle1" sx={{  fontSize: '11px', color: '#757575' }}>Found {this.state.pageInfo.total_items} elements</Typography>
+            </Grid>
+          </Grid>
           <Box display="flex" width="100%">
             <Box display="flex" width="100%">
               <StyledDataGrid
@@ -251,9 +257,9 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
                 headerHeight={headerHeight}
                 hideFooterSelectedRowCount={true}
                 paginationMode="server"
-                rowsPerPageOptions={[50]}
+                rowsPerPageOptions={[10]}
                 onPageChange={(newPage) => this.changeMockResourceListPage(newPage)}
-                pageSize={50}
+                pageSize={10}
                 pagination
                 rowHeight={rowHeight}
                 rows={ this.state.mockResources ?? []}

@@ -14,7 +14,7 @@ import Title from "../../../components/pages/Title";
 import GenericModal from "../../../components/generic/GenericModal";
 import { SpecialRequestHeader } from "../../../api/generated/mocker-config/SpecialRequestHeader";
 import { ENV as env } from "../../../util/env";
-import { getActivationStatusTooltip, getRuleConditionTooltip, getSpecialHeadersTooltip } from "../../../util/tooltips";
+import { getActivationStatusTooltip, getResourceCURLTooltip, getRuleConditionTooltip, getSpecialHeadersTooltip } from "../../../util/tooltips";
 
 interface IProps {
     match: {
@@ -427,6 +427,7 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
               <Grid item xs={12}>
                 <Typography variant="subtitle1" sx={{fontWeight: 'bold'}}>
                   Resource cURL
+                  {getResourceCURLTooltip()}
                 </Typography>
                 <Box sx={{ width: '100%', marginBottom: 2, borderRadius: 4, p: 1, backgroundColor: '#f6f6f6', typography: 'caption' }}>
                   <ButtonNaked component="button" onClick={() => this.copyCURL()} startIcon={<ContentCopy/>} sx={{ color: 'primary.main' }}>

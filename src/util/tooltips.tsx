@@ -11,6 +11,13 @@ export const getSpecialHeadersTooltip = () => {
     );
 } 
 
+export const getResourceCURLTooltip = () => {
+    return getHelpTooltip(
+        <>Due to retrocompatibility with old HTTP specifications, the JavaScript client does not permits to send GET request with a body. Please use cURL if you want to 
+        perform this kind of requests.</>
+    );
+}
+
 export const getActivationStatusTooltip = () => {
     return getHelpTooltip(
         <> This field represents the activation status of the mock resource.<br/><br/>
