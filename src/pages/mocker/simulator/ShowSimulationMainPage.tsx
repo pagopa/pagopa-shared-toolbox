@@ -239,7 +239,7 @@ export default class ShowSimulationMainPage extends React.Component<IProps, ISta
               </Grid>
               <Grid container alignItems={"center"} spacing={1} mb={2}>
                 <Grid item xs={12}>
-                  <TextField id="body" multiline label="Request (in string, XML or JSON)" rows={15} value={this.state.simulation.body} onChange={(event) => this.setField("body", event.target.value)} InputProps={{ sx: {fontSize: '8px', typography: 'caption'} }} InputLabelProps={{ shrink: true }} sx={{ width: '100%', fontSize: '8px', typography: 'caption' }} />
+                  <TextField id="body" multiline label="Request (in string, XML or JSON)" rows={15} value={this.state.simulation.body} onChange={(event) => this.setField("body", event.target.value)} InputProps={{ sx: {fontSize: '8px', typography: 'caption'} }} InputLabelProps={{ shrink: true }} sx={{ width: '100%' }} />
                 </Grid>
               </Grid>
             </Paper>
