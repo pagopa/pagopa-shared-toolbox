@@ -44,11 +44,13 @@ const onRedirectToLogin = () => {
 
 export const MockerConfigApi = {
 
-    getMockResources: async (token: string, limit: number, page: number): Promise<MockResourceList> => {
+    getMockResources: async (token: string, limit: number, page: number, name?: string, tag?: string): Promise<MockResourceList> => {
         const result = await apiClient.getMockResources({
             Authorization: setJWTToken(token),
             limit, 
-            page
+            page,
+            name,
+            tag
         });
         return extractResponse(result, 200, onRedirectToLogin);
     },
