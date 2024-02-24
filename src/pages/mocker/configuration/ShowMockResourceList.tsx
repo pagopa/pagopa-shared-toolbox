@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { Box, Grid, Pagination, Typography } from '@mui/material';
+import { Box, Grid, Pagination, TextField, Typography, debounce } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { MockerConfigApi } from "../../../util/apiclient";
 import { MsalContext } from "@azure/msal-react";
@@ -29,7 +29,13 @@ interface IState {
   showDeleteModal: boolean,
   targetResource: string | undefined,
   pageInfo: PageInfo,
-  mockResources: any;
+  mockResources: any,
+  search: ISearch,
+}
+
+interface ISearch {
+  resourceName?: string,
+  resourceTag?: string
 }
 
 export default class ShowMockResourceList extends React.Component<IProps, IState> {
@@ -52,7 +58,8 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
         items_found: 0,
         total_pages: 1,
       },
-      mockResources: []
+      mockResources: [],
+      search: {}
     };
 
     this.readPaginatedMockResourceList.bind(this);
@@ -63,12 +70,14 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
 
   readPaginatedMockResourceList = (page: number): void => {    
     this.setState({ isContentLoading: true });
+    let search = this.state.search;
+    console.log("Search:", search);
     this.context.instance.acquireTokenSilent({
       ...loginRequest,
       account: this.context.accounts[0]
     })
     .then((auth: AuthenticationResult) => {
-      MockerConfigApi.getMockResources(auth.idToken, 50, page)
+      MockerConfigApi.getMockResources(auth.idToken, 50, page, search.resourceName, search.resourceTag)
       .then((response) => {
         if (isErrorResponse(response)) {
             const problemJson = response as ProblemJson;
@@ -122,21 +131,38 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
     }
   }
 
+
+  
+  setResourceNameFilter = debounce((data: any) => {
+    let search = this.state.search;
+    search.resourceName = data.target.value;
+    this.setState({ search });
+    this.readPaginatedMockResourceList(0);
+  }, 500);
+
+
+  setResourceTagFilter = debounce((data: any) => {
+    let search = this.state.search;
+    search.resourceTag = data.target.value;
+    this.setState({ search });
+    this.readPaginatedMockResourceList(0);
+  }, 500);
+
+
   changeMockResourceListPage = (requestedPage: number) => {
     this.readPaginatedMockResourceList(requestedPage);
   }
-
   redirectToCreateMockResource() {
     this.props.history.push("/mocker/mock-resources/create");
   }
-
   onClickDetail = (row: any) => {
     this.props.history.push("/mocker/mock-resources/" + row.id);
   };
-
   onClickDelete = (row: any) => {
     this.setState({ showDeleteModal: true, targetResource: row.id });
   };
+
+
 
   componentDidMount(): void {
     this.readPaginatedMockResourceList(0);
@@ -155,6 +181,14 @@ export default class ShowMockResourceList extends React.Component<IProps, IState
           <Grid container alignItems={'center'} spacing={0}>
             <Grid item xs={11} alignItems={'center'}>
               <Typography variant="h4">Mock Resources</Typography>
+            </Grid>
+          </Grid>
+          <Grid container alignItems={'center'} pt={3} pb={3} spacing={5}>
+            <Grid item xs={6} alignItems={'center'}>
+              <TextField id="resource_name" label="Search by resource name" onChange={(data) => this.setResourceNameFilter(data)} sx={{ width: "100%" }}/>
+            </Grid>
+            <Grid item xs={5} alignItems={'center'}>
+              <TextField id="resource_tag" label="Search by resource tag" onChange={(data) => this.setResourceTagFilter(data)} sx={{ width: "100%" }}/>
             </Grid>
             <Grid item xs={1}>
               <ButtonNaked size="large" component="button" onClick={() => this.redirectToCreateMockResource()} startIcon={<Add/>} sx={{ fontSize: '18px', color: 'primary.main'}} weight="default">
