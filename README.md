@@ -37,3 +37,7 @@ It should be something like the following image
 
 The page will reload if you make edits and you will also see any lint errors in the console.
 
+
+### `yarn start:local`
+
+Runs the app in the development mode, pointing to backend service running in local.

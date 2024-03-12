@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import { MockResource } from "../../../api/generated/mocker-config/MockResource";
-import { Paper, Grid, Typography, Stack, Button, Divider, TextField, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, Box, } from "@mui/material";
+import { Paper, Grid, Typography, Stack, Button, Divider, TextField, FormControlLabel, Switch, FormControl, InputLabel, Select, MenuItem, Box, SelectChangeEvent, } from "@mui/material";
 import React from "react";
 import { MockRule } from "../../../api/generated/mocker-config/MockRule";
 import { appendInList, getFirstAvailableOrder, getFormattedComplexContentType, getFormattedCondition, getFormattedConditionByType, stringfyList } from "../../../util/utilities";
@@ -10,6 +10,8 @@ import { Add, CheckCircleOutline, Delete, HighlightOff } from "@mui/icons-materi
 import { ButtonNaked } from "@pagopa/mui-italia";
 import { MockResponse } from "../../../api/generated/mocker-config/MockResponse";
 import { getInjectedParameterTooltip, getRuleConditionTooltip } from "../../../util/tooltips";
+import { ScriptMetadataList } from "../../../api/generated/mocker-config/ScriptMetadataList";
+import { MockScripting } from "../../../api/generated/mocker-config/MockScripting";
 
 type Props = {
   redirectToPreviousPage: () => void,
@@ -18,7 +20,8 @@ type Props = {
   operation: string,
   mockResource?: MockResource,
   setMockRule: (rule: MockRule) => void,
-  mockRule?: MockRule
+  mockRule?: MockRule,
+  scriptsMetadata?: ScriptMetadataList
 };
 
 type FormikSupportData = {
@@ -31,11 +34,16 @@ type FormikSupportData = {
   status: number,
   headers: any,
   injected_parameters: any,
-  body: string | undefined
+  body: string | undefined,
+  // scripting
+  is_scripting_enabled: boolean,
+  script_name: string | undefined,
+  script_input_parameters: string | undefined,
+  script_output_parameters: string | undefined,
 }
 
 
-export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal, onSubmitNewRuleShowRecord, operation, mockResource, setMockRule, mockRule}: Props) => {
+export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal, onSubmitNewRuleShowRecord, operation, mockResource, setMockRule, mockRule, scriptsMetadata}: Props) => {
 
   const isHttpStatusInvalid = (value: number | undefined) => !value || value < 200 || value > 599
 
@@ -56,6 +64,14 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
 
   const enableSubmit = (values: Partial<MockRule & FormikSupportData>) => {
     return !isHttpStatusInvalid(values.status) /* ... */;
+  }
+
+  const updateScriptDataWithSelectedScript = (e: SelectChangeEvent<string>) => {
+    const scriptName = e.target.value;
+    let scriptMetadata = scriptsMetadata?.scripts.find(scripts => scripts.name === scriptName);
+    formik.setFieldValue('script_name', scriptName);
+    formik.setFieldValue('script_input_parameters', scriptMetadata?.input_parameters.map((param) => `${param}` + ": ${" + `${param}` + "}").join(", "));
+    formik.setFieldValue('script_output_parameters', scriptMetadata?.output_parameters.join(", "));
   }
 
 
@@ -124,6 +140,7 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
 
   const initialFormData = (mockRule?: MockRule): MockRule & FormikSupportData => {
     if (operation === 'EDIT' && mockRule) {
+      let scriptMetadata = scriptsMetadata?.scripts.find(scripts => scripts.name === mockRule.scripting?.script_name);
       return {
         id: mockRule.id,
         name: mockRule.name,
@@ -142,7 +159,12 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
         status: mockRule.response.status,
         headers: stringfyList(mockRule.response.headers, (header) => `${header.name}:${header.value}`),
         injected_parameters: stringfyList(mockRule.response.injected_parameters),
-        body: mockRule.response.body ? atob(mockRule.response.body) : ''
+        body: mockRule.response.body ? atob(mockRule.response.body) : '',
+
+        is_scripting_enabled: mockRule.scripting ? mockRule.scripting.is_active : false,
+        script_name: mockRule.scripting?.script_name || undefined,
+        script_input_parameters: (mockRule.scripting ? mockRule.scripting.input_parameters.map((param) => `${param.name}: ${param.value}`) : scriptMetadata?.input_parameters.map((param) => `${param}` + ": ${" + `${param}` + "}"))?.join(", "),
+        script_output_parameters: scriptMetadata?.output_parameters.join(", "),
       };
     } else {
       return {
@@ -166,7 +188,12 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
         status: 200,
         headers: [],
         injected_parameters: [],
-        body: undefined
+        body: undefined,
+
+        is_scripting_enabled: false,
+        script_name: undefined,
+        script_input_parameters: undefined,
+        script_output_parameters: undefined,
       };
     }
   };  
@@ -206,6 +233,18 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
       body: btoa(formikValues.body ? formikValues.body : ''),
     }
 
+    let scripting: MockScripting | undefined;
+    if (formikValues.is_scripting_enabled) {
+      scripting = {
+        script_name: formikValues.script_name!,
+        is_active: formikValues.is_scripting_enabled,
+        input_parameters: (formikValues.script_input_parameters! as unknown as string).split(",").map(param => {
+          const splitParam = param.split(":");
+          return {name: splitParam[0].trim(), value: splitParam[1].trim()}
+        })
+      }
+    }
+
     let mockRule: MockRule = {
       id: formikValues.id,
       name: formikValues.name,
@@ -213,7 +252,8 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
       order: formikValues.order,
       tags: formikValues.tags,
       conditions: formikValues.conditions,
-      response: response
+      response,
+      scripting
     };
 
     if (formikValues.tags.length > 0 && typeof formikValues.tags === 'string') {
@@ -331,6 +371,67 @@ export const MockRuleHandlingForm = ({redirectToPreviousPage, onSubmitShowModal,
           }
         </Grid>
       </Paper>
+
+
+
+
+
+
+
+
+      <Paper elevation={8} sx={{ marginBottom: 2, borderRadius: 4, p: 4 }}>
+        <Grid container alignItems={"center"} spacing={1} mb={2}>
+          <Grid item xs={11}>
+            <Typography variant="h5">Scripting</Typography>
+          </Grid>
+        </Grid>
+        <Divider style={{ marginBottom: 20 }} />
+        <Grid container alignItems={"center"} spacing={1} mb={2}>
+          <Grid item xs={2}>
+            <FormControlLabel label="Enable scripting" control={<Switch id="is_scripting_enabled" value={formik.values.is_scripting_enabled} onChange={formik.handleChange} checked={formik.values.is_scripting_enabled}/>}/>
+          </Grid>
+        </Grid>
+        {
+          formik.values.is_scripting_enabled &&
+          <>
+            <Grid container alignItems={"center"} spacing={1} mb={2}>
+              <Grid item xs={3}>
+                <FormControl fullWidth key={`script_name`}>
+                  <InputLabel>Script</InputLabel>
+                  <Select id="script_name" required={true} value={formik.values.script_name} onChange={updateScriptDataWithSelectedScript} error={formik.touched.script_name && Boolean(formik.errors.script_name)}>
+                    {
+                      scriptsMetadata?.scripts.map((metadata) => (
+                        <MenuItem id={`script_name-${metadata.name}-menuitem`} key={metadata.name} value={metadata.name}>
+                          {`${metadata.name}`}
+                        </MenuItem>
+                      ))
+                    }
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="subtitle2">Description: {scriptsMetadata?.scripts.find(scripts => scripts.name === formik.values.script_name)?.description}</Typography>
+              </Grid>
+            </Grid>
+            <Grid container alignItems={"center"} spacing={1} mb={2}>
+              <Grid item xs={12}>
+                <TextField id="script_input_parameters" label={<>Input parameters (split by comma)</>} value={formik.values.script_input_parameters} onChange={formik.handleChange} error={formik.touched.script_input_parameters && Boolean(formik.errors.script_input_parameters)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+              </Grid>
+            </Grid>
+            <Grid container alignItems={"center"} spacing={1} mb={2}>
+              <Grid item xs={12}>
+                <TextField id="script_output_parameters" label={<>Output parameters (split by comma)</>} disabled={true} value={formik.values.script_output_parameters} onChange={formik.handleChange} error={formik.touched.script_output_parameters && Boolean(formik.errors.script_output_parameters)} InputLabelProps={{ shrink: true }} sx={{ width: "100%" }}/>
+              </Grid>
+            </Grid>
+          </>
+        }
+      </Paper>
+
+
+
+
+
+
 
       <Paper elevation={8} sx={{ marginBottom: 2, borderRadius: 4, p: 4 }}>
         <Grid container alignItems={"center"} spacing={1} mb={2}>

@@ -15,6 +15,7 @@ import { toastError } from "../../../util/utilities";
 import { MockResource } from "../../../api/generated/mocker-config/MockResource";
 import { MockRule } from "../../../api/generated/mocker-config/MockRule";
 import { MockRuleHandlingForm } from "../forms/MockRuleHandlingForm";
+import { ScriptMetadataList } from "../../../api/generated/mocker-config/ScriptMetadataList";
 
 interface IProps {
   match: {
@@ -34,6 +35,7 @@ interface IState {
   triggered: number,
   mockResource?: MockResource,
   mockRule?: MockRule,
+  scripts?: ScriptMetadataList,
 }
 
 
@@ -78,6 +80,33 @@ export default class CreateMockRule extends React.Component<IProps, IState> {
       })
       .catch(() => {
         toastError(`An error occurred while retrieving mock resource with id ${resourceId}.`);
+      })
+      .finally(() => {
+        this.setState({ isContentLoading: false });
+      })
+    });
+  }
+
+  readScripts = (): void => {
+    this.setState({ isContentLoading: true });
+    this.context.instance.acquireTokenSilent({
+      ...loginRequest,
+      account: this.context.accounts[0]
+    })
+    .then((auth: AuthenticationResult) => {
+      MockerConfigApi.getScripts(auth.idToken)
+      .then((response) => {
+        if (isErrorResponse(response)) {
+            const problemJson = response as ProblemJson;
+            if (problemJson.status === 500) {
+              toastError(`An error occurred while retrieving all scripts information.`);
+            }
+        } else {
+          this.setState({ scripts: response });    
+        }
+      })
+      .catch(() => {
+        toastError(`An error occurred while retrieving all scripts information.`);
       })
       .finally(() => {
         this.setState({ isContentLoading: false });
@@ -146,6 +175,7 @@ export default class CreateMockRule extends React.Component<IProps, IState> {
 
   componentDidMount(): void {
       this.readMockResource();
+      this.readScripts();
   }
 
 
@@ -172,6 +202,7 @@ export default class CreateMockRule extends React.Component<IProps, IState> {
             onSubmitNewRuleShowRecord={this.onSubmitNewRuleShowRecord}
             mockResource={this.state.mockResource}
             setMockRule={this.setMockRule}
+            scriptsMetadata={this.state.scripts}
             operation="CREATE"
           />
         </Grid>
