@@ -40,10 +40,26 @@ export const getInjectedParameterTooltip = () => {
     );
 }
 
+export const getScriptInputParameterTooltip = () => {
+    return getHelpTooltip(
+        <>These fields represents the set of parameter that can be passed as input for the script execution.<br/><br/>
+        These parameters can be either a constant value or can also be taken from request body, including it using the format {'${NAME}'}.<br/><br/>
+        If no value is retrievable from request, the field value is set as empty.</>
+    );
+}
+
+
+export const getScriptOutputParameterTooltip = () => {
+    return getHelpTooltip(
+        <>These values represents the response fields, in map format, that can be retrieved from script execution.<br/><br/>
+        The value of this fields can be used for dynamically set content in mock response using the format {'${dynamic.NAME}'}.</>
+    );
+}
+
 export const getHelpTooltip = (text: ReactNode) => {
     return (
         <Tooltip title={<div>{text}</div>}>
-          <Help sx={{ color: "#61affe", paddingLeft: '5px' }}></Help>
+          <Help sx={{ color: "#61affe", paddingLeft: '5px', paddingRight: '5px' }}></Help>
         </Tooltip>
     );
 }

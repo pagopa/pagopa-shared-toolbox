@@ -14,7 +14,7 @@ import Title from "../../../components/pages/Title";
 import GenericModal from "../../../components/generic/GenericModal";
 import { SpecialRequestHeader } from "../../../api/generated/mocker-config/SpecialRequestHeader";
 import { ENV as env } from "../../../util/env";
-import { getActivationStatusTooltip, getResourceCURLTooltip, getRuleConditionTooltip, getSpecialHeadersTooltip } from "../../../util/tooltips";
+import { getActivationStatusTooltip, getResourceCURLTooltip, getRuleConditionTooltip, getScriptInputParameterTooltip, getScriptOutputParameterTooltip, getSpecialHeadersTooltip } from "../../../util/tooltips";
 
 interface IProps {
     match: {
@@ -542,6 +542,37 @@ export default class ShowMockResourceDetail extends React.Component<IProps, ISta
                           }
                         </Grid>
                       </Grid>
+
+                      { rule.scripting &&
+                        <Grid container alignItems={'center'} spacing={0} mb={2}>
+                          <Typography variant="subtitle1" sx={{fontWeight: 'bold'}}>
+                            Scripting
+                          </Typography>
+                          <Grid container alignItems={'center'} spacing={0}>
+                            <Box sx={{ width: '100%', marginBottom: 2, borderRadius: 4, p: 1, backgroundColor: '#f6f6f6', typography: 'caption' }}>
+                              <Typography variant="body2" sx={{ fontSize: '14px'}}>
+                                <b>Name:</b> <Typography variant="caption" sx={{ fontSize: '14px'}}>{rule.scripting.script_name}</Typography>
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '14px'}}>
+                                <b>Description:</b> <Typography variant="caption" sx={{ fontSize: '14px'}}>{rule.scripting.description}</Typography>
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '14px'}}>
+                                <b>Execution:</b> <Typography variant="caption" sx={{ fontSize: '14px'}}>{rule.scripting.is_active ? "Enabled" : "Disabled"}</Typography>
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '14px'}}>
+                                <b>Input parameters:</b> 
+                                {getScriptInputParameterTooltip()}
+                                <Typography variant="caption" sx={{ fontSize: '14px'}}>{rule.scripting.input_parameters.map(param => `${param.name}: ${param.value}`).join(", ")}</Typography>
+                              </Typography>
+                              <Typography variant="body2" sx={{ fontSize: '14px'}}>
+                                <b>Output parameters:</b>
+                                {getScriptOutputParameterTooltip()}
+                                <Typography variant="caption" sx={{ fontSize: '14px'}}>{rule.scripting.output_parameters?.join(", ")}</Typography>
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      }
 
                       <Grid container alignItems={'center'} spacing={0} mb={2}>
                         <Grid item sx={{ width: '100%' }}>

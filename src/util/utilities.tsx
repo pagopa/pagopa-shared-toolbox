@@ -78,9 +78,9 @@ export const getFormattedResponseInfo = (response: MockResponse) => {
       </Typography>
       <Typography variant="body2" sx={{ fontSize: '14px', marginBottom: 1 }}>
         <b>Injectable parameters: </b> 
+        {getInjectedParameterTooltip()}
         <Typography variant="caption" sx={{ fontSize: '14px'}}>
           {injected_parameters}
-          {getInjectedParameterTooltip()}
         </Typography>
       </Typography>
       <Divider/>

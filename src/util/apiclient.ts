@@ -2,6 +2,7 @@ import { MockResource } from "../api/generated/mocker-config/MockResource";
 import { MockResourceGeneralInfo } from "../api/generated/mocker-config/MockResourceGeneralInfo";
 import { MockResourceList } from "../api/generated/mocker-config/MockResourceList";
 import { MockRule } from "../api/generated/mocker-config/MockRule";
+import { ScriptMetadataList } from "../api/generated/mocker-config/ScriptMetadataList";
 import { WithDefaultsT, createClient } from "../api/generated/mocker-config/client";
 import { extractResponse } from "./client-utils";
 import { ENV as env } from "./env";
@@ -59,6 +60,13 @@ export const MockerConfigApi = {
         const result = await apiClient.getMockResource({
             Authorization: setJWTToken(token),
             resourceId, 
+        });
+        return extractResponse(result, 200, onRedirectToLogin);
+    },
+
+    getScripts: async (token: string): Promise<ScriptMetadataList> => {
+        const result = await apiClient.getScripts({
+            Authorization: setJWTToken(token)
         });
         return extractResponse(result, 200, onRedirectToLogin);
     },
