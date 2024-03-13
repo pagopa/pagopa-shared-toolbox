@@ -1,10 +1,10 @@
 prefix    = "pagopa"
-env       = "dev"
-env_short = "d"
+env       = "uat"
+env_short = "u"
 
 tags = {
   CreatedBy   = "Terraform"
-  Environment = "Dev"
+  Environment = "Uat"
   Owner       = "pagoPA"
   Source      = "https://github.com/pagopa/pagopa-shared-toolbox"
   CostCenter  = "TS310 - PAGAMENTI & SERVIZI"
