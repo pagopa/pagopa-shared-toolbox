@@ -110,7 +110,7 @@ jobs:
           persist-credentials: false
 
       - name: Set Node.js 16
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
         with:
           node-version: 16.14.0
 
@@ -165,7 +165,7 @@ jobs:
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
       - name: Deploy ${{ needs.setup.outputs.environment }}
-        uses: azure/CLI@v1
+        uses: azure/CLI@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           azcliversion: latest
           inlineScript: |
@@ -173,7 +173,7 @@ jobs:
 
 
       - name: Purge
-        uses: azure/CLI@v1
+        uses: azure/CLI@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           azcliversion: latest
           inlineScript: |
