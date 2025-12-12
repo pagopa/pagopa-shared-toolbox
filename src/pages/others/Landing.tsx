@@ -26,6 +26,14 @@ const blockData = [
         description: 'Strumento di business intelligence che consente agli utenti, anche non tecnici, di porre domande sui dati e visualizzare le risposte tramite dashboard e report intuitivi.',
         href: 'https://pagopa-p-itn-dbsecurity-metabase-webapp.azurewebsites.net/',
     },
+    {
+        id: 4,
+        logoUrl: 'https://raw.githubusercontent.com/pagopa/payment-cloud-domain-builder/main/docs/images/icon.png',
+        altText: 'Domain Builder icon',
+        title: 'Domain builder',
+        description: 'Strumento per lo scaffolding di un nuovo dominio in pagopa-infra. Richiede la VPN di dev',
+        href: 'https://weudev.shared.internal.dev.platform.pagopa.it/domain-builder',
+    },
 ];
 
 const Landing = () => (
