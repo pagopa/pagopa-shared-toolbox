@@ -350,3 +350,69 @@ pre {
 .dropdown {
   height: fit-content;
 }
+
+/* Stili di esempio (BlockList.css o BlockItem.css) */
+
+.block-list-grid {
+  display: grid;
+  /* Crea 3 colonne di uguale larghezza, adattabili */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.block-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Per spingere il link in basso */
+  transition: transform 0.2s;
+  background-color: #fff;
+}
+
+.block-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.block-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.block-logo {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+}
+
+.block-title {
+  font-size: 1.2em;
+  color: #282c34;
+}
+
+.block-description {
+  color: #666;
+  margin-bottom: 15px;
+  flex-grow: 1; /* Permette alla descrizione di occupare lo spazio disponibile */
+}
+
+.block-link {
+  color: #61dafb;
+  text-decoration: none;
+  font-weight: bold;
+  align-self: flex-start; /* Assicura che il link non si allunghi orizzontalmente */
+}
+
+.block-link:hover {
+  text-decoration: underline;
+}
+
+#status-page {
+  border: none;
+  display: block;
+}

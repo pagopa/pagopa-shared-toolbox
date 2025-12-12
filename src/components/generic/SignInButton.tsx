@@ -7,7 +7,8 @@ export const SignInButton = () => {
     const {instance} = useMsal();
 
     const handleLogin = () => {
-        void instance.loginPopup(loginRequest);
+        // void instance.loginPopup(loginRequest);
+        void instance.loginRedirect(loginRequest);
     };
 
     return (

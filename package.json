@@ -2,7 +2,7 @@
   "name": "pagopa-shared-toolbox",
   "homepage": "ui",
   "license": "MIT",
-  "version": "0.3.8",
+  "version": "0.3.8-3-fix-signin-btn",
   "scripts": {
     "envconfig": "chmod +x envconfig.sh && . ./envconfig.sh && chmod +x version.sh && ./version.sh",
     "clean": "npm-run-all clean:*",
