@@ -6,7 +6,8 @@ import SidebarItems from "./SidebarItems";
 import packageJson from "../../../package.json";
 import { ENV as env } from "../../util/env";
 import { Accordion } from "react-bootstrap";
-import { FaCompress, FaExpand, FaHome } from "react-icons/fa";
+import menuItems from '../../config/menu-items.json';
+import { FaCompress, FaExpand, FaHome, FaExternalLinkAlt } from "react-icons/fa";
 
 interface IProps {
     history: {
@@ -163,6 +164,25 @@ export default class Sidebar extends React.Component<IProps, IState> {
                         </span>
                     }
                 </Accordion>
+                {(menuItems as any)?.length > 0 && (
+                    <div className="external-links mt-3">
+                        <div className="list-group">
+                            {(menuItems as any).map((item: any) => (
+                                <a
+                                    key={item.id}
+                                    href={item.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`list-group-item-action`}
+                                    title={item.description}
+                                    aria-label={item.description}
+                                >
+                                    <FaExternalLinkAlt /><span>{item.title}</span>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                )}
                 <div className={"info-box"}>
                     <div>Portal version: {packageJson.version} </div>
                     Made with ❤️ by PagoPA S.p.A.
@@ -171,4 +191,3 @@ export default class Sidebar extends React.Component<IProps, IState> {
         );
     }
 }
-

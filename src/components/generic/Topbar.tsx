@@ -19,6 +19,7 @@ export default class Topbar extends React.Component<IProps, IState> {
             <nav className="navbar navbar-light sticky-top bg-white flex-md-nowrap p-0 shadow">
                 <a className="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">
                     <img src={require('../../assets/images/logo-pagopa.png')} title="logo"/>
+                    <span className="ml-2 font-weight-bold text-dark">Shared Toolbox</span>
                     {localStorage.getItem("ALT") != null && <FaDharmachakra className="ml-2" />}
                 </a>
 

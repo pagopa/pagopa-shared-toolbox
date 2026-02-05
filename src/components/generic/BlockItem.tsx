@@ -1,8 +1,10 @@
 import React from 'react';
+import { FaLock } from 'react-icons/fa';
 
 interface BlockItemButtonProps {
     href: string;
-    text: React.ReactNode;
+    text: string;
+    locked?: boolean;
 }
 
 interface BlockItemProps {
@@ -49,7 +51,7 @@ const BlockItem: React.FC<BlockItemProps> = ({
                                 rel="noopener noreferrer"
                                 className={`btn btn-outline-primary btn-sm ${buttons.length > 1 ? 'flex-fill' : ''} ${index !== buttons.length - 1 ? 'mr-2' : ''}`}
                             >
-                                {button.text}
+                                {button.locked ? <><FaLock className="me-1 ms-0" />{button.text}</> : button.text}
                             </a>
                         ))}
                     </div>
