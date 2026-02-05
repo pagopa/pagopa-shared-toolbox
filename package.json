@@ -10,7 +10,7 @@
     "start": "craco start",
     "start:local": "export $(grep -v '^#' .env.local) && ./envconfig.sh && ./version.sh && craco start",
     "prebuild": "npm-run-all envconfig",
-    "build": "CI=false && craco build",
+    "build": "CI=false DISABLE_ESLINT_PLUGIN=true && craco build",
     "clean:build": "rimraf build",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
     "lint:local": "eslint . -c .eslintrc.js --ext .ts,.tsx --cache",

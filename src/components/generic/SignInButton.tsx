@@ -1,19 +1,15 @@
 import React from "react";
-import {useMsal} from "@azure/msal-react";
-import {Button} from "react-bootstrap";
-import {loginRequest} from "../../util/authconfig";
+import { useMsal } from "@azure/msal-react";
+import { Button } from "react-bootstrap";
+import { loginRequest } from "../../util/authconfig";
 
 export const SignInButton = () => {
-    const {instance} = useMsal();
+  const { instance } = useMsal();
 
-    const handleLogin = () => {
-        // void instance.loginPopup(loginRequest);
-        void instance.loginRedirect(loginRequest);
-    };
+  const handleLogin = () => {
+    // void instance.loginPopup(loginRequest);
+    void instance.loginRedirect(loginRequest);
+  };
 
-    return (
-        <Button onClick={() => handleLogin()}>
-            Login
-        </Button>
-    );
+  return <Button onClick={() => handleLogin()}>Login</Button>;
 };

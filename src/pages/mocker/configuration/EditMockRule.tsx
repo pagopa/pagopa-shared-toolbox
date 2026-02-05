@@ -1,13 +1,12 @@
-
 import { Grid, Stack } from "@mui/material";
 import { ButtonNaked } from "@pagopa/mui-italia";
 import React from "react";
-import Title from "../../../components/pages/Title";
 import { ArrowBack } from "@mui/icons-material";
-import GenericModal from "../../../components/generic/GenericModal";
 import { MsalContext } from "@azure/msal-react";
-import { loginRequest } from "../../../util/authconfig";
 import { AuthenticationResult } from "@azure/msal-browser";
+import Title from "../../../components/pages/Title";
+import GenericModal from "../../../components/generic/GenericModal";
+import { loginRequest } from "../../../util/authconfig";
 import { MockerConfigApi } from "../../../util/apiclient";
 import { isErrorResponse } from "../../../util/client-utils";
 import { ProblemJson } from "../../../api/generated/mocker-config/ProblemJson";
@@ -18,31 +17,29 @@ import { MockRuleHandlingForm } from "../forms/MockRuleHandlingForm";
 import { ScriptMetadataList } from "../../../api/generated/mocker-config/ScriptMetadataList";
 
 interface IProps {
-  match: {
-      params: Record<string, unknown>;
+  readonly match: {
+    readonly params: Record<string, unknown>;
   };
-  history: {
+  readonly history: {
     push(url: string): void;
     goBack(): void;
     replace(url: string): void;
   };
 }
-  
+
 interface IState {
-  isContentLoading: boolean,
-  showConfirmationModal: boolean,
-  isOperationSuccessful: boolean,
-  triggered: number,
-  mockResource?: MockResource,
-  mockRule?: MockRule,
-  scripts?: ScriptMetadataList,
+  readonly isContentLoading: boolean;
+  readonly showConfirmationModal: boolean;
+  readonly isOperationSuccessful: boolean;
+  readonly triggered: number;
+  readonly mockResource?: MockResource;
+  readonly mockRule?: MockRule;
+  readonly scripts?: ScriptMetadataList;
 }
 
-
 export default class EditMockRule extends React.Component<IProps, IState> {
-
-  static contextType = MsalContext;
-  context!: React.ContextType<typeof MsalContext>
+  static readonly contextType = MsalContext;
+  readonly context!: React.ContextType<typeof MsalContext>;
 
   constructor(props: IProps) {
     super(props);
@@ -55,131 +52,156 @@ export default class EditMockRule extends React.Component<IProps, IState> {
     };
   }
 
-
-
-  readMockResource = (): void => {
-    let resourceId = this.props.match.params['id'] as string;
-    let ruleId = this.props.match.params['ruleid'] as string;
+  readonly readMockResource = (): void => {
+    const resourceId = this.props.match.params.id as string;
+    const ruleId = this.props.match.params.ruleid as string;
     this.setState({ isContentLoading: true });
-    this.context.instance.acquireTokenSilent({
-      ...loginRequest,
-      account: this.context.accounts[0]
-    })
-    .then((auth: AuthenticationResult) => {
-      MockerConfigApi.getMockResource(auth.idToken, resourceId)
-      .then((response) => {
-        if (isErrorResponse(response)) {
-            const problemJson = response as ProblemJson;
-            if (problemJson.status === 404) {
-              toastError(`No mock resource found with id ${resourceId}.`);
-            } else if (problemJson.status === 500) {
-              toastError(`An error occurred while retrieving mock resource with id ${resourceId}.`);
+    this.context.instance
+      .acquireTokenSilent({
+        ...loginRequest,
+        account: this.context.accounts[0],
+      })
+      .then((auth: AuthenticationResult) => {
+        MockerConfigApi.getMockResource(auth.idToken, resourceId)
+          .then((response) => {
+            if (isErrorResponse(response)) {
+              const problemJson = response as ProblemJson;
+              if (problemJson.status === 404) {
+                toastError(`No mock resource found with id ${resourceId}.`);
+              } else if (problemJson.status === 500) {
+                toastError(
+                  `An error occurred while retrieving mock resource with id ${resourceId}.`
+                );
+              }
+            } else {
+              const rule = response.rules.find((rule) => rule.id === ruleId);
+              this.setState({ mockResource: response, mockRule: rule });
             }
-        } else {
-          let rule = response.rules.find((rule) => rule.id === ruleId);
-          this.setState({ mockResource: response, mockRule: rule });    
-        }
-      })
-      .catch(() => {
-        toastError(`An error occurred while retrieving mock resource with id ${resourceId}.`);
-      })
-      .finally(() => {
-        this.setState({ isContentLoading: false });
-      })
-    });
-  }
+          })
+          .catch(() => {
+            toastError(
+              `An error occurred while retrieving mock resource with id ${resourceId}.`
+            );
+          })
+          .finally(() => {
+            this.setState({ isContentLoading: false });
+          });
+      });
+  };
 
-  readScripts = (): void => {
+  readonly readScripts = (): void => {
     this.setState({ isContentLoading: true });
-    this.context.instance.acquireTokenSilent({
-      ...loginRequest,
-      account: this.context.accounts[0]
-    })
-    .then((auth: AuthenticationResult) => {
-      MockerConfigApi.getScripts(auth.idToken)
-      .then((response) => {
-        if (isErrorResponse(response)) {
-            const problemJson = response as ProblemJson;
-            if (problemJson.status === 500) {
-              toastError(`An error occurred while retrieving all scripts information.`);
+    this.context.instance
+      .acquireTokenSilent({
+        ...loginRequest,
+        account: this.context.accounts[0],
+      })
+      .then((auth: AuthenticationResult) => {
+        MockerConfigApi.getScripts(auth.idToken)
+          .then((response) => {
+            if (isErrorResponse(response)) {
+              const problemJson = response as ProblemJson;
+              if (problemJson.status === 500) {
+                toastError(
+                  `An error occurred while retrieving all scripts information.`
+                );
+              }
+            } else {
+              this.setState({ scripts: response });
             }
-        } else {
-          this.setState({ scripts: response });    
-        }
-      })
-      .catch(() => {
-        toastError(`An error occurred while retrieving all scripts information.`);
-      })
-      .finally(() => {
-        this.setState({ isContentLoading: false });
-      })
-    });
-  }
+          })
+          .catch(() => {
+            toastError(
+              `An error occurred while retrieving all scripts information.`
+            );
+          })
+          .finally(() => {
+            this.setState({ isContentLoading: false });
+          });
+      });
+  };
 
-  updateRule = (): void => {
+  readonly updateRule = (): void => {
     this.setState({ isContentLoading: true });
-    this.context.instance.acquireTokenSilent({
-      ...loginRequest,
-      account: this.context.accounts[0]
-    })
-    .then((auth: AuthenticationResult) => {
-      MockerConfigApi.updateMockRule(auth.idToken, this.state.mockResource!.id!, this.state.mockRule!.id!, this.state.mockRule!)
-      .then((response) => {
-        if (isErrorResponse(response)) {
-            const problemJson = response as ProblemJson;
-            if (problemJson.status === 404) {
-              toastError(`No mock rule found with id ${this.state.mockRule!.id}.`);
-            } else if (problemJson.status === 500) {
-              toastError(`An error occurred while updating mock rule with id ${this.state.mockRule!.id}.`);
+    this.context.instance
+      .acquireTokenSilent({
+        ...loginRequest,
+        account: this.context.accounts[0],
+      })
+      .then((auth: AuthenticationResult) => {
+        MockerConfigApi.updateMockRule(
+          auth.idToken,
+          this.state.mockResource!.id!,
+          this.state.mockRule!.id!,
+          this.state.mockRule!
+        )
+          .then((response) => {
+            if (isErrorResponse(response)) {
+              const problemJson = response as ProblemJson;
+              if (problemJson.status === 404) {
+                toastError(
+                  `No mock rule found with id ${this.state.mockRule!.id}.`
+                );
+              } else if (problemJson.status === 500) {
+                toastError(
+                  `An error occurred while updating mock rule with id ${
+                    this.state.mockRule!.id
+                  }.`
+                );
+              }
+            } else {
+              this.setState({
+                mockResource: response,
+                isOperationSuccessful: true,
+              });
             }
-        } else {
-          this.setState({ mockResource: response, isOperationSuccessful: true });
-        }
-      })
-      .catch(() => {
-        toastError(`An error occurred while updating mock rule with id ${this.state.mockRule!.id}.`);
-      })
-      .finally(() => {
-        this.setState({ isContentLoading: false, showConfirmationModal: false });
-      })
-    });
-  }
-  
+          })
+          .catch(() => {
+            toastError(
+              `An error occurred while updating mock rule with id ${
+                this.state.mockRule!.id
+              }.`
+            );
+          })
+          .finally(() => {
+            this.setState({
+              isContentLoading: false,
+              showConfirmationModal: false,
+            });
+          });
+      });
+  };
 
-
-  setMockRule = (mockRuleFromForm: MockRule) => {
+  readonly setMockRule = (mockRuleFromForm: MockRule) => {
     this.setState({ mockRule: mockRuleFromForm });
-  }
+  };
 
-
-
-  onSubmitShowModal = () => {
+  readonly onSubmitShowModal = () => {
     this.setState({ showConfirmationModal: true });
-  }
+  };
 
-  onSubmitNewRuleShowRecord = () => {
+  readonly onSubmitNewRuleShowRecord = () => {
     this.setState({ triggered: this.state.triggered + 1 });
-  }
+  };
 
-
-
-  redirectToPreviousPage = () => {
+  readonly redirectToPreviousPage = () => {
     this.props.history.goBack();
-  }
+  };
 
-  redirectOnSuccess = () => {
+  readonly redirectOnSuccess = () => {
     if (this.state.isOperationSuccessful) {
       setTimeout(() => {
-        this.props.history.replace("/mocker/mock-resources/" + this.state.mockResource?.id);
-     }, 500);
+        this.props.history.replace(
+          "/mocker/mock-resources/" + this.state.mockResource?.id
+        );
+      }, 500);
     }
-  }
+  };
 
   componentDidMount(): void {
-      this.readMockResource();
-      this.readScripts();
+    this.readMockResource();
+    this.readScripts();
   }
-
 
   render(): React.ReactNode {
     this.redirectOnSuccess();
@@ -187,18 +209,25 @@ export default class EditMockRule extends React.Component<IProps, IState> {
       <Grid container mb={12}>
         <Grid item xs={12}>
           <Stack direction="row">
-            <ButtonNaked size="small" component="button" onClick={() => this.redirectToPreviousPage()} startIcon={<ArrowBack/>} sx={{color: 'primary.main', mr: '20px'}} weight="default">
+            <ButtonNaked
+              size="small"
+              component="button"
+              onClick={() => this.redirectToPreviousPage()}
+              startIcon={<ArrowBack />}
+              sx={{ color: "primary.main", mr: "20px" }}
+              weight="default"
+            >
               Back
             </ButtonNaked>
           </Stack>
 
           <Grid container mt={3}>
             <Grid item xs={11} mb={5}>
-              <Title title='Update mock rule' mbTitle={1} variantTitle="h4"/>
-            </Grid>            
+              <Title title="Update mock rule" mbTitle={1} variantTitle="h4" />
+            </Grid>
           </Grid>
 
-          <MockRuleHandlingForm 
+          <MockRuleHandlingForm
             redirectToPreviousPage={this.redirectToPreviousPage}
             onSubmitShowModal={this.onSubmitShowModal}
             onSubmitNewRuleShowRecord={this.onSubmitNewRuleShowRecord}
@@ -216,10 +245,12 @@ export default class EditMockRule extends React.Component<IProps, IState> {
           openModal={this.state.showConfirmationModal}
           onConfirmLabel="Confirm"
           onCloseLabel="Dismiss"
-          handleCloseModal={() => this.setState({ showConfirmationModal: false })}
+          handleCloseModal={() =>
+            this.setState({ showConfirmationModal: false })
+          }
           handleConfirm={this.updateRule}
         />
-      </Grid>    
+      </Grid>
     );
   }
 }

@@ -1,17 +1,17 @@
-import { Modal, Backdrop, Fade, Box, Typography, Button } from '@mui/material';
-import React from 'react';
-import { MouseEventHandler } from 'react';
+import { Modal, Backdrop, Fade, Box, Typography, Button } from "@mui/material";
+import React from "react";
+import { MouseEventHandler } from "react";
 
-type Props = {
-  title: string;
-  message: any;
-  openModal: boolean;
-  onConfirmLabel: string;
-  onCloseLabel: string;
-  handleCloseModal: MouseEventHandler;
-  handleConfirm: MouseEventHandler;
-  renderContent?: () => any;
-};
+interface Props {
+  readonly title: string;
+  readonly message: any;
+  readonly openModal: boolean;
+  readonly onConfirmLabel: string;
+  readonly onCloseLabel: string;
+  readonly handleCloseModal: MouseEventHandler;
+  readonly handleConfirm: MouseEventHandler;
+  readonly renderContent?: () => any;
+}
 
 const GenericModal = ({
   title,
@@ -36,13 +36,13 @@ const GenericModal = ({
     <Fade in={openModal}>
       <Box
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           width: 600,
-          bgcolor: 'background.paper',
-          borderRadius: '4px',
+          bgcolor: "background.paper",
+          borderRadius: "4px",
           boxShadow: 24,
           p: 4,
         }}
@@ -57,21 +57,21 @@ const GenericModal = ({
             </Typography>
             <Box
               sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(8, 1fr)',
-                gridTemplateRows: 'auto',
+                display: "grid",
+                gridTemplateColumns: "repeat(8, 1fr)",
+                gridTemplateRows: "auto",
               }}
             >
               <Button
                 variant="outlined"
-                sx={{ gridColumn: 'span 6', justifySelf: 'end', mr: 1 }}
+                sx={{ gridColumn: "span 6", justifySelf: "end", mr: 1 }}
                 onClick={handleCloseModal}
               >
                 {onCloseLabel}
               </Button>
               <Button
                 variant="contained"
-                sx={{ gridColumn: 'span 2', justifySelf: 'end' }}
+                sx={{ gridColumn: "span 2", justifySelf: "end" }}
                 onClick={handleConfirm}
               >
                 {onConfirmLabel}

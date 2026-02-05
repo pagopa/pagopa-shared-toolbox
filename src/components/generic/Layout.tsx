@@ -1,74 +1,75 @@
-import React from 'react';
-import {ToastContainer} from "react-toastify";
-import {injectToken} from "../../util/MsalWrapper";
+import React from "react";
+import { ToastContainer } from "react-toastify";
+import { injectToken } from "../../util/MsalWrapper";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 
 interface IProps {
-    history: {
-        location: {
-            pathname: string;
-        };
-        push(url: string): void;
+  readonly history: {
+    readonly location: {
+      readonly pathname: string;
     };
-    children: any;
-    instance: any;
-    accounts: any;
-    isAuthenticated: boolean;
+    push(url: string): void;
+  };
+  readonly children: any;
+  readonly instance: any;
+  readonly accounts: any;
+  readonly isAuthenticated: boolean;
 }
 
 interface IState {
-    loading: boolean;
+  readonly loading: boolean;
 }
 
 class Layout extends React.Component<IProps, IState> {
+  constructor(props: IProps) {
+    super(props);
+    this.state = {
+      loading: true,
+    };
+  }
 
-    constructor(props: IProps) {
-        super(props);
-        this.state = {
-            loading: true,
-        };
-    }
+  render(): React.ReactNode {
+    return (
+      <div>
+        <Topbar isAuthenticated={this.props.isAuthenticated} />
 
-    render(): React.ReactNode {
+        <div className="container-fluid">
+          <div className="row">
+            <nav
+              id="sidebarMenu"
+              className="col-md-2 col-lg-2 d-md-block bg-white sidebar collapse"
+            >
+              <div className="sidebar-sticky">
+                <Sidebar history={this.props.history} />
+              </div>
+            </nav>
 
-        return (
-            <div>
-                <Topbar isAuthenticated={this.props.isAuthenticated}/>
+            <main
+              role="main"
+              className="col-md-10 ml-sm-auto col-lg-10 px-md-4"
+            >
+              <div className="justify-content-between flex-wrap flex-md-nowrap align-items-center">
+                {this.props.children}
+              </div>
+            </main>
+          </div>
+        </div>
 
-                <div className="container-fluid">
-                    <div className="row">
-                        <nav id="sidebarMenu" className="col-md-2 col-lg-2 d-md-block bg-white sidebar collapse">
-                            <div className="sidebar-sticky">
-                                <Sidebar history={this.props.history}/>
-                            </div>
-                        </nav>
-
-                        <main role="main" className="col-md-10 ml-sm-auto col-lg-10 px-md-4">
-                            <div
-                                className="justify-content-between flex-wrap flex-md-nowrap align-items-center">
-                                {this.props.children}
-                            </div>
-                        </main>
-                    </div>
-                </div>
-
-
-                <ToastContainer
-                    position="top-center"
-                    autoClose={10000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                />
-
-            </div>
-        );
-    }
+        <ToastContainer
+          position="top-center"
+          autoClose={10000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </div>
+    );
+  }
 }
 
 export default injectToken(Layout);

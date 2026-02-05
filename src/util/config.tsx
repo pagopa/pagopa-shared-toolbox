@@ -1,17 +1,23 @@
 import * as env from "env-var";
 
 export enum Type {
-    string,
-    boolean,
-    int
+  string,
+  boolean,
+  int,
 }
 
-export function getConfig(param: string, options?: { default?: any; type?: Type; required?: boolean }) {
+export function getConfig(
+  param: string,
+  options?: {
+    readonly default?: any;
+    readonly type?: Type;
+    readonly required?: boolean;
+  }
+) {
+  // eslint-disable-next-line no-underscore-dangle
 
-    // eslint-disable-next-line no-underscore-dangle
-
-    const actual_environment = env.get('REACT_APP_ENV').required().asString();
-    /*eslint-disable */
+  const actual_environment = env.get("REACT_APP_ENV").required().asString();
+  /*eslint-disable */
     if (actual_environment === "prod" || (!("_env_" in window) || !(window as any)._env_[param])) {
         return getVarFromEnvironment(param, options);
     }

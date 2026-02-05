@@ -1,21 +1,21 @@
-import { Typography } from '@mui/material';
-import { Grid } from '@mui/material';
-import { Variant } from '@mui/material/styles/createTypography';
-import React from 'react';
+import { Typography } from "@mui/material";
+import { Grid } from "@mui/material";
+import { Variant } from "@mui/material/styles/createTypography";
+import React from "react";
 
-type Props = {
-  title: string;
-  subTitle?: string;
-  mtTitle?: number;
-  mbTitle?: number;
-  mbSubTitle?: number;
-  variantTitle?: Variant;
-  variantSubTitle?: Variant;
-  titleFontSize?: string;
-  subTitleFontSize?: string;
-  titleFontColor?: string;
-  subTitleFontColor?: string;
-};
+interface Props {
+  readonly title: string;
+  readonly subTitle?: string;
+  readonly mtTitle?: number;
+  readonly mbTitle?: number;
+  readonly mbSubTitle?: number;
+  readonly variantTitle?: Variant;
+  readonly variantSubTitle?: Variant;
+  readonly titleFontSize?: string;
+  readonly subTitleFontSize?: string;
+  readonly titleFontColor?: string;
+  readonly subTitleFontColor?: string;
+}
 
 export default function Title({
   title,
@@ -23,23 +23,29 @@ export default function Title({
   mbTitle = 2,
   mtTitle,
   mbSubTitle,
-  variantTitle = 'h1',
-  variantSubTitle = 'h5',
+  variantTitle = "h1",
+  variantSubTitle = "h5",
   titleFontSize,
-  subTitleFontSize = '18px',
-  titleFontColor = '212529',
-  subTitleFontColor = '212529',
+  subTitleFontSize = "18px",
+  titleFontColor = "212529",
+  subTitleFontColor = "212529",
 }: Props) {
   return (
     <Grid container mt={mtTitle}>
       <Grid item xs={12} mb={mbTitle}>
-        <Typography variant={variantTitle} sx={{ fontSize: titleFontSize, color: titleFontColor }}>
+        <Typography
+          variant={variantTitle}
+          sx={{ fontSize: titleFontSize, color: titleFontColor }}
+        >
           {title}
         </Typography>
       </Grid>
       {subTitle && (
         <Grid item xs={12} mb={mbSubTitle}>
-          <Typography variant={variantSubTitle} sx={{ fontSize: subTitleFontSize, color: subTitleFontColor }}>
+          <Typography
+            variant={variantSubTitle}
+            sx={{ fontSize: subTitleFontSize, color: subTitleFontColor }}
+          >
             {subTitle}
           </Typography>
         </Grid>
