@@ -17,6 +17,7 @@
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",
     "pretest": "npm-run-all envconfig",
     "test": "jest --coverage --ci --testResultsProcessor jest-sonar-reporter",
+    "test:coverage": "jest --coverage --ci --watchAll=false --passWithNoTests",
     "test:local": "jest --coverage --ci",
     "clean:api": "rimraf src/api/generated && rimraf openapi/generated",
     "generate:api": "chmod +x generateapi.sh && yarn run clean:api && ./generateapi.sh pagopa-mock-config-be mocker-config && ./generateapi.sh pagopa-platform-authorizer-config authorizer-config",
