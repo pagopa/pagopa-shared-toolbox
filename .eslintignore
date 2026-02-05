@@ -1,0 +1,5 @@
+# Ignore generated API models and build artifacts
+src/api/generated/**
+build/**
+public/**
+node_modules/**

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "RGP",
+    "description": "Pianificazione rilasci",
+    "href": "https://pagopa.atlassian.net/servicedesk/customer/portal/284"
+  },
+  {
+    "id": 2,
+    "title": "Call4Task",
+    "description": "Richiesta di attività",
+    "href": "https://pagopa.atlassian.net/servicedesk/customer/portal/85"
+  },
+  {
+    "id": 3,
+    "title": "Planning Poker",
+    "description": "Tool per la stima delle attività in modalità Agile",
+    "href": "https://poker-planning-jc.web.app/"
+  }
+]

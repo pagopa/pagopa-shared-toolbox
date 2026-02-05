@@ -37,7 +37,7 @@ jobs:
       - name: Set Node.js 16
         uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
         with:
-          node-version: 16.10.0
+          node-version: 16.14.0
 
       - name: Build
         run: |
@@ -56,7 +56,7 @@ jobs:
       - name: Set Node.js 16
         uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
         with:
-          node-version: 16.10.0
+          node-version: 16.14.0
 
       - name: Lint
         run: |
@@ -74,7 +74,7 @@ jobs:
       - name: Set Node.js 16
         uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
         with:
-          node-version: 16.10.0
+          node-version: 16.14.0
 
       - name: Unit Tests
         run: |

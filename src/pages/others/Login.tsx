@@ -1,5 +1,5 @@
-import React from 'react';
-import {useIsAuthenticated} from "@azure/msal-react";
+import React from "react";
+import { useIsAuthenticated } from "@azure/msal-react";
 import ReactMarkdown from "react-markdown";
 import raw from "raw.macro";
 import Topbar from "../../components/generic/Topbar";
@@ -7,22 +7,22 @@ import Topbar from "../../components/generic/Topbar";
 // @ts-ignore
 import packageJson from "../../../package.json";
 
-const Login = () => {
-    const isAuthenticated = useIsAuthenticated();
-    const content = raw("../../assets/resources/login.md");
-    return (
-        <>
-            <Topbar isAuthenticated={isAuthenticated}/>
+const Login: React.FC = () => {
+  const isAuthenticated = useIsAuthenticated();
+  const content = raw("../../assets/resources/login.md");
+  return (
+    <>
+      <Topbar isAuthenticated={isAuthenticated} />
 
-            <div className="container-fluid mt-3">
-                <ReactMarkdown>{content}</ReactMarkdown>
-                <div className={"info-box"}>
-                    <div>versione FE {packageJson.version} </div>
-                    Made with ❤️ by PagoPA S.p.A.
-                </div>
-            </div>
-        </>
-    );
+      <div className="container-fluid mt-3">
+        <ReactMarkdown>{content}</ReactMarkdown>
+        <div className={"info-box"}>
+          <div>versione FE {packageJson.version} </div>
+          Made with ❤️ by PagoPA S.p.A.
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default Login;
