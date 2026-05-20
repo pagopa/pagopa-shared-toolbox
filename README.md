@@ -1,43 +1,121 @@
 # pagoPA Shared Toolbox
 
-The project is an aggregator of pagoPA platform application, make usable by a dedicated frontend interface.
+Portale web centralizzato che aggrega i tool interni della piattaforma pagoPA in un'unica interfaccia React.
 
-## Prerequisites
+Disponibile su:
+- **DEV:** https://shared.dev.platform.pagopa.it/ui
+- **UAT:** https://shared.uat.platform.pagopa.it/ui
 
-- Install [yarn](https://classic.yarnpkg.com/en/docs/getting-started)
-- Install lib dependencies
+- [pagoPA Shared Toolbox](#pagopa-shared-toolbox)
+    * [Tool disponibili](#tool-disponibili)
+    * [Technology Stack](#technology-stack)
+    * [Start Project Locally 🚀](#start-project-locally---)
+        + [Prerequisites](#prerequisites)
+        + [Run the project](#run-the-project)
+    * [Available Scripts](#available-scripts)
+    * [API Client generation](#api-client-generation)
+    * [Operational Guides](#operational-guides)
+    * [Contributors 👥](#contributors-)
+        + [Maintainers](#maintainers)
+
+---
+
+## Tool disponibili
+
+| Tool | Descrizione |
+|---|---|
+| **MOCKER** | Gestione delle mock resources per il servizio [pagopa-mocker](https://github.com/pagopa/pagopa-mocker) |
+| **RGP** | Pianificazione rilasci (link a Jira) |
+| **Call4Task** | Richiesta di attività (link a Jira) |
+| **Planning Poker** | Tool per la stima delle attività in modalità Agile |
+
+Dalla home page sono inoltre accessibili link diretti a **Grafana**, **Kibana** e **Metabase** per i vari ambienti (DEV, UAT, PROD).
+
+---
+
+## Technology Stack
+
+- React 17
+- TypeScript
+- Material UI (MUI) + @pagopa/mui-italia
+- Azure MSAL (autenticazione Azure AD)
+- Formik (gestione form)
+- Axios (chiamate HTTP)
+- CRACO (configurazione webpack)
+
+---
+
+## Start Project Locally 🚀
+
+### Prerequisites
+
+- Node.js
+- [yarn](https://classic.yarnpkg.com/en/docs/getting-started)
+
+### Run the project
+
+1. Installa le dipendenze:
+   ```bash
+   yarn
+   ```
+
+2. Avvia in modalità sviluppo (punta ai backend DEV):
+   ```bash
+   yarn start
+   ```
+   App disponibile su [http://localhost:3000](http://localhost:3000)
+
+3. Avvia in modalità sviluppo puntando ai backend in locale:
+   ```bash
+   yarn start:local
+   ```
+   Richiede un file `.env.local` con le variabili d'ambiente dei backend locali.
+
+---
 
 ## Available Scripts
 
-For install all the dependencies defined in `package.json`, you can run:
+| Script | Descrizione |
+|---|---|
+| `yarn` | Installa tutte le dipendenze |
+| `yarn start` | Avvia in dev mode puntando a DEV |
+| `yarn start:local` | Avvia in dev mode puntando ai backend locali |
+| `yarn build` | Build di produzione nella cartella `build/` |
+| `yarn test` | Esegue i test con coverage (CI) |
+| `yarn test:local` | Esegue i test in locale |
+| `yarn lint` | Analisi statica del codice (output JSON) |
+| `yarn lint:local` | Analisi statica del codice (output console) |
+| `yarn generate` | Rigenera i client API da OpenAPI spec |
+| `yarn prettify` | Formatta il codice con Prettier |
 
-### `yarn`
+---
 
-In the project directory, you can run:
+## API Client generation
 
-### `yarn build`
+I client API sono generati automaticamente dagli OpenAPI spec dei backend. Per rigenerarli:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+yarn generate
+```
 
-The build is minified and the filenames include the hashes.
+Il comando scarica le spec OpenAPI e genera il codice TypeScript in `src/api/generated/`.
 
-### `yarn generate`
+Backend configurati:
+- `mocker-config` — [pagopa-mocker-config](https://github.com/pagopa/pagopa-mocker-config)
+- `authorizer-config` — pagopa-platform-authorizer-config
 
-It generates the client API scripts able to interact with the backend APIs according to the Swagger defined for each application.\
+---
 
+## Operational Guides
 
-### `yarn start`
+> 📖 **[Guida Operativa — Mocker](docs/GUIDA_OPERATIVA_MOCKER.md)** — Guida all'uso dell'interfaccia web per la gestione delle mock resources, con screenshot e workflow operativi.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.\
-It should be something like the following image
+---
 
-![](...)
+## Contributors 👥
 
-The page will reload if you make edits and you will also see any lint errors in the console.
+Made with ❤️ by PagoPa S.p.A.
 
+### Maintainers
 
-### `yarn start:local`
-
-Runs the app in the development mode, pointing to backend service running in local.
+See `CODEOWNERS` file
