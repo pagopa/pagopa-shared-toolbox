@@ -50,7 +50,9 @@
     "title": "ClouDO",
     "description": "Strumento per l'automazione dei runbook.<br/>Richiede la <b>VPN</b>.",
     "buttons": [
-      { "href": "https://pagopa-d-cloudo-ui.azurewebsites.net", "text": "DEV", "locked": true }
+      { "href": "https://pagopa-d-cloudo-ui.azurewebsites.net", "text": "DEV", "locked": true },
+      { "href": "https://pagopa-u-cloudo-ui.azurewebsites.net", "text": "UAT", "locked": true },
+      { "href": "https://pagopa-p-cloudo-ui.azurewebsites.net", "text": "PROD", "locked": true }
     ]
   }
 ]
