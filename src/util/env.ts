@@ -29,4 +29,7 @@ export const ENV = {
     HOST: env.get("REACT_APP_MOCKER_HOST").required().asString(),
     BASEPATH: env.get("REACT_APP_MOCKER_BASEPATH").required().asString(),
   },
+  EBOLLO20: {
+    SERVICE: env.get("REACT_APP_EBOLLO20_SERVICE").required().asString(),
+  },
 };
