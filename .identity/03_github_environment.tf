@@ -41,6 +41,8 @@ locals {
     "MOCKER_HOST" : var.env == "prod" ? "" : "https://api.${var.env}.platform.pagopa.it",
     "MOCKER_BASEPATH" : "/mocker/v1",
 
+    "EBOLLO20_SERVICE" : "https://api.uat.platform.pagopa.it/pagopa-mbd-service/v2",
+
     "AUTH_CLIENT_ID": var.client_id,
     "AUTH_REDIRECT_URI": var.env == "prod" ? "https://shared.platform.pagopa.it/" : "https://shared.${var.env}.platform.pagopa.it/",
     "AUTH_TENANT": "https://login.microsoftonline.com/7788edaf-0346-4068-9d79-c868aed15b3d",
@@ -98,6 +100,14 @@ resource "github_actions_secret" "secret_cucumber_token" {
   repository      = local.github.repository
   secret_name     = "CUCUMBER_PUBLISH_TOKEN"
   plaintext_value = data.azurerm_key_vault_secret.key_vault_cucumber_token.value
+}
+
+#tfsec:ignore:github-actions-no-plain-text-action-secrets # not real secret
+resource "github_actions_secret" "secret_ebollo20_subscription_key" {
+
+  repository      = local.github.repository
+  secret_name     = "EBOLLO20_SUBSCRIPTION_KEY"
+  plaintext_value = data.azurerm_key_vault_secret.key_vault_ebollo20_subscription_key.value
 }
 
 

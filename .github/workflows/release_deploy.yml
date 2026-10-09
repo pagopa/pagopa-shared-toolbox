@@ -129,6 +129,8 @@ jobs:
           export REACT_APP_AUTH_REDIRECT_URI='${{ vars.AUTH_REDIRECT_URI }}'
           export REACT_APP_AUTH_TENANT='${{ vars.AUTH_TENANT }}'
           export REACT_APP_AUTH_SCOPES='${{ vars.AUTH_SCOPES }}'
+          export REACT_APP_EBOLLO20_SUBSCRIPTION_KEY='${{ secrets.EBOLLO20_SUBSCRIPTION_KEY }}'
+          export REACT_APP_EBOLLO20_SERVICE='${{ vars.EBOLLO20_SERVICE }}'
 
           if [ "${{ needs.setup.outputs.environment }}" = "dev" ]; then        
             export REACT_APP_FEATURE_MOCKER='true'
