@@ -23,6 +23,36 @@ const SidebarItems = [
     domain: "authorizer",
     is_active: false,
   },
+  {
+    name: "Partner",
+    route: "/partner",
+    domain: "demo",
+    is_active: true,
+  },
+  {
+    name: "Pagamento andato a buon fine",
+    route: "/demo/payment/success",
+    domain: "demo",
+    is_active: true,
+  },
+  {
+    name: "Pagamento cancellato",
+    route: "/demo/payment/cancel",
+    domain: "demo",
+    is_active: true,
+  },
+  {
+    name: "Pagamento andato in errore",
+    route: "/demo/payment/error",
+    domain: "demo",
+    is_active: true,
+  },
+  {
+    name: "Pagamento in attesa",
+    route: "/demo/payment/waiting",
+    domain: "demo",
+    is_active: true,
+  },
 ];
 
 export default SidebarItems;

@@ -22,6 +22,7 @@ interface IState {
   readonly domains: {
     readonly authorizer: boolean;
     readonly mocker: boolean;
+    readonly demo: boolean;
   };
 }
 
@@ -40,6 +41,7 @@ export default class Sidebar extends React.Component<IProps, IState> {
       domains: {
         authorizer: false,
         mocker: true,
+        demo: false,
       },
     };
   }
@@ -49,7 +51,7 @@ export default class Sidebar extends React.Component<IProps, IState> {
     SidebarItems.forEach((item) => {
       if (
         this.props.history.location.pathname.split("/")[1] ===
-        item.route.substring(1)
+        item.route.split("/")[1]
       ) {
         const headings: ReadonlyArray<Element> = Array.from(
           document.getElementsByClassName("navbar-heading")
@@ -231,6 +233,74 @@ export default class Sidebar extends React.Component<IProps, IState> {
               </Accordion.Item>
             </span>
           )}
+          <span>
+            <Accordion.Item eventKey="2">
+              <Accordion.Header>
+                <span
+                  className="navbar-heading"
+                  onClick={(): void => this.setDomainState("demo")}
+                >
+                  <FaExpand
+                    className={`ml-2 mr-2 ${getCompressionClass("demo", true)}`}
+                  />
+                  <FaCompress
+                    className={`ml-2 mr-2 ${getCompressionClass(
+                      "demo",
+                      false
+                    )}`}
+                  />
+                  Demo
+                </span>
+              </Accordion.Header>
+              <Accordion.Body>
+                <div className="list-group">
+                  <Link
+                    to={"/partner"}
+                    key={"Partner"}
+                    className={`list-group-item-action ${getClass("/partner")}`}
+                  >
+                    <span>{"Partner"}</span>
+                  </Link>
+                  <Link
+                    to={"/demo/payment/success"}
+                    key={"Pagamento andato a buon fine"}
+                    className={`list-group-item-action ${getClass(
+                      "/demo/payment/success"
+                    )}`}
+                  >
+                    <span>{"Pagamento andato a buon fine"}</span>
+                  </Link>
+                  <Link
+                    to={"/demo/payment/cancel"}
+                    key={"Pagamento cancellato"}
+                    className={`list-group-item-action ${getClass(
+                      "/demo/payment/cancel"
+                    )}`}
+                  >
+                    <span>{"Pagamento cancellato"}</span>
+                  </Link>
+                  <Link
+                    to={"/demo/payment/error"}
+                    key={"Pagamento andato in errore"}
+                    className={`list-group-item-action ${getClass(
+                      "/demo/payment/error"
+                    )}`}
+                  >
+                    <span>{"Pagamento andato in errore"}</span>
+                  </Link>
+                  <Link
+                    to={"/demo/payment/waiting"}
+                    key={"Pagamento in attesa"}
+                    className={`list-group-item-action ${getClass(
+                      "/demo/payment/waiting"
+                    )}`}
+                  >
+                    <span>{"Pagamento in attesa"}</span>
+                  </Link>
+                </div>
+              </Accordion.Body>
+            </Accordion.Item>
+          </span>
         </Accordion>
         {(menuItems as ReadonlyArray<MenuItem>)?.length > 0 && (
           <div className="external-links mt-3">
